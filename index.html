@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Kedatangan Material</title>
+    <title>Jadwal Kedatangan Compond</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -162,7 +162,7 @@
 
     async function muatDataGoogleSheets() {
         // Menggunakan endpoint visualisasi alternatif untuk menghindari isu keamanan browser (CORS)
-        const url = `https://google.com{SPREADSHEET_ID}/gviz/tq?tqx=out:csv`;
+        const url = `https://google.com{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=web_jadwal_material`;
         const loadingEl = document.getElementById('loadingInfo');
         
         try {
