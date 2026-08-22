@@ -141,41 +141,44 @@
     const SPREADSHEET_ID = '1eNTyhvxsYVLlgOzjP8Quxe2BvYYq_4UQwX4siSYLMnw';
     let databaseKedatangan = [];
 
-    // Fungsi mengambil data langsung dari Google Sheets (Format CSV Publik)
+    // Fungsi mengambil data langsung dari Google Sheets (Metode gviz stabil)
     async function muatDataGoogleSheets() {
         if (SPREADSHEET_ID === 'MOHON_GANTI_DENGAN_ID_SPREADSHEET_ANDA') {
-            return; // Gunakan pencarian manual jika ID belum diganti
+            return;
         }
         
-        const url = `https://google.com{SPREADSHEET_ID}/pub?output=csv`;
+        // Menggunakan format visualisasi visual Google Drive agar bebas kendala CORS browser
+        const url = `https://google.com{SPREADSHEET_ID}/gviz/tq?tqx=out:csv`;
         const loadingEl = document.getElementById('loadingInfo');
         
         try {
             loadingEl.style.display = 'block';
             const respon = await fetch(url);
+            if (!respon.ok) throw new Error('Jaringan bermasalah');
+            
             const teksData = await respon.text();
             
-            // Parsing CSV sederhana ke Array Objek
-            const baris = teksData.split('\n').map(b => b.split(';'));
-            const headers = baris[0].map(h => h.trim().toLowerCase());
+            // Pembersihan otomatis format teks bawaan Google Sheets
+            const baris = teksData.split('\n').map(b => b.split(',').map(sel => sel.replace(/^"|"$/g, '').trim()));
             
             databaseKedatangan = [];
             for (let i = 1; i < baris.length; i++) {
-                if (baris[i].length < headers.length) continue;
+                if (baris[i].length < 4 || !baris[i][0]) continue;
                 databaseKedatangan.push({
-                    tanggal: baris[i][0]?.trim(),
-                    supplier: baris[i][1]?.trim(),
-                    material: baris[i][2]?.trim(),
-                    jumlah: baris[i][3]?.trim(),
-                    status: baris[i][4]?.trim() || 'Proses'
+                    tanggal: baris[i][0],
+                    supplier: baris[i][1],
+                    material: baris[i][2],
+                    jumlah: baris[i][3],
+                    status: baris[i][4] || 'Proses'
                 });
             }
             loadingEl.style.display = 'none';
         } catch (error) {
-            loadingEl.innerHTML = '❌ Gagal memuat data. Periksa pengaturan publish Google Sheets Anda.';
+            loadingEl.innerHTML = '❌ Gagal memuat data. Periksa koneksi internet atau ID spreadsheet Anda.';
             console.error(error);
         }
     }
+
 
     function filterData() {
         const tanggalDipilih = document.getElementById('pilihTanggal').value;
@@ -185,7 +188,11 @@
         if (!tanggalDipilih) return;
 
         // Filter data berdasarkan tanggal
-        const hasilFilter = databaseKedatangan.filter(item => item.tanggal === tanggalDipilih);
+        const hasilFilter = databaseKedatangan.filter(item => {
+        const tglData = item.tanggal.replace(/[\/\-]/g, '');
+        const tglPilih = tanggalDipilih.replace(/[\/\-]/g, '');
+        return tglData === tglPilih;
+    });
 
         isiTabel.innerHTML = '';
 
