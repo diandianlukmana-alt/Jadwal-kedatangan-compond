@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Kedatangan Compond</title>
+    <title>Jadwal Kedatangan Material</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -101,7 +101,7 @@
             font-weight: 600;
             text-transform: uppercase;
         }
-        .status-selesai { background-color: #1e4620; color: #bbf7d0; }
+        .status-selready { background-color: #1e4620; color: #bbf7d0; }
         .status-proses { background-color: #614e1a; color: #fef08a; }
         .status-tertunda { background-color: #622525; color: #fecaca; }
         .no-data {
@@ -156,13 +156,17 @@
 </div>
 
 <script>
-    // MASUKKAN ID SPREADSHEET ANDA DI SINI
+    // ID SPREADSHEET ANDA SUDAH TERPASANG DI SINI
     const SPREADSHEET_ID = '1eNTyhvxsYVLlgOzJP8Quxe2BvYYq_4UQwX4siSYLMnw';
     let databaseKedatangan = [];
 
     async function muatDataGoogleSheets() {
-        // Menggunakan endpoint visualisasi alternatif untuk menghindari isu keamanan browser (CORS)
-        const url = `https://google.com{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=web_jadwal_material`;
+        if (SPREADSHEET_ID === 'MOHON_GANTI_DENGAN_ID_SPREADSHEET_ANDA') {
+            return;
+        }
+        
+        // Menggunakan engine publish resmi untuk stabilitas koneksi data lintas platform
+        const url = `https://google.com{SPREADSHEET_ID}/pub?output=csv`;
         const loadingEl = document.getElementById('loadingInfo');
         
         try {
@@ -170,19 +174,24 @@
             if (!respon.ok) throw new Error();
             const teksData = await respon.text();
             
-            // Proses pembersihan tanda kutip dari Google Sheets
-            const baris = teksData.split('\n').map(b => b.split(',').map(sel => sel.replace(/^"|"$/g, '').trim()));
-            
+            const barisRaw = teksData.split('\n');
             databaseKedatangan = [];
-            // Lewati baris pertama (header)
-            for (let i = 1; i < baris.length; i++) {
-                if (baris[i].length < 4 || !baris[i][0]) continue;
+            
+            for (let i = 1; i < barisRaw.length; i++) {
+                if (!barisRaw[i].trim()) continue;
+                
+                // Deteksi otomatis format pembatas regional (Koma atau Titik Koma)
+                const pemisah = barisRaw[i].includes(';') ? ';' : ',';
+                const kolom = barisRaw[i].split(pemisah).map(sel => sel.replace(/^"|"$/g, '').trim());
+                
+                if (kolom.length < 4) continue;
+                
                 databaseKedatangan.push({
-                    tanggal: baris[i][0],
-                    supplier: baris[i][1],
-                    material: baris[i][2],
-                    jumlah: baris[i][3],
-                    status: baris[i][4] || 'Proses'
+                    tanggal: kolom[0],
+                    supplier: kolom[1],
+                    material: kolom[2],
+                    jumlah: kolom[3],
+                    status: kolom[4] || 'Proses'
                 });
             }
             loadingEl.style.display = 'none';
@@ -190,7 +199,7 @@
             loadingEl.style.backgroundColor = '#7f1d1d';
             loadingEl.style.borderColor = '#b91c1c';
             loadingEl.style.color = '#fecaca';
-            loadingEl.innerHTML = '❌ Gagal sinkronisasi data. Pastikan Google Sheets Anda sudah diatur "Siapa saja dapat melihat".';
+            loadingEl.innerHTML = '❌ Gagal sinkronisasi data. Pastikan di Google Sheets Anda sudah klik menu File > Bagikan > Publikasikan ke Web.';
         }
     }
 
@@ -201,8 +210,9 @@
         
         if (!tanggalDipilih) return;
 
-        // Normalisasi format tanggal agar cocok (menghilangkan strip/garis miring)
+        // Normalisasi format tanggal agar cocok meskipun setelan HP staf berbeda-beda
         const hasilFilter = databaseKedatangan.filter(item => {
+            if (!item.tanggal) return false;
             const tglData = item.tanggal.replace(/[\/\-]/g, '');
             const tglPilih = tanggalDipilih.replace(/[\/\-]/g, '');
             return tglData === tglPilih;
@@ -221,8 +231,10 @@
         hasilFilter.forEach(item => {
             const baris = document.createElement('tr');
             let statusClass = 'status-proses';
-            if (item.status.toLowerCase() === 'selesai') statusClass = 'status-selesai';
-            if (item.status.toLowerCase() === 'tertunda') statusClass = 'status-tertunda';
+            const statusTeks = item.status.toLowerCase();
+            
+            if (statusTeks === 'selesai') statusClass = 'status-selready';
+            if (statusTeks === 'tertunda') statusClass = 'status-tertunda';
 
             baris.innerHTML = `
                 <td><b>${item.supplier}</b></td>
