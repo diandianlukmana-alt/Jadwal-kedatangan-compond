@@ -93,17 +93,15 @@
         tr:hover {
             background-color: #243249;
         }
-        .badge {
-            display: inline-block;
+        .unit-text {
+            color: #38bdf8;
+            font-weight: 600;
+            background-color: #0c4a6e;
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
+            display: inline-block;
+            font-size: 13px;
         }
-        .status-selready { background-color: #1e4620; color: #bbf7d0; }
-        .status-proses { background-color: #614e1a; color: #fef08a; }
-        .status-tertunda { background-color: #622525; color: #fecaca; }
         .no-data {
             text-align: center;
             padding: 30px;
@@ -143,7 +141,7 @@
                     <th>Supplier</th>
                     <th>Nama Material</th>
                     <th>Jumlah</th>
-                    <th>Status</th>
+                    <th>Unit</th>
                 </tr>
             </thead>
             <tbody id="isiTabel">
@@ -159,7 +157,6 @@
     let databaseKedatangan = [];
 
     async function muatDataInternal() {
-        // Membaca file data.txt langsung dari server internal GitHub Anda tanpa proxy luar
         const url = `data.txt?v=${new Date().getTime()}`;
         const loadingEl = document.getElementById('loadingInfo');
         
@@ -182,7 +179,7 @@
                     supplier: kolom[1],
                     material: kolom[2],
                     jumlah: kolom[3],
-                    status: kolom[4] || 'Proses'
+                    unit: kolom[4] || '-'
                 });
             }
             loadingEl.style.display = 'none';
@@ -221,17 +218,12 @@
 
         hasilFilter.forEach(item => {
             const baris = document.createElement('tr');
-            let statusClass = 'status-proses';
-            const statusTeks = item.status.toLowerCase().trim();
-            
-            if (statusTeks === 'selesai') statusClass = 'status-selready';
-            if (statusTeks === 'tertunda') statusClass = 'status-tertunda';
 
             baris.innerHTML = `
                 <td><b>${item.supplier}</b></td>
                 <td>${item.material}</td>
                 <td>${item.jumlah}</td>
-                <td><span class="badge ${statusClass}">${item.status}</span></td>
+                <td><span class="unit-text">${item.unit}</span></td>
             `;
             isiTabel.appendChild(baris);
         });
