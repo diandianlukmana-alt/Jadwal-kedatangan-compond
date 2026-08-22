@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Kedatangan Material</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #0f172a;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .filter-section {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        label {
+            font-weight: 600;
+        }
+        input[type="date"] {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+        input[type="date"]:focus {
+            border-color: var(--primary);
+        }
+        .stats {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+        }
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-selesai { background-color: #dcfce7; color: #15803d; }
+        .status-proses { background-color: #fef9c3; color: #a16207; }
+        .status-tertunda { background-color: #fee2e2; color: #b91c1c; }
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🗓️ Jadwal Kedatangan Material Supplier</h2>
+    
+    <div class="filter-section">
+        <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
+        <input type="date" id="pilihTanggal" onchange="filterData()">
+    </div>
+
+    <div id="loadingInfo" class="loading" style="display: none;">Memuat data dari Google Sheets...</div>
+    <div id="statsSummary" class="stats"></div>
+
+    <table id="tabelMaterial">
+        <thead>
+            <tr>
+                <th>Supplier</th>
+                <th>Nama Material</th>
+                <th>Jumlah</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="isiTabel">
+            <tr>
+                <td colspan="4" class="no-data">Silakan pilih tanggal terlebih dahulu.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // SILAKAN GANTI KODE DI BAWAH INI DENGAN SPREADSHEET ID ANDA
+    const SPREADSHEET_ID = '1eNTyhvxsYVLlgOzjP8Quxe2BvYYq_4UQwX4siSYLMnw';
+    let databaseKedatangan = [];
+
+    // Fungsi mengambil data langsung dari Google Sheets (Format CSV Publik)
+    async function muatDataGoogleSheets() {
+        if (SPREADSHEET_ID === '1eNTyhvxsYVLlgOzjP8Quxe2BvYYq_4UQwX4siSYLMnw') {
+            return; // Gunakan pencarian manual jika ID belum diganti
+        }
+        
+        const url = `https://google.com{SPREADSHEET_ID}/pub?output=csv`;
+        const loadingEl = document.getElementById('loadingInfo');
+        
+        try {
+            loadingEl.style.display = 'block';
+            const respon = await fetch(url);
+            const teksData = await respon.text();
+            
+            // Parsing CSV sederhana ke Array Objek
+            const baris = teksData.split('\n').map(b => b.split(','));
+            const headers = baris[0].map(h => h.trim().toLowerCase());
+            
+            databaseKedatangan = [];
+            for (let i = 1; i < baris.length; i++) {
+                if (baris[i].length < headers.length) continue;
+                databaseKedatangan.push({
+                    tanggal: baris[i][0]?.trim(),
+                    supplier: baris[i][1]?.trim(),
+                    material: baris[i][2]?.trim(),
+                    jumlah: baris[i][3]?.trim(),
+                    status: baris[i][4]?.trim() || 'Proses'
+                });
+            }
+            loadingEl.style.display = 'none';
+        } catch (error) {
+            loadingEl.innerHTML = '❌ Gagal memuat data. Periksa pengaturan publish Google Sheets Anda.';
+            console.error(error);
+        }
+    }
+
+    function filterData() {
+        const tanggalDipilih = document.getElementById('pilihTanggal').value;
+        const isiTabel = document.getElementById('isiTabel');
+        const statsSummary = document.getElementById('statsSummary');
+        
+        if (!tanggalDipilih) return;
+
+        // Filter data berdasarkan tanggal
+        const hasilFilter = databaseKedatangan.filter(item => item.tanggal === tanggalDipilih);
+
+        isiTabel.innerHTML = '';
+
+        if (hasilFilter.length === 0) {
+            statsSummary.innerHTML = `Total: 0 jenis material`;
+            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal kedatangan material pada tanggal ini.</td></tr>`;
+            return;
+        }
+
+        // Tampilkan Summary
+        statsSummary.innerHTML = `📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman material`;
+
+        // Masukkan data ke tabel
+        hasilFilter.forEach(item => {
+            const baris = document.createElement('tr');
+            
+            // Deteksi kelas warna status
+            let statusClass = 'status-proses';
+            if (item.status.toLowerCase() === 'selesai') statusClass = 'status-selesai';
+            if (item.status.toLowerCase() === 'tertunda') statusClass = 'status-tertunda';
+
+            baris.innerHTML = `
+                <td><b>${item.supplier}</b></td>
+                <td>${item.material}</td>
+                <td>${item.jumlah}</td>
+                <td><span class="badge ${statusClass}">${item.status}</span></td>
+            `;
+            isiTabel.appendChild(baris);
+        });
+    }
+
+    // Jalankan penarikan data saat web dibuka pertama kali
+    window.onload = muatDataGoogleSheets;
+</script>
+
+</body>
+</html>
