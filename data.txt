@@ -1,4 +1,4 @@
-2026-08-24;PT Semen Jaya;Semen Portland;500 Sak;Selesai
-2026-08-24;CV Baja Sakti;Besi Beton 12mm;150 Batang;Proses
-2026-08-25;PT Kayu Abadi;Triplek 9mm;200 Lembar;Proses
-2026-08-26;Mega Pasir;Pasir Beton;3 Truk;Tertunda
+2026-08-24;PT Semen Jaya;Semen Portland;500 Sak;Batch 1
+2026-08-24;CV Baja Sakti;Besi Beton 12mm;150 Batang;Batch 2
+2026-08-25;PT Kayu Abadi;Triplek 9mm;200 Lembar;Batch 1
+2026-08-26;Mega Pasir;Pasir Beton;3 Truk;Batch 3
