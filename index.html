@@ -93,15 +93,6 @@
         tr:hover {
             background-color: #243249;
         }
-        .unit-text {
-            color: #38bdf8;
-            font-weight: 600;
-            background-color: #0c4a6e;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            font-size: 13px;
-        }
         .no-data {
             text-align: center;
             padding: 30px;
@@ -223,7 +214,7 @@
                 <td><b>${item.supplier}</b></td>
                 <td>${item.material}</td>
                 <td>${item.jumlah}</td>
-                <td><span class="unit-text">${item.unit}</span></td>
+                <td>${item.unit}</td>
             `;
             isiTabel.appendChild(baris);
         });
