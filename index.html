@@ -110,17 +110,6 @@
             color: var(--text-secondary);
             font-style: italic;
         }
-        .loading {
-            text-align: center;
-            padding: 15px;
-            color: #38bdf8;
-            font-weight: bold;
-            font-size: 14px;
-            background: #0c4a6e;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            border: 1px solid #0369a1;
-        }
     </style>
 </head>
 <body>
@@ -133,7 +122,6 @@
         <input type="date" id="pilihTanggal" onchange="filterData()">
     </div>
 
-    <div id="loadingInfo" class="loading">Sedang menyambungkan ke Google Sheets...</div>
     <div id="statsSummary" class="stats"></div>
 
     <div class="table-responsive">
@@ -156,49 +144,14 @@
 </div>
 
 <script>
-    // ID SPREADSHEET MILIK ANDA
-    const SPREADSHEET_ID = '1eNTyhvxsYVLlgOzJP8Quxe2BvYYq_4UQwX4siSYLMnw';
-    let databaseKedatangan = [];
-
-    async function muatDataGoogleSheets() {
-        const url = `https://google.com{SPREADSHEET_ID}/pub?output=csv`;
-        const loadingEl = document.getElementById('loadingInfo');
-        
-        try {
-            const respon = await fetch(url);
-            if (!respon.ok) throw new Error();
-            const teksData = await respon.text();
-            
-            // Mengatasi pembagian baris yang fleksibel (CRLF / LF)
-            const barisRaw = teksData.split(/\r?\n/);
-            databaseKedatangan = [];
-            
-            for (let i = 1; i < barisRaw.length; i++) {
-                if (!barisRaw[i].trim()) continue;
-                
-                // Detektor cerdas otomatis pembatas kolom regional (Koma atau Titik Koma)
-                const pemisah = barisRaw[i].includes(';') ? ';' : ',';
-                const kolom = barisRaw[i].split(pemisah).map(sel => sel.replace(/^"|"$/g, '').trim());
-                
-                // Sistem toleransi pemetaan jika ada baris kosong di Google Sheets
-                if (kolom.length < 3) continue;
-                
-                databaseKedatangan.push({
-                    tanggal: kolom[0] || '',
-                    supplier: kolom[1] || '-',
-                    material: kolom[2] || '-',
-                    jumlah: kolom[3] || '-',
-                    status: kolom[4] || 'Proses'
-                });
-            }
-            loadingEl.style.display = 'none';
-        } catch (error) {
-            loadingEl.style.backgroundColor = '#7f1d1d';
-            loadingEl.style.borderColor = '#b91c1c';
-            loadingEl.style.color = '#fecaca';
-            loadingEl.innerHTML = '❌ Gagal Sinkronisasi. Solusi: Di Google Sheets Anda, pastikan sudah klik File > Bagikan > Publikasikan ke Web > klik tombol biru "Publikasikan".';
-        }
-    }
+    // DATA DIBAWAH INI BISA ANDA TAMBAH ATAU UBAH KAPAN SAJA SECARA MANUAL
+    // Format tanggal wajib: TAHUN-BULAN-HARI (YYYY-MM-DD)
+    const databaseKedatangan = [
+        { tanggal: "2026-08-24", supplier: "PT Semen Jaya", material: "Semen Portland", jumlah: "500 Sak", status: "Selesai" },
+        { tanggal: "2026-08-24", supplier: "CV Baja Sakti", material: "Besi Beton 12mm", jumlah: "150 Batang", status: "Proses" },
+        { tanggal: "2026-08-25", supplier: "PT Kayu Abadi", material: "Triplek 9mm", jumlah: "200 Lembar", status: "Proses" },
+        { tanggal: "2026-08-26", supplier: "Mega Pasir", material: "Pasir Beton", jumlah: "3 Truk", status: "Tertunda" }
+    ];
 
     function filterData() {
         const tanggalDipilih = document.getElementById('pilihTanggal').value;
@@ -207,13 +160,8 @@
         
         if (!tanggalDipilih) return;
 
-        // Mencocokkan format tanggal digital murni dari HP dan spreadsheet
-        const hasilFilter = databaseKedatangan.filter(item => {
-            if (!item.tanggal) return false;
-            const tglData = item.tanggal.replace(/[\/\-]/g, '').trim();
-            const tglPilih = tanggalDipilih.replace(/[\/\-]/g, '').trim();
-            return tglData === tglPilih;
-        });
+        // Mencocokkan data tanggal
+        const hasilFilter = databaseKedatangan.filter(item => item.tanggal === tanggalDipilih);
 
         isiTabel.innerHTML = '';
 
@@ -242,8 +190,6 @@
             isiTabel.appendChild(baris);
         });
     }
-
-    window.onload = muatDataGoogleSheets;
 </script>
 
 </body>
