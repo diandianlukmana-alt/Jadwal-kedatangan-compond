@@ -156,19 +156,17 @@
 </div>
 
 <script>
-    // ID PASTEBIN PERMANEN ANDA SUDAH SAYA PASANG DI SINI
-    const PASTEBIN_ID = 'EuQ2CABu';
     let databaseKedatangan = [];
 
-    async function muatDataOnline() {
-        // Menggunakan proxy AllOrigins dengan timestamp agar data di HP selalu paling baru saat di-refresh
-        const url = `https://allorigins.win{encodeURIComponent('https://pastebin.com' + PASTEBIN_ID)}&timestamp=${new Date().getTime()}`;
+    async function muatDataInternal() {
+        // Membaca file data.txt langsung dari server internal GitHub Anda tanpa proxy luar
+        const url = `data.txt?v=${new Date().getTime()}`;
         const loadingEl = document.getElementById('loadingInfo');
         
         try {
             const respon = await fetch(url);
-            const hasilEksternal = await respon.json();
-            const teksData = hasilEksternal.contents;
+            if (!respon.ok) throw new Error();
+            const teksData = await respon.text();
             
             const barisRaw = teksData.split(/\r?\n/);
             databaseKedatangan = [];
@@ -193,7 +191,7 @@
             loadingEl.style.backgroundColor = '#7f1d1d';
             loadingEl.style.borderColor = '#b91c1c';
             loadingEl.style.color = '#fecaca';
-            loadingEl.innerHTML = '❌ Gagal memuat data online. Pastikan koneksi internet stabil.';
+            loadingEl.innerHTML = '❌ Gagal memuat data internal GitHub.';
         }
     }
 
@@ -239,7 +237,7 @@
         });
     }
 
-    window.onload = muatDataOnline;
+    window.onload = muatDataInternal;
 </script>
 
 </body>
