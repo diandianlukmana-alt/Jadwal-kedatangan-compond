@@ -156,16 +156,11 @@
 </div>
 
 <script>
-    // ID SPREADSHEET ANDA SUDAH TERPASANG DI SINI
+    // ID SPREADSHEET MILIK ANDA
     const SPREADSHEET_ID = '1eNTyhvxsYVLlgOzJP8Quxe2BvYYq_4UQwX4siSYLMnw';
     let databaseKedatangan = [];
 
     async function muatDataGoogleSheets() {
-        if (SPREADSHEET_ID === 'MOHON_GANTI_DENGAN_ID_SPREADSHEET_ANDA') {
-            return;
-        }
-        
-        // Menggunakan engine publish resmi untuk stabilitas koneksi data lintas platform
         const url = `https://google.com{SPREADSHEET_ID}/pub?output=csv`;
         const loadingEl = document.getElementById('loadingInfo');
         
@@ -174,23 +169,25 @@
             if (!respon.ok) throw new Error();
             const teksData = await respon.text();
             
-            const barisRaw = teksData.split('\n');
+            // Mengatasi pembagian baris yang fleksibel (CRLF / LF)
+            const barisRaw = teksData.split(/\r?\n/);
             databaseKedatangan = [];
             
             for (let i = 1; i < barisRaw.length; i++) {
                 if (!barisRaw[i].trim()) continue;
                 
-                // Deteksi otomatis format pembatas regional (Koma atau Titik Koma)
+                // Detektor cerdas otomatis pembatas kolom regional (Koma atau Titik Koma)
                 const pemisah = barisRaw[i].includes(';') ? ';' : ',';
                 const kolom = barisRaw[i].split(pemisah).map(sel => sel.replace(/^"|"$/g, '').trim());
                 
-                if (kolom.length < 4) continue;
+                // Sistem toleransi pemetaan jika ada baris kosong di Google Sheets
+                if (kolom.length < 3) continue;
                 
                 databaseKedatangan.push({
-                    tanggal: kolom[0],
-                    supplier: kolom[1],
-                    material: kolom[2],
-                    jumlah: kolom[3],
+                    tanggal: kolom[0] || '',
+                    supplier: kolom[1] || '-',
+                    material: kolom[2] || '-',
+                    jumlah: kolom[3] || '-',
                     status: kolom[4] || 'Proses'
                 });
             }
@@ -199,7 +196,7 @@
             loadingEl.style.backgroundColor = '#7f1d1d';
             loadingEl.style.borderColor = '#b91c1c';
             loadingEl.style.color = '#fecaca';
-            loadingEl.innerHTML = '❌ Gagal sinkronisasi data. Pastikan di Google Sheets Anda sudah klik menu File > Bagikan > Publikasikan ke Web.';
+            loadingEl.innerHTML = '❌ Gagal Sinkronisasi. Solusi: Di Google Sheets Anda, pastikan sudah klik File > Bagikan > Publikasikan ke Web > klik tombol biru "Publikasikan".';
         }
     }
 
@@ -210,11 +207,11 @@
         
         if (!tanggalDipilih) return;
 
-        // Normalisasi format tanggal agar cocok meskipun setelan HP staf berbeda-beda
+        // Mencocokkan format tanggal digital murni dari HP dan spreadsheet
         const hasilFilter = databaseKedatangan.filter(item => {
             if (!item.tanggal) return false;
-            const tglData = item.tanggal.replace(/[\/\-]/g, '');
-            const tglPilih = tanggalDipilih.replace(/[\/\-]/g, '');
+            const tglData = item.tanggal.replace(/[\/\-]/g, '').trim();
+            const tglPilih = tanggalDipilih.replace(/[\/\-]/g, '').trim();
             return tglData === tglPilih;
         });
 
@@ -231,7 +228,7 @@
         hasilFilter.forEach(item => {
             const baris = document.createElement('tr');
             let statusClass = 'status-proses';
-            const statusTeks = item.status.toLowerCase();
+            const statusTeks = item.status.toLowerCase().trim();
             
             if (statusTeks === 'selesai') statusClass = 'status-selready';
             if (statusTeks === 'tertunda') statusClass = 'status-tertunda';
