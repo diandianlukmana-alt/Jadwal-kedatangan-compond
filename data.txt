@@ -1,4 +1,4 @@
-2026-08-24;PT Semen Jaya;Semen Portland;500 Sak;Batch 1
-2026-08-24;CV Baja Sakti;Besi Beton 12mm;150 Batang;Batch 2
-2026-08-25;PT Kayu Abadi;Triplek 9mm;200 Lembar;Batch 1
-2026-08-26;Mega Pasir;Pasir Beton;3 Truk;Batch 3
+2026-08-24;IRC RUBBER;Compond Jenis A;500;Sak
+2026-08-24;ELASTOMIX;Compond Jenis B;150;Kg
+2026-08-25;IRC RUBBER;Compond Jenis C;10;Pallet
+2026-08-26;ELASTOMIX;Compond Jenis A;20;Pcs
