@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Kedatangan Compond</title>
+    <title>Jadwal Kedatangan Compound</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -44,6 +44,13 @@
             padding: 15px;
             border-radius: 8px;
             border: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
         }
         label {
             font-weight: 600;
@@ -51,7 +58,7 @@
             margin-bottom: 8px;
             color: var(--text-secondary);
         }
-        input[type="date"] {
+        input[type="date"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -62,7 +69,7 @@
             box-sizing: border-box;
             outline: none;
         }
-        input[type="date"]:focus {
+        input[type="date"]:focus, select:focus {
             border-color: var(--primary);
         }
         .stats {
@@ -115,11 +122,21 @@
 <body>
 
 <div class="container">
-    <h2>🗓️ Jadwal Kedatangan Compond</h2>
+    <h2>🗓️ Jadwal Kedatangan Compound</h2>
     
     <div class="filter-section">
-        <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
-        <input type="date" id="pilihTanggal" onchange="filterData()">
+        <div class="filter-group">
+            <label for="pilihSupplier">Pilih Supplier:</label>
+            <select id="pilihSupplier" onchange="gantiDataSupplier()">
+                <option value="semua">Semua Supplier (IRC & EMIX)</option>
+                <option value="data_irc.txt">IRC RUBBER</option>
+                <option value="data_emix.txt">EMIX</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
+            <input type="date" id="pilihTanggal" onchange="filterData()">
+        </div>
     </div>
 
     <div id="loadingInfo" class="loading">Sedang mengambil data jadwal terbaru...</div>
@@ -147,40 +164,72 @@
 <script>
     let databaseKedatangan = [];
 
+    // Fungsi membaca file teks dan parsing baris ke objek
+    async function ambilTeksFile(filename) {
+        const url = `${filename}?v=${new Date().getTime()}`;
+        const respon = await fetch(url);
+        if (!respon.ok) throw new Error(`Gagal memuat ${filename}`);
+        const teksData = await respon.text();
+        
+        const barisRaw = teksData.split(/\r?\n/);
+        const dataParsed = [];
+
+        for (let i = 0; i < barisRaw.length; i++) {
+            if (!barisRaw[i].trim()) continue;
+            
+            const kolom = barisRaw[i].split(';').map(sel => sel.trim());
+            if (kolom.length < 4) continue;
+            
+            dataParsed.push({
+                tanggal: kolom[0],
+                supplier: kolom[1],
+                material: kolom[2],
+                jumlah: kolom[3],
+                unit: kolom[4] || '-'
+            });
+        }
+        return dataParsed;
+    }
+
+    // Fungsi memuat data berdasarkan pilihan dropdown supplier
     async function muatDataInternal() {
-        const url = `data.txt?v=${new Date().getTime()}`;
+        const supplierDipilih = document.getElementById('pilihSupplier').value;
         const loadingEl = document.getElementById('loadingInfo');
         
+        loadingEl.style.display = 'block';
+        loadingEl.style.backgroundColor = '#0c4a6e';
+        loadingEl.style.borderColor = '#0369a1';
+        loadingEl.style.color = '#38bdf8';
+        loadingEl.innerHTML = 'Sedang mengambil data jadwal terbaru...';
+
         try {
-            const respon = await fetch(url);
-            if (!respon.ok) throw new Error();
-            const teksData = await respon.text();
-            
-            const barisRaw = teksData.split(/\r?\n/);
             databaseKedatangan = [];
-            
-            for (let i = 0; i < barisRaw.length; i++) {
-                if (!barisRaw[i].trim()) continue;
-                
-                const kolom = barisRaw[i].split(';').map(sel => sel.trim());
-                if (kolom.length < 4) continue;
-                
-                databaseKedatangan.push({
-                    tanggal: kolom[0],
-                    supplier: kolom[1],
-                    material: kolom[2],
-                    jumlah: kolom[3],
-                    unit: kolom[4] || '-'
-                });
+
+            if (supplierDipilih === 'semua') {
+                // Ambil kedua file secara bersamaan jika memilih 'Semua'
+                const [dataIRC, dataEMIX] = await Promise.all([
+                    ambilTeksFile('data_irc.txt'),
+                    ambilTeksFile('data_emix.txt')
+                ]);
+                databaseKedatangan = [...dataIRC, ...dataEMIX];
+            } else {
+                // Ambil file spesifik sesuai pilihan dropdown
+                databaseKedatangan = await ambilTeksFile(supplierDipilih);
             }
+
             loadingEl.style.display = 'none';
+            filterData(); // Perbarui tabel jika tanggal sudah dipilih
         } catch (error) {
             console.error(error);
             loadingEl.style.backgroundColor = '#7f1d1d';
             loadingEl.style.borderColor = '#b91c1c';
             loadingEl.style.color = '#fecaca';
-            loadingEl.innerHTML = '❌ Gagal memuat data internal GitHub.';
+            loadingEl.innerHTML = '❌ Gagal memuat data file internal GitHub.';
         }
+    }
+
+    function gantiDataSupplier() {
+        muatDataInternal();
     }
 
     function filterData() {
