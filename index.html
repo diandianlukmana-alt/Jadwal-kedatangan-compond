@@ -96,7 +96,7 @@
             font-size: 14px;
         }
 
-        input[type="text"], input[type="date"], select {
+        input[type="date"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -106,9 +106,10 @@
             color: var(--text);
             box-sizing: border-box;
             outline: none;
+            cursor: pointer;
         }
 
-        input[type="text"]:focus, select:focus {
+        input[type="date"]:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
@@ -206,8 +207,8 @@
             </select>
         </div>
         <div class="filter-group">
-            <label for="pilihTanggal">Tanggal Kedatangan (TGL/BLN/THN):</label>
-            <input type="text" id="pilihTanggal" placeholder="Contoh: 01/09/2026" oninput="filterData()">
+            <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
+            <input type="date" id="pilihTanggal" onchange="filterData()">
         </div>
     </div>
 
@@ -225,7 +226,7 @@
             </thead>
             <tbody id="isiTabel">
                 <tr>
-                    <td colspan="3" class="no-data">Silakan ketik tanggal terlebih dahulu.</td>
+                    <td colspan="3" class="no-data">Silakan pilih tanggal terlebih dahulu.</td>
                 </tr>
             </tbody>
         </table>
@@ -326,17 +327,13 @@
     }
 
     function filterData() {
-        const inputTanggal = document.getElementById('pilihTanggal').value;
+        const tanggalDipilih = document.getElementById('pilihTanggal').value;
         const isiTabel = document.getElementById('isiTabel');
         const statsSummary = document.getElementById('statsSummary');
         
-        if (!inputTanggal || inputTanggal.trim().length < 8) {
-            statsSummary.innerHTML = '';
-            isiTabel.innerHTML = `<tr><td colspan="3" class="no-data">Masukkan tanggal (DD/MM/YYYY) untuk melihat data.</td></tr>`;
-            return;
-        }
+        if (!tanggalDipilih) return;
 
-        const tglPilihNorm = normalkanTanggal(inputTanggal);
+        const tglPilihNorm = normalkanTanggal(tanggalDipilih);
 
         const hasilFilter = databaseKedatangan.filter(item => {
             if (!item.tanggal) return false;
@@ -345,8 +342,12 @@
 
         isiTabel.innerHTML = '';
 
+        // Format tampilan tanggal pilihan ke bentuk DD/MM/YYYY untuk header ringkasan
+        const pTgl = tanggalDipilih.split('-');
+        const tglTampilFormatted = `${pTgl[2]}/${pTgl[1]}/${pTgl[0]}`;
+
         if (hasilFilter.length === 0) {
-            statsSummary.innerHTML = `Total: 0 pengiriman`;
+            statsSummary.innerHTML = `Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
             isiTabel.innerHTML = `<tr><td colspan="3" class="no-data">Tidak ada jadwal kedatangan material pada tanggal ini.</td></tr>`;
             return;
         }
@@ -363,7 +364,7 @@
 
         const totalBatchFormatted = parseFloat(totalBatch.toFixed(2)).toString().replace('.', ',');
 
-        statsSummary.innerHTML = `📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman material (Total: <b>${totalBatchFormatted}</b> batch)`;
+        statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | 📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman (Total: <b>${totalBatchFormatted}</b> batch)`;
 
         hasilFilter.forEach(item => {
             const baris = document.createElement('tr');
