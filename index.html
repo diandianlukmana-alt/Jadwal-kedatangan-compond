@@ -236,6 +236,12 @@
 <script>
     let databaseKedatangan = [];
 
+    // Array nama bulan dalam Bahasa Indonesia
+    const NAMA_BULAN = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
     function normalkanTanggal(strTanggal) {
         if (!strTanggal) return '';
         const bersih = strTanggal.trim();
@@ -342,12 +348,15 @@
 
         isiTabel.innerHTML = '';
 
-        // Format tampilan tanggal pilihan ke bentuk DD/MM/YYYY untuk header ringkasan
+        // Mengubah format tanggal menjadi teks "01 September 2026"
         const pTgl = tanggalDipilih.split('-');
-        const tglTampilFormatted = `${pTgl[2]}/${pTgl[1]}/${pTgl[0]}`;
+        const hari = pTgl[2];
+        const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
+        const tahun = pTgl[0];
+        const tglTampilFormatted = `${hari} ${bulanTeks} ${tahun}`;
 
         if (hasilFilter.length === 0) {
-            statsSummary.innerHTML = `Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
+            statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
             isiTabel.innerHTML = `<tr><td colspan="3" class="no-data">Tidak ada jadwal kedatangan material pada tanggal ini.</td></tr>`;
             return;
         }
