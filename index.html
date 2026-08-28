@@ -8,7 +8,6 @@
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            /* Dibuat hampir solid (98% opaque) agar teks super jelas */
             --surface: rgba(255, 255, 255, 0.98); 
             --text: #0f172a;
             --text-secondary: #475569;
@@ -18,7 +17,6 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Latar belakang bertema Supply Chain / Logistic Warehouse */
             background: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.55)), 
                         url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover;
@@ -39,7 +37,6 @@
             backdrop-filter: blur(12px);
             padding: 24px;
             border-radius: 12px;
-            /* Bayangan dan border dipertegas */
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.8);
             border: 1px solid #e2e8f0;
         }
@@ -169,7 +166,6 @@
             border: 1px solid #bae6fd;
         }
 
-        /* Styling khusus format cetak / PDF */
         @media print {
             body {
                 background: #ffffff !important;
@@ -351,7 +347,21 @@
             return;
         }
 
-        statsSummary.innerHTML = `📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman material`;
+        // Menghitung total jumlah batch (mengonversi koma ke titik untuk desimal)
+        let totalBatch = 0;
+        hasilFilter.forEach(item => {
+            if (item.jumlah && item.jumlah !== '-') {
+                const nilaiAngka = parseFloat(item.jumlah.replace(',', '.'));
+                if (!isNaN(nilaiAngka)) {
+                    totalBatch += nilaiAngka;
+                }
+            }
+        });
+
+        // Format angka desimal agar rapi (misal: jika desimal gunakan koma kembali)
+        const totalBatchFormatted = parseFloat(totalBatch.toFixed(2)).toString().replace('.', ',');
+
+        statsSummary.innerHTML = `📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman material (Total: <b>${totalBatchFormatted}</b> batch)`;
 
         hasilFilter.forEach(item => {
             const baris = document.createElement('tr');
