@@ -96,7 +96,7 @@
             font-size: 14px;
         }
 
-        input[type="date"], select {
+        input[type="text"], input[type="date"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -108,7 +108,7 @@
             outline: none;
         }
 
-        input[type="date"]:focus, select:focus {
+        input[type="text"]:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
@@ -206,8 +206,8 @@
             </select>
         </div>
         <div class="filter-group">
-            <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
-            <input type="date" id="pilihTanggal" onchange="filterData()">
+            <label for="pilihTanggal">Tanggal Kedatangan (TGL/BLN/THN):</label>
+            <input type="text" id="pilihTanggal" placeholder="Contoh: 01/09/2026" oninput="filterData()">
         </div>
     </div>
 
@@ -225,7 +225,7 @@
             </thead>
             <tbody id="isiTabel">
                 <tr>
-                    <td colspan="3" class="no-data">Silakan pilih tanggal terlebih dahulu.</td>
+                    <td colspan="3" class="no-data">Silakan ketik tanggal terlebih dahulu.</td>
                 </tr>
             </tbody>
         </table>
@@ -326,13 +326,17 @@
     }
 
     function filterData() {
-        const tanggalDipilih = document.getElementById('pilihTanggal').value;
+        const inputTanggal = document.getElementById('pilihTanggal').value;
         const isiTabel = document.getElementById('isiTabel');
         const statsSummary = document.getElementById('statsSummary');
         
-        if (!tanggalDipilih) return;
+        if (!inputTanggal || inputTanggal.trim().length < 8) {
+            statsSummary.innerHTML = '';
+            isiTabel.innerHTML = `<tr><td colspan="3" class="no-data">Masukkan tanggal (DD/MM/YYYY) untuk melihat data.</td></tr>`;
+            return;
+        }
 
-        const tglPilihNorm = normalkanTanggal(tanggalDipilih);
+        const tglPilihNorm = normalkanTanggal(inputTanggal);
 
         const hasilFilter = databaseKedatangan.filter(item => {
             if (!item.tanggal) return false;
