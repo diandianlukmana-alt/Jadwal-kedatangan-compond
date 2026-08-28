@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Kedatangan Compound</title>
+    <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -192,7 +192,7 @@
 
 <div class="container" id="areaCetak">
     <div class="header-section">
-        <h2>🗓️ Jadwal Kedatangan Compound</h2>
+        <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
         <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
     </div>
 
@@ -347,7 +347,6 @@
             return;
         }
 
-        // Menghitung total jumlah batch (mengonversi koma ke titik untuk desimal)
         let totalBatch = 0;
         hasilFilter.forEach(item => {
             if (item.jumlah && item.jumlah !== '-') {
@@ -358,7 +357,6 @@
             }
         });
 
-        // Format angka desimal agar rapi (misal: jika desimal gunakan koma kembali)
         const totalBatchFormatted = parseFloat(totalBatch.toFixed(2)).toString().replace('.', ',');
 
         statsSummary.innerHTML = `📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman material (Total: <b>${totalBatchFormatted}</b> batch)`;
