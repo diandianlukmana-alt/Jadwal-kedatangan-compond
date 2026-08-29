@@ -222,11 +222,12 @@
                     <th>Supplier</th>
                     <th>Nama Material</th>
                     <th>Jumlah Batch</th>
+                    <th>Jam Kedatangan</th>
                 </tr>
             </thead>
             <tbody id="isiTabel">
                 <tr>
-                    <td colspan="3" class="no-data">Silakan pilih tanggal terlebih dahulu.</td>
+                    <td colspan="4" class="no-data">Silakan pilih tanggal terlebih dahulu.</td>
                 </tr>
             </tbody>
         </table>
@@ -288,7 +289,8 @@
                 tanggal: kolom[0],
                 supplier: kolom[1],
                 material: kolom[2],
-                jumlah: kolom[3] || '-'
+                jumlah: kolom[3] || '-',
+                jam: kolom[4] || '-'
             });
         }
         return dataParsed;
@@ -357,7 +359,7 @@
 
         if (hasilFilter.length === 0) {
             statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
-            isiTabel.innerHTML = `<tr><td colspan="3" class="no-data">Tidak ada jadwal kedatangan material pada tanggal ini.</td></tr>`;
+            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal kedatangan material pada tanggal ini.</td></tr>`;
             return;
         }
 
@@ -381,6 +383,7 @@
                 <td><b>${item.supplier}</b></td>
                 <td>${item.material}</td>
                 <td>${item.jumlah}</td>
+                <td>${item.jam}</td>
             `;
             isiTabel.appendChild(baris);
         });
