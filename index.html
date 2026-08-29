@@ -170,12 +170,12 @@
             border: 1px solid #bae6fd;
         }
 
-        /* QR Code Container (Sembunyi di tampilan Layar) */
+        /* QR Code Container (Tersembunyi di layar monitor) */
         .qr-print-container {
             display: none;
         }
 
-        /* Tampilan khusus Hasil Cetak / PDF */
+        /* Tampilan khusus untuk Hasil Cetak / PDF */
         @media print {
             body {
                 background: #ffffff !important;
@@ -222,7 +222,7 @@
             }
 
             .header-section {
-                padding-right: 100px; /* Memberi ruang agar judul tidak tertimpa QR */
+                padding-right: 100px;
             }
         }
     </style>
@@ -230,7 +230,7 @@
 <body>
 
 <div class="container" id="areaCetak">
-    <!-- Komponen QR Code khusus Cetak PDF -->
+    <!-- QR Code khusus cetak PDF -->
     <div class="qr-print-container">
         <div id="qrcode"></div>
         <div class="qr-text">Scan disini untuk melihat jadwal via web</div>
@@ -286,7 +286,7 @@
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
 
-    // Generate QR Code otomatis dari URL halaman web saat ini
+    // Buat QR Code dari URL web
     window.addEventListener('DOMContentLoaded', () => {
         new QRCode(document.getElementById("qrcode"), {
             text: window.location.href,
@@ -444,7 +444,26 @@
     }
 
     function unduhPDF() {
+        const tanggalDipilih = document.getElementById('pilihTanggal').value;
+        const judulAsli = "ORDER COMPOND EXTRUDER AUTOSEAL";
+
+        if (tanggalDipilih) {
+            const pTgl = tanggalDipilih.split('-');
+            const hari = pTgl[2];
+            const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
+            const tahun = pTgl[0];
+            const tglFormatted = `${hari} ${bulanTeks} ${tahun}`;
+
+            document.title = `${judulAsli} - ${tglFormatted}`;
+        } else {
+            document.title = judulAsli;
+        }
+
         window.print();
+
+        setTimeout(() => {
+            document.title = judulAsli;
+        }, 1000);
     }
 
     window.onload = muatDataInternal;
