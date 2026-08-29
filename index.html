@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
+    <!-- Library QR Code JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -39,6 +41,7 @@
             border-radius: 12px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.8);
             border: 1px solid #e2e8f0;
+            position: relative;
         }
 
         .header-section {
@@ -167,6 +170,12 @@
             border: 1px solid #bae6fd;
         }
 
+        /* QR Code Container (Sembunyi di tampilan Layar) */
+        .qr-print-container {
+            display: none;
+        }
+
+        /* Tampilan khusus Hasil Cetak / PDF */
         @media print {
             body {
                 background: #ffffff !important;
@@ -186,12 +195,47 @@
                 background-color: #e2e8f0 !important;
                 -webkit-print-color-adjust: exact;
             }
+
+            /* Menampilkan QR Code di Pojok Kanan Atas PDF */
+            .qr-print-container {
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                text-align: center;
+            }
+
+            .qr-print-container img, .qr-print-container canvas {
+                width: 75px !important;
+                height: 75px !important;
+            }
+
+            .qr-text {
+                font-size: 9px;
+                font-weight: 600;
+                color: #334155;
+                margin-top: 4px;
+                max-width: 90px;
+                line-height: 1.1;
+            }
+
+            .header-section {
+                padding-right: 100px; /* Memberi ruang agar judul tidak tertimpa QR */
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container" id="areaCetak">
+    <!-- Komponen QR Code khusus Cetak PDF -->
+    <div class="qr-print-container">
+        <div id="qrcode"></div>
+        <div class="qr-text">Scan disini untuk melihat jadwal via web</div>
+    </div>
+
     <div class="header-section">
         <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
         <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
@@ -237,11 +281,22 @@
 <script>
     let databaseKedatangan = [];
 
-    // Array nama bulan dalam Bahasa Indonesia
     const NAMA_BULAN = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
+
+    // Generate QR Code otomatis dari URL halaman web saat ini
+    window.addEventListener('DOMContentLoaded', () => {
+        new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href,
+            width: 75,
+            height: 75,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    });
 
     function normalkanTanggal(strTanggal) {
         if (!strTanggal) return '';
@@ -350,7 +405,6 @@
 
         isiTabel.innerHTML = '';
 
-        // Mengubah format tanggal menjadi teks "01 September 2026"
         const pTgl = tanggalDipilih.split('-');
         const hari = pTgl[2];
         const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
