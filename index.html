@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JADWAL DELIVERY DCM</title>
+    <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
     <!-- Library QR Code JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -34,7 +34,7 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 850px;
             background: var(--surface);
             backdrop-filter: blur(12px);
             padding: 24px;
@@ -53,17 +53,10 @@
             margin-bottom: 20px;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
         h2 {
             margin: 0;
             color: var(--text);
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
         }
 
         .btn-pdf {
@@ -82,24 +75,6 @@
             background-color: #047857;
         }
 
-        .btn-gps {
-            background-color: #0284c7;
-            color: white;
-            text-decoration: none;
-            padding: 9px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: background-color 0.2s;
-        }
-
-        .btn-gps:hover {
-            background-color: #0369a1;
-        }
-
         .filter-section {
             background: var(--accent-bg);
             padding: 16px;
@@ -113,7 +88,7 @@
 
         .filter-group {
             flex: 1;
-            min-width: 180px;
+            min-width: 200px;
         }
 
         label {
@@ -124,7 +99,7 @@
             font-size: 14px;
         }
 
-        input[type="date"], input[type="month"], select {
+        input[type="date"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -137,7 +112,7 @@
             cursor: pointer;
         }
 
-        input:focus, select:focus {
+        input[type="date"]:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
@@ -147,10 +122,6 @@
             color: var(--text-secondary);
             margin-bottom: 12px;
             font-weight: 500;
-            background: #f1f5f9;
-            padding: 10px 14px;
-            border-radius: 6px;
-            border-left: 4px solid var(--primary);
         }
 
         .table-responsive {
@@ -199,30 +170,6 @@
             border: 1px solid #bae6fd;
         }
 
-        .catatan-box {
-            margin-top: 20px;
-            background-color: #fefce8;
-            border: 1px solid #fef08a;
-            border-left: 4px solid #eab308;
-            padding: 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #713f12;
-        }
-
-        .catatan-box h4 {
-            margin: 0 0 6px 0;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .catatan-box ol {
-            margin: 0;
-            padding-left: 20px;
-        }
-
         /* QR Code Container (Tersembunyi di layar monitor) */
         .qr-print-container {
             display: none;
@@ -241,7 +188,7 @@
                 padding: 0;
                 background: transparent;
             }
-            .filter-section, .action-buttons, .loading {
+            .filter-section, .btn-pdf, .loading {
                 display: none !important;
             }
             th {
@@ -249,6 +196,7 @@
                 -webkit-print-color-adjust: exact;
             }
 
+            /* Menampilkan QR Code di Pojok Kanan Atas PDF */
             .qr-print-container {
                 display: flex !important;
                 flex-direction: column;
@@ -289,70 +237,44 @@
     </div>
 
     <div class="header-section">
-        <h2>🚚 JADWAL DELIVERY DCM</h2>
-        <div class="action-buttons">
-            <a href="https://hita.oslog.id/#/app/maps-monitoring?name=map" target="_blank" class="btn-gps">📡 Lacak GPS</a>
-            <button class="btn-pdf" onclick="unduhPDF()">🖨️ Cetak / PDF</button>
-        </div>
+        <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
+        <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
     </div>
 
     <div class="filter-section">
         <div class="filter-group">
-            <label for="pilihTruck">Pilih Truck:</label>
-            <select id="pilihTruck">
-                <option value="DCM">DCM</option>
+            <label for="pilihSupplier">Pilih Supplier:</label>
+            <select id="pilihSupplier" onchange="gantiDataSupplier()">
+                <option value="semua">Semua Supplier (IRC & EMIX)</option>
+                <option value="data_irc.txt">IRC RUBBER</option>
+                <option value="data_emix.txt">EMIX</option>
             </select>
         </div>
-
         <div class="filter-group">
-            <label for="pilihMode">Mode Laporan:</label>
-            <select id="pilihMode" onchange="gantiModeFilter()">
-                <option value="harian">Harian (Per Tanggal)</option>
-                <option value="bulanan">Bulanan (1 Bulan Full)</option>
-            </select>
-        </div>
-
-        <!-- Group Input Harian -->
-        <div class="filter-group" id="groupHarian">
-            <label for="pilihTanggal">Pilih Tanggal:</label>
+            <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
             <input type="date" id="pilihTanggal" onchange="filterData()">
-        </div>
-
-        <!-- Group Input Bulanan -->
-        <div class="filter-group" id="groupBulanan" style="display: none;">
-            <label for="pilihBulan">Pilih Bulan & Tahun:</label>
-            <input type="month" id="pilihBulan" onchange="filterData()">
         </div>
     </div>
 
     <div id="loadingInfo" class="loading">Sedang mengambil data jadwal terbaru...</div>
-    <div id="statsSummary" class="stats">Silakan pilih tanggal atau bulan untuk melihat laporan.</div>
+    <div id="statsSummary" class="stats"></div>
 
     <div class="table-responsive">
         <table id="tabelMaterial">
             <thead>
                 <tr>
-                    <th>TANGGAL</th>
-                    <th>JADWAL TRUCK</th>
-                    <th>KATEGORI</th>
-                    <th>TUJUAN</th>
-                    <th>JUMLAH RIT</th>
+                    <th>Supplier</th>
+                    <th>Nama Material</th>
+                    <th>Jumlah Batch</th>
+                    <th>Jam Kedatangan</th>
                 </tr>
             </thead>
             <tbody id="isiTabel">
                 <tr>
-                    <td colspan="5" class="no-data">Silakan pilih tanggal atau bulan terlebih dahulu.</td>
+                    <td colspan="4" class="no-data">Silakan pilih tanggal terlebih dahulu.</td>
                 </tr>
             </tbody>
         </table>
-    </div>
-
-    <div class="catatan-box">
-        <h4>📌 Catatan Penting:</h4>
-        <ol>
-            <li>Pengiriman ke PT. SUZUKI maksimal jam 07:00 WIB (Pagi) truck sudah berangkat.</li>
-            <li>Pic Control: Dian Lukmana (PPIC).</li>
-        </ol>
     </div>
 </div>
 
@@ -364,7 +286,7 @@
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
 
-    // Generate QR Code saat halaman selesai dimuat
+    // Buat QR Code dari URL web
     window.addEventListener('DOMContentLoaded', () => {
         new QRCode(document.getElementById("qrcode"), {
             text: window.location.href,
@@ -374,29 +296,7 @@
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
         });
-
-        // Set tanggal default hari ini
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('pilihTanggal').value = today;
-        
-        // Set bulan default bulan ini
-        const yearMonth = today.substring(0, 7);
-        document.getElementById('pilihBulan').value = yearMonth;
-
-        muatDataInternal();
     });
-
-    function gantiModeFilter() {
-        const mode = document.getElementById('pilihMode').value;
-        if (mode === 'bulanan') {
-            document.getElementById('groupHarian').style.display = 'none';
-            document.getElementById('groupBulanan').style.display = 'block';
-        } else {
-            document.getElementById('groupHarian').style.display = 'block';
-            document.getElementById('groupBulanan').style.display = 'none';
-        }
-        filterData();
-    }
 
     function normalkanTanggal(strTanggal) {
         if (!strTanggal) return '';
@@ -425,14 +325,6 @@
         return bersih.replace(/[\/\-]/g, '');
     }
 
-    function formatTanggalTampil(strYmd) {
-        if (!strYmd || strYmd.length !== 8) return strYmd;
-        const yyyy = strYmd.substring(0, 4);
-        const mm = strYmd.substring(4, 6);
-        const dd = strYmd.substring(6, 8);
-        return `${dd}-${mm}-${yyyy}`;
-    }
-
     async function ambilTeksFile(filename) {
         const url = `${filename}?v=${new Date().getTime()}`;
         const respon = await fetch(url);
@@ -452,7 +344,7 @@
                 tanggal: kolom[0],
                 supplier: kolom[1],
                 material: kolom[2],
-                jumlah: kolom[3] || '1',
+                jumlah: kolom[3] || '-',
                 jam: kolom[4] || '-'
             });
         }
@@ -460,17 +352,27 @@
     }
 
     async function muatDataInternal() {
+        const supplierDipilih = document.getElementById('pilihSupplier').value;
         const loadingEl = document.getElementById('loadingInfo');
+        
         loadingEl.style.display = 'block';
+        loadingEl.style.backgroundColor = '#e0f2fe';
+        loadingEl.style.borderColor = '#bae6fd';
+        loadingEl.style.color = '#0369a1';
+        loadingEl.innerHTML = 'Sedang mengambil data jadwal terbaru...';
 
         try {
             databaseKedatangan = [];
-            const [dataIRC, dataEMIX] = await Promise.all([
-                ambilTeksFile('data_irc.txt').catch(() => []),
-                ambilTeksFile('data_emix.txt').catch(() => [])
-            ]);
 
-            databaseKedatangan = [...dataIRC, ...dataEMIX];
+            if (supplierDipilih === 'semua') {
+                const [dataIRC, dataEMIX] = await Promise.all([
+                    ambilTeksFile('data_irc.txt'),
+                    ambilTeksFile('data_emix.txt')
+                ]);
+                databaseKedatangan = [...dataIRC, ...dataEMIX];
+            } else {
+                databaseKedatangan = await ambilTeksFile(supplierDipilih);
+            }
 
             loadingEl.style.display = 'none';
             filterData();
@@ -483,85 +385,78 @@
         }
     }
 
+    function gantiDataSupplier() {
+        muatDataInternal();
+    }
+
     function filterData() {
-        const mode = document.getElementById('pilihMode').value;
+        const tanggalDipilih = document.getElementById('pilihTanggal').value;
         const isiTabel = document.getElementById('isiTabel');
         const statsSummary = document.getElementById('statsSummary');
+        
+        if (!tanggalDipilih) return;
 
-        let hasilFilter = [];
+        const tglPilihNorm = normalkanTanggal(tanggalDipilih);
 
-        if (mode === 'harian') {
-            const tanggalDipilih = document.getElementById('pilihTanggal').value;
-            if (!tanggalDipilih) return;
-
-            const tglPilihNorm = normalkanTanggal(tanggalDipilih);
-            hasilFilter = databaseKedatangan.filter(item => normalkanTanggal(item.tanggal) === tglPilihNorm);
-
-            const pTgl = tanggalDipilih.split('-');
-            const hari = pTgl[2];
-            const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
-            const tahun = pTgl[0];
-
-            let totalRit = hasilFilter.reduce((acc, curr) => acc + (parseFloat(curr.jumlah) || 1), 0);
-
-            statsSummary.innerHTML = `📅 Laporan Harian: <b>${hari} ${bulanTeks} ${tahun}</b> | 📋 Total: <b>${hasilFilter.length}</b> pengiriman (${totalRit} rit)`;
-        } else {
-            // Mode Bulanan
-            const bulanTahun = document.getElementById('pilihBulan').value;
-            if (!bulanTahun) return;
-
-            const [tahun, bulan] = bulanTahun.split('-');
-            const bulanTeks = NAMA_BULAN[parseInt(bulan, 10) - 1];
-
-            hasilFilter = databaseKedatangan.filter(item => {
-                const tglNorm = normalkanTanggal(item.tanggal);
-                if (tglNorm.length < 6) return false;
-                const thnItem = tglNorm.substring(0, 4);
-                const blnItem = tglNorm.substring(4, 6);
-                return thnItem === tahun && blnItem === bulan;
-            });
-
-            // Urutkan berdasarkan tanggal
-            hasilFilter.sort((a, b) => normalkanTanggal(a.tanggal).localeCompare(normalkanTanggal(b.tanggal)));
-
-            let totalRit = hasilFilter.reduce((acc, curr) => acc + (parseFloat(curr.jumlah) || 1), 0);
-
-            statsSummary.innerHTML = `🗓️ Laporan Bulanan DCM: <b>${bulanTeks} ${tahun}</b> | 📋 Total Pengiriman: <b>${hasilFilter.length}</b> kali (${totalRit} Rit)`;
-        }
+        const hasilFilter = databaseKedatangan.filter(item => {
+            if (!item.tanggal) return false;
+            return normalkanTanggal(item.tanggal) === tglPilihNorm;
+        });
 
         isiTabel.innerHTML = '';
 
+        const pTgl = tanggalDipilih.split('-');
+        const hari = pTgl[2];
+        const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
+        const tahun = pTgl[0];
+        const tglTampilFormatted = `${hari} ${bulanTeks} ${tahun}`;
+
         if (hasilFilter.length === 0) {
-            isiTabel.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada data pengiriman truk DCM pada periode ini.</td></tr>`;
+            statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
+            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal kedatangan material pada tanggal ini.</td></tr>`;
             return;
         }
 
+        let totalBatch = 0;
+        hasilFilter.forEach(item => {
+            if (item.jumlah && item.jumlah !== '-') {
+                const nilaiAngka = parseFloat(item.jumlah.replace(',', '.'));
+                if (!isNaN(nilaiAngka)) {
+                    totalBatch += nilaiAngka;
+                }
+            }
+        });
+
+        const totalBatchFormatted = parseFloat(totalBatch.toFixed(2)).toString().replace('.', ',');
+
+        statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | 📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman (Total: <b>${totalBatchFormatted}</b> batch)`;
+
         hasilFilter.forEach(item => {
             const baris = document.createElement('tr');
-            const tglNorm = normalkanTanggal(item.tanggal);
-            const tglFormatted = formatTanggalTampil(tglNorm);
-
             baris.innerHTML = `
-                <td><b>${tglFormatted}</b></td>
-                <td><b>DCM</b></td>
-                <td>${item.material || 'Delivery Part Local'}</td>
                 <td><b>${item.supplier}</b></td>
-                <td>${item.jumlah || 1}</td>
+                <td>${item.material}</td>
+                <td>${item.jumlah}</td>
+                <td>${item.jam}</td>
             `;
             isiTabel.appendChild(baris);
         });
     }
 
     function unduhPDF() {
-        const mode = document.getElementById('pilihMode').value;
-        const judulAsli = "JADWAL DELIVERY DCM";
+        const tanggalDipilih = document.getElementById('pilihTanggal').value;
+        const judulAsli = "ORDER COMPOND EXTRUDER AUTOSEAL";
 
-        if (mode === 'harian') {
-            const tgl = document.getElementById('pilihTanggal').value;
-            document.title = `${judulAsli} - ${tgl}`;
+        if (tanggalDipilih) {
+            const pTgl = tanggalDipilih.split('-');
+            const hari = pTgl[2];
+            const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
+            const tahun = pTgl[0];
+            const tglFormatted = `${hari} ${bulanTeks} ${tahun}`;
+
+            document.title = `${judulAsli} - ${tglFormatted}`;
         } else {
-            const bln = document.getElementById('pilihBulan').value;
-            document.title = `${judulAsli} - Laporan Bulanan ${bln}`;
+            document.title = judulAsli;
         }
 
         window.print();
@@ -570,6 +465,8 @@
             document.title = judulAsli;
         }, 1000);
     }
+
+    window.onload = muatDataInternal;
 </script>
 
 </body>
