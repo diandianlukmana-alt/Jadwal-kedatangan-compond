@@ -24,7 +24,7 @@
             background-size: cover;
             color: var(--text);
             margin: 0;
-            padding: 30px 20px;
+            padding: 20px 10px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -42,6 +42,7 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.8);
             border: 1px solid #e2e8f0;
             position: relative;
+            box-sizing: border-box;
         }
 
         .header-section {
@@ -51,12 +52,14 @@
             border-bottom: 2px solid var(--border);
             padding-bottom: 15px;
             margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         h2 {
             margin: 0;
             color: var(--text);
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .btn-pdf {
@@ -69,6 +72,7 @@
             cursor: pointer;
             font-size: 14px;
             transition: background-color 0.2s;
+            white-space: nowrap;
         }
 
         .btn-pdf:hover {
@@ -88,7 +92,7 @@
 
         .filter-group {
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
         }
 
         label {
@@ -96,10 +100,10 @@
             display: block;
             margin-bottom: 8px;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        input[type="date"], select {
+        input[type="date"], input[type="text"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -112,9 +116,42 @@
             cursor: pointer;
         }
 
-        input[type="date"]:focus, select:focus {
+        input[type="text"] {
+            cursor: text;
+        }
+
+        input[type="date"]:focus, input[type="text"]:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .last-updated {
+            font-size: 12px;
+            color: #1e293b;
+            background-color: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-weight: 500;
+        }
+
+        .auto-refresh-tag {
+            font-size: 12px;
+            color: #0369a1;
+            background-color: #e0f2fe;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bae6fd;
+            font-weight: 500;
         }
 
         .stats {
@@ -124,31 +161,20 @@
             font-weight: 500;
         }
 
-        /* Styling Badge Terakhir Update */
-        .last-updated {
-            font-size: 12px;
-            color: #1e293b;
-            background-color: #f1f5f9;
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            margin-bottom: 15px;
-            display: inline-block;
-            font-weight: 500;
-        }
-
         .table-responsive {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 5px;
+            min-width: 500px;
         }
 
         th, td {
-            padding: 12px 16px;
+            padding: 12px 14px;
             text-align: left;
             border-bottom: 1px solid var(--border);
             font-size: 14px;
@@ -183,7 +209,6 @@
             border: 1px solid #bae6fd;
         }
 
-        /* Styling Catatan/Notes */
         .notes-section {
             margin-top: 15px;
             padding: 12px 16px;
@@ -207,12 +232,34 @@
             margin-bottom: 3px;
         }
 
-        /* QR Code Container (Tersembunyi di layar monitor) */
         .qr-print-container {
             display: none;
         }
 
-        /* Tampilan khusus untuk Hasil Cetak / PDF */
+        /* Tampilan Responsif Mobile/HP */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px 5px;
+            }
+            .container {
+                padding: 16px;
+            }
+            h2 {
+                font-size: 17px;
+            }
+            .filter-group {
+                min-width: 100%;
+            }
+            .status-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            th, td {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+        }
+
         @media print {
             body {
                 background: #ffffff !important;
@@ -225,7 +272,7 @@
                 padding: 0;
                 background: transparent;
             }
-            .filter-section, .btn-pdf, .loading {
+            .filter-section, .btn-pdf, .loading, .auto-refresh-tag {
                 display: none !important;
             }
             th {
@@ -233,7 +280,6 @@
                 -webkit-print-color-adjust: exact;
             }
 
-            /* Menampilkan QR Code di Pojok Kanan Atas PDF */
             .qr-print-container {
                 display: flex !important;
                 flex-direction: column;
@@ -278,7 +324,6 @@
 <body>
 
 <div class="container" id="areaCetak">
-    <!-- QR Code khusus cetak PDF -->
     <div class="qr-print-container">
         <div id="qrcode"></div>
         <div class="qr-text">Scan disini untuk melihat jadwal via web</div>
@@ -292,22 +337,28 @@
     <div class="filter-section">
         <div class="filter-group">
             <label for="pilihSupplier">Pilih Supplier:</label>
-            <select id="pilihSupplier" onchange="gantiDataSupplier()">
+            <select id="pilihSupplier" onchange="filterData()">
                 <option value="semua">Semua Supplier (IRC & EMIX)</option>
-                <option value="data_irc.txt">IRC RUBBER</option>
-                <option value="data_emix.txt">EMIX</option>
+                <option value="IRC RUBBER">IRC RUBBER</option>
+                <option value="EMIX">EMIX</option>
             </select>
         </div>
         <div class="filter-group">
             <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
             <input type="date" id="pilihTanggal" onchange="filterData()">
         </div>
+        <div class="filter-group">
+            <label for="cariMaterial">🔍 Cari Nama Material:</label>
+            <input type="text" id="cariMaterial" placeholder="Ketik nama material..." onkeyup="filterData()">
+        </div>
     </div>
 
     <div id="loadingInfo" class="loading">Sedang mengambil data jadwal terbaru...</div>
     
-    <!-- Informasi Waktu Terakhir Update Data -->
-    <div id="lastUpdated" class="last-updated">🕒 Terakhir Diperbarui: <i>Memuat...</i></div>
+    <div class="status-bar">
+        <div id="lastUpdated" class="last-updated">🕒 Terakhir Diperbarui: <i>Memuat...</i></div>
+        <div id="timerRefresh" class="auto-refresh-tag">🔄 Auto-update dalam: <b id="countdown">05:00</b></div>
+    </div>
     
     <div id="statsSummary" class="stats"></div>
 
@@ -329,7 +380,6 @@
         </table>
     </div>
 
-    <!-- Catatan Tambahan di Bawah Tabel -->
     <div class="notes-section">
         <strong>Note:</strong>
         <ol>
@@ -340,15 +390,18 @@
 </div>
 
 <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbznuxpmqZ4qc1z1Vg0YOae0XtJdaWxCG9mcsyV1xg7NkyY1kK5qT8XS9yMJTnr7waAG/exec';
+
     let databaseKedatangan = [];
-    let waktuTerakhirUpdate = null;
+    const REFRESH_INTERVAL_DETIK = 300; // Auto update tiap 5 menit
+    let sisaWaktuRefresh = REFRESH_INTERVAL_DETIK;
+    let timerCountdown;
 
     const NAMA_BULAN = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
 
-    // Buat QR Code dari URL web
     window.addEventListener('DOMContentLoaded', () => {
         new QRCode(document.getElementById("qrcode"), {
             text: window.location.href,
@@ -358,33 +411,42 @@
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
         });
+        muatDataJSONP();
+        mulaiTimerAutoRefresh();
     });
 
     function normalkanTanggal(strTanggal) {
         if (!strTanggal) return '';
-        const bersih = strTanggal.trim();
+        let dateObj;
 
-        if (bersih.includes('/')) {
-            const p = bersih.split('/');
-            if (p.length === 3) {
-                const dd = p[0].padStart(2, '0');
-                const mm = p[1].padStart(2, '0');
-                const yyyy = p[2];
-                return `${yyyy}${mm}${dd}`;
+        if (typeof strTanggal === 'string' && strTanggal.includes('T')) {
+            dateObj = new Date(strTanggal);
+        } else if (typeof strTanggal === 'string') {
+            const bersih = strTanggal.trim();
+            if (bersih.includes('/')) {
+                const p = bersih.split('/');
+                if (p.length === 3) return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
             }
-        }
-
-        if (bersih.includes('-')) {
-            const p = bersih.split('-');
-            if (p.length === 3) {
-                if (p[0].length === 4) {
-                    return `${p[0]}${p[1].padStart(2, '0')}${p[2].padStart(2, '0')}`;
+            if (bersih.includes('-')) {
+                const p = bersih.split('-');
+                if (p.length === 3) {
+                    if (p[0].length === 4) return `${p[0]}${p[1].padStart(2, '0')}${p[2].padStart(2, '0')}`;
+                    return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
                 }
-                return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
             }
+            return bersih.replace(/[\/\-]/g, '');
+        } else {
+            dateObj = new Date(strTanggal);
         }
 
-        return bersih.replace(/[\/\-]/g, '');
+        if (dateObj && !isNaN(dateObj.getTime())) {
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            return `${yyyy}${mm}${dd}`;
+        }
+
+        return String(strTanggal);
     }
 
     function formatWaktu(date) {
@@ -398,74 +460,45 @@
         return `${d} ${m} ${y} pukul ${jam}:${menit}:${detik} WIB`;
     }
 
-    async function ambilTeksFile(filename) {
-        const url = `${filename}?v=${new Date().getTime()}`;
-        const respon = await fetch(url);
-        if (!respon.ok) throw new Error(`Gagal memuat ${filename}`);
-        
-        // Ambil header Last-Modified dari server jika tersedia
-        const lastModHeader = respon.headers.get('Last-Modified');
-        const tglMod = lastModHeader ? new Date(lastModHeader) : null;
-
-        const teksData = await respon.text();
-        const barisRaw = teksData.split(/\r?\n/);
-        const dataParsed = [];
-
-        for (let i = 0; i < barisRaw.length; i++) {
-            if (!barisRaw[i].trim()) continue;
-            
-            const kolom = barisRaw[i].split(';').map(sel => sel.trim());
-            if (kolom.length < 3) continue;
-            
-            dataParsed.push({
-                tanggal: kolom[0],
-                supplier: kolom[1],
-                material: kolom[2],
-                jumlah: kolom[3] || '-',
-                jam: kolom[4] || '-'
-            });
+    function formatJam(val) {
+        if (!val || val === '-') return '-';
+        if (typeof val === 'string' && val.includes('T')) {
+            const d = new Date(val);
+            if (!isNaN(d.getTime())) {
+                return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            }
         }
-        return { data: dataParsed, lastModified: tglMod };
+        return val;
     }
 
-    async function muatDataInternal() {
-        const supplierDipilih = document.getElementById('pilihSupplier').value;
+    function olahDataGoogleSheets(rawData) {
         const loadingEl = document.getElementById('loadingInfo');
         const lastUpdatedEl = document.getElementById('lastUpdated');
         
-        loadingEl.style.display = 'block';
-        loadingEl.style.backgroundColor = '#e0f2fe';
-        loadingEl.style.borderColor = '#bae6fd';
-        loadingEl.style.color = '#0369a1';
-        loadingEl.innerHTML = 'Sedang mengambil data jadwal terbaru...';
-
         try {
             databaseKedatangan = [];
-            let listLastModified = [];
 
-            if (supplierDipilih === 'semua') {
-                const [resIRC, resEMIX] = await Promise.all([
-                    ambilTeksFile('data_irc.txt'),
-                    ambilTeksFile('data_emix.txt')
-                ]);
-                databaseKedatangan = [...resIRC.data, ...resEMIX.data];
-                if (resIRC.lastModified) listLastModified.push(resIRC.lastModified);
-                if (resEMIX.lastModified) listLastModified.push(resEMIX.lastModified);
-            } else {
-                const res = await ambilTeksFile(supplierDipilih);
-                databaseKedatangan = res.data;
-                if (res.lastModified) listLastModified.push(res.lastModified);
+            for (let i = 0; i < rawData.length; i++) {
+                const row = rawData[i];
+                if (!row || row.length < 3) continue;
+
+                const tgl = row[1];
+                const supp = row[2];
+                const mat = row[3];
+
+                if (!tgl || !supp || !mat) continue;
+                if (String(tgl).toLowerCase().includes('tanggal')) continue;
+
+                databaseKedatangan.push({
+                    tanggal: tgl,
+                    supplier: supp,
+                    material: mat,
+                    jumlah: row[4] || '-',
+                    jam: formatJam(row[5])
+                });
             }
 
-            // Cari tanggal update paling baru
-            if (listLastModified.length > 0) {
-                const terbatuMs = Math.max(...listLastModified.map(d => d.getTime()));
-                waktuTerakhirUpdate = new Date(terbatuMs);
-                lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <b>${formatWaktu(waktuTerakhirUpdate)}</b>`;
-            } else {
-                lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <b>Data lokal (Live)</b>`;
-            }
-
+            lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <b>${formatWaktu(new Date())}</b>`;
             loadingEl.style.display = 'none';
             filterData();
         } catch (error) {
@@ -473,17 +506,49 @@
             loadingEl.style.backgroundColor = '#fee2e2';
             loadingEl.style.borderColor = '#fca5a5';
             loadingEl.style.color = '#991b1b';
-            loadingEl.innerHTML = '❌ Gagal memuat data file internal.';
-            lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <i>Gagal memuat status</i>`;
+            loadingEl.innerHTML = '❌ Gagal memproses data Google Sheets.';
         }
     }
 
-    function gantiDataSupplier() {
-        muatDataInternal();
+    function muatDataJSONP() {
+        const scriptLama = document.getElementById('jsonpScript');
+        if (scriptLama) scriptLama.remove();
+
+        const script = document.createElement('script');
+        script.id = 'jsonpScript';
+        script.src = `${SCRIPT_URL}?callback=olahDataGoogleSheets&t=${new Date().getTime()}`;
+        script.onerror = function() {
+            const loadingEl = document.getElementById('loadingInfo');
+            loadingEl.style.backgroundColor = '#fee2e2';
+            loadingEl.style.borderColor = '#fca5a5';
+            loadingEl.style.color = '#991b1b';
+            loadingEl.innerHTML = '❌ Gagal memuat data dari Google Sheets.';
+        };
+        document.body.appendChild(script);
+    }
+
+    function mulaiTimerAutoRefresh() {
+        sisaWaktuRefresh = REFRESH_INTERVAL_DETIK;
+        if (timerCountdown) clearInterval(timerCountdown);
+
+        timerCountdown = setInterval(() => {
+            sisaWaktuRefresh--;
+            
+            const menit = String(Math.floor(sisaWaktuRefresh / 60)).padStart(2, '0');
+            const detik = String(sisaWaktuRefresh % 60).padStart(2, '0');
+            document.getElementById('countdown').innerText = `${menit}:${detik}`;
+
+            if (sisaWaktuRefresh <= 0) {
+                sisaWaktuRefresh = REFRESH_INTERVAL_DETIK;
+                muatDataJSONP();
+            }
+        }, 1000);
     }
 
     function filterData() {
         const tanggalDipilih = document.getElementById('pilihTanggal').value;
+        const supplierDipilih = document.getElementById('pilihSupplier').value;
+        const kataKunciCari = document.getElementById('cariMaterial').value.trim().toLowerCase();
         const isiTabel = document.getElementById('isiTabel');
         const statsSummary = document.getElementById('statsSummary');
         
@@ -492,8 +557,13 @@
         const tglPilihNorm = normalkanTanggal(tanggalDipilih);
 
         const hasilFilter = databaseKedatangan.filter(item => {
-            if (!item.tanggal) return false;
-            return normalkanTanggal(item.tanggal) === tglPilihNorm;
+            const matchTanggal = normalkanTanggal(item.tanggal) === tglPilihNorm;
+            const matchSupplier = (supplierDipilih === 'semua') || 
+                                  (String(item.supplier).trim().toUpperCase() === supplierDipilih.toUpperCase());
+            const matchCari = (kataKunciCari === '') || 
+                              String(item.material).toLowerCase().includes(kataKunciCari);
+
+            return matchTanggal && matchSupplier && matchCari;
         });
 
         isiTabel.innerHTML = '';
@@ -506,14 +576,14 @@
 
         if (hasilFilter.length === 0) {
             statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
-            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal kedatangan material pada tanggal ini.</td></tr>`;
+            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal kedatangan material yang cocok.</td></tr>`;
             return;
         }
 
         let totalBatch = 0;
         hasilFilter.forEach(item => {
             if (item.jumlah && item.jumlah !== '-') {
-                const nilaiAngka = parseFloat(item.jumlah.replace(',', '.'));
+                const nilaiAngka = parseFloat(String(item.jumlah).replace(',', '.'));
                 if (!isNaN(nilaiAngka)) {
                     totalBatch += nilaiAngka;
                 }
@@ -558,8 +628,6 @@
             document.title = judulAsli;
         }, 1000);
     }
-
-    window.onload = muatDataInternal;
 </script>
 
 </body>
