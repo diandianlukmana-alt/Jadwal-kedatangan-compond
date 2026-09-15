@@ -87,12 +87,12 @@
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .filter-group {
             flex: 1;
-            min-width: 180px;
+            min-width: 200px;
         }
 
         label {
@@ -103,7 +103,7 @@
             font-size: 13px;
         }
 
-        input[type="date"], input[type="text"], select {
+        input[type="date"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -116,47 +116,19 @@
             cursor: pointer;
         }
 
-        input[type="text"] {
-            cursor: text;
-        }
-
-        input[type="date"]:focus, input[type="text"]:focus, select:focus {
+        input[type="date"]:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
 
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .status-tag {
+        .last-update-info {
             font-size: 12px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .status-tag.loading {
-            color: #1e40af;
-            background-color: #dbeafe;
-            border: 1px solid #bfdbfe;
-        }
-
-        .status-tag.success {
-            color: #166534;
-            background-color: #dcfce7;
-            border: 1px solid #bbf7d0;
-        }
-
-        .status-tag.error {
-            color: #991b1b;
-            background-color: #fee2e2;
-            border: 1px solid #fecaca;
+            color: #64748b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
         }
 
         .stats {
@@ -234,14 +206,13 @@
             .container { padding: 16px; }
             h2 { font-size: 17px; }
             .filter-group { min-width: 100%; }
-            .status-bar { flex-direction: column; align-items: flex-start; }
             th, td { padding: 8px 10px; font-size: 13px; }
         }
 
         @media print {
             body { background: #ffffff !important; padding: 0; }
             .container { box-shadow: none; border: none; max-width: 100%; padding: 0; background: transparent; }
-            .filter-section, .btn-pdf, .status-tag { display: none !important; }
+            .filter-section, .btn-pdf { display: none !important; }
             th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; }
 
             .qr-print-container {
@@ -287,14 +258,11 @@
             <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
             <input type="date" id="pilihTanggal" onchange="filterData()">
         </div>
-        <div class="filter-group">
-            <label for="cariMaterial">🔍 Cari Nama Material:</label>
-            <input type="text" id="cariMaterial" placeholder="Ketik nama material..." onkeyup="filterData()">
-        </div>
     </div>
 
-    <div class="status-bar">
-        <div id="loadingInfo" class="status-tag loading">⏳ Memuat data dari GitHub...</div>
+    <!-- Informasi Last Update -->
+    <div class="last-update-info">
+        ⏱️ <span>Last Update: <strong id="lastUpdateText">Memuat...</strong></span>
     </div>
     
     <div id="statsSummary" class="stats"></div>
@@ -321,7 +289,6 @@
         <strong>Note:</strong>
         <ol>
             <li>1 batch = 71 kilogram (perhitungan internal ipi)</li>
-            <li>Data otomatis diambil dari file <code>data_irc.txt</code> dan <code>data_emix.txt</code> di GitHub.</li>
         </ol>
     </div>
 </div>
@@ -355,11 +322,9 @@
     });
 
     async function muatDataDariGithub() {
-        const loadingEl = document.getElementById('loadingInfo');
         databaseKedatangan = [];
 
         try {
-            // Ambil kedua file secara bersamaan
             const [resIRC, resEMIX] = await Promise.all([
                 fetch(URL_DATA_IRC + '?t=' + new Date().getTime()).catch(() => null),
                 fetch(URL_DATA_EMIX + '?t=' + new Date().getTime()).catch(() => null)
@@ -375,20 +340,26 @@
                 prosesTeksData(teksEMIX, 'EMIX');
             }
 
-            if (databaseKedatangan.length > 0) {
-                loadingEl.className = 'status-tag success';
-                loadingEl.innerHTML = '✅ Berhasil memuat data dari GitHub';
-            } else {
-                loadingEl.className = 'status-tag error';
-                loadingEl.innerHTML = '⚠️ Data tidak ditemukan dalam file TXT.';
-            }
+            // Update Tanggal/Jam Last Update
+            updateWaktuLastUpdate();
 
             filterData();
         } catch (err) {
-            loadingEl.className = 'status-tag error';
-            loadingEl.innerHTML = '❌ Gagal membaca file dari GitHub.';
             console.error(err);
+            document.getElementById('lastUpdateText').innerText = "Gagal memperbarui data";
         }
+    }
+
+    function updateWaktuLastUpdate() {
+        const sekarang = new Date();
+        const tgl = String(sekarang.getDate()).padStart(2, '0');
+        const bln = NAMA_BULAN[sekarang.getMonth()];
+        const thn = sekarang.getFullYear();
+        const jam = String(sekarang.getHours()).padStart(2, '0');
+        const menit = String(sekarang.getMinutes()).padStart(2, '0');
+        const detik = String(sekarang.getSeconds()).padStart(2, '0');
+
+        document.getElementById('lastUpdateText').innerText = `${tgl} ${bln} ${thn} pukul ${jam}:${menit}:${detik} WIB`;
     }
 
     function prosesTeksData(teks, defaultSupplier) {
@@ -397,7 +368,6 @@
         barisArr.forEach(baris => {
             if (!baris.trim()) return;
 
-            // Parser pemisah ';' atau ',' atau TAB
             const kolom = baris.split(/;|;|\t/).map(k => k.trim());
 
             if (kolom.length >= 3) {
@@ -407,7 +377,6 @@
                 let jml = kolom[3] || '-';
                 let jam = kolom[4] || '-';
 
-                // Lewati baris header jika ada
                 if (!tgl.toLowerCase().includes('tanggal')) {
                     databaseKedatangan.push({
                         tanggal: tgl,
@@ -458,7 +427,6 @@
     function filterData() {
         const tanggalDipilih = document.getElementById('pilihTanggal').value;
         const supplierDipilih = document.getElementById('pilihSupplier').value;
-        const kataKunciCari = document.getElementById('cariMaterial').value.trim().toLowerCase();
         const isiTabel = document.getElementById('isiTabel');
         const statsSummary = document.getElementById('statsSummary');
         
@@ -474,10 +442,8 @@
             const matchTanggal = normalkanTanggal(item.tanggal) === tglPilihNorm;
             const matchSupplier = (supplierDipilih === 'semua') || 
                                   (String(item.supplier).trim().toUpperCase() === supplierDipilih.toUpperCase());
-            const matchCari = (kataKunciCari === '') || 
-                              String(item.material).toLowerCase().includes(kataKunciCari);
 
-            return matchTanggal && matchSupplier && matchCari;
+            return matchTanggal && matchSupplier;
         });
 
         isiTabel.innerHTML = '';
