@@ -124,7 +124,6 @@
             font-weight: 500;
         }
 
-        /* Styling Badge Terakhir Update */
         .last-updated {
             font-size: 12px;
             color: #1e293b;
@@ -183,7 +182,6 @@
             border: 1px solid #bae6fd;
         }
 
-        /* Styling Catatan/Notes */
         .notes-section {
             margin-top: 15px;
             padding: 12px 16px;
@@ -207,12 +205,10 @@
             margin-bottom: 3px;
         }
 
-        /* QR Code Container (Tersembunyi di layar monitor) */
         .qr-print-container {
             display: none;
         }
 
-        /* Tampilan khusus untuk Hasil Cetak / PDF */
         @media print {
             body {
                 background: #ffffff !important;
@@ -233,7 +229,6 @@
                 -webkit-print-color-adjust: exact;
             }
 
-            /* Menampilkan QR Code di Pojok Kanan Atas PDF */
             .qr-print-container {
                 display: flex !important;
                 flex-direction: column;
@@ -278,7 +273,6 @@
 <body>
 
 <div class="container" id="areaCetak">
-    <!-- QR Code khusus cetak PDF -->
     <div class="qr-print-container">
         <div id="qrcode"></div>
         <div class="qr-text">Scan disini untuk melihat jadwal via web</div>
@@ -292,10 +286,10 @@
     <div class="filter-section">
         <div class="filter-group">
             <label for="pilihSupplier">Pilih Supplier:</label>
-            <select id="pilihSupplier" onchange="gantiDataSupplier()">
-                <option value="semua">Semua Supplier (IRC & EMIX)</option>
-                <option value="data_irc.txt">IRC RUBBER</option>
-                <option value="data_emix.txt">EMIX</option>
+            <select id="pilihSupplier" onchange="filterData()">
+                <option value="semua">Semua Supplier</option>
+                <option value="IRC RUBBER">IRC RUBBER</option>
+                <option value="EMIX">EMIX</option>
             </select>
         </div>
         <div class="filter-group">
@@ -306,7 +300,6 @@
 
     <div id="loadingInfo" class="loading">Sedang mengambil data jadwal terbaru...</div>
     
-    <!-- Informasi Waktu Terakhir Update Data -->
     <div id="lastUpdated" class="last-updated">🕒 Terakhir Diperbarui: <i>Memuat...</i></div>
     
     <div id="statsSummary" class="stats"></div>
@@ -329,7 +322,6 @@
         </table>
     </div>
 
-    <!-- Catatan Tambahan di Bawah Tabel -->
     <div class="notes-section">
         <strong>Note:</strong>
         <ol>
@@ -340,15 +332,15 @@
 </div>
 
 <script>
-    let databaseKedatangan = [];
-    let waktuTerakhirUpdate = null;
+    // URL API Google Apps Script Live
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRSVQNa0-NexroJoKIZ7lSk0dpZkIFEZjgDvUgAIa8UQtkVxwlTgRFCYxT1bTsnhydWA/exec';
 
+    let databaseKedatangan = [];
     const NAMA_BULAN = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
 
-    // Buat QR Code dari URL web
     window.addEventListener('DOMContentLoaded', () => {
         new QRCode(document.getElementById("qrcode"), {
             text: window.location.href,
@@ -362,29 +354,36 @@
 
     function normalkanTanggal(strTanggal) {
         if (!strTanggal) return '';
-        const bersih = strTanggal.trim();
+        let dateObj;
 
-        if (bersih.includes('/')) {
-            const p = bersih.split('/');
-            if (p.length === 3) {
-                const dd = p[0].padStart(2, '0');
-                const mm = p[1].padStart(2, '0');
-                const yyyy = p[2];
-                return `${yyyy}${mm}${dd}`;
+        if (typeof strTanggal === 'string' && strTanggal.includes('T')) {
+            dateObj = new Date(strTanggal);
+        } else if (typeof strTanggal === 'string') {
+            const bersih = strTanggal.trim();
+            if (bersih.includes('/')) {
+                const p = bersih.split('/');
+                if (p.length === 3) return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
             }
-        }
-
-        if (bersih.includes('-')) {
-            const p = bersih.split('-');
-            if (p.length === 3) {
-                if (p[0].length === 4) {
-                    return `${p[0]}${p[1].padStart(2, '0')}${p[2].padStart(2, '0')}`;
+            if (bersih.includes('-')) {
+                const p = bersih.split('-');
+                if (p.length === 3) {
+                    if (p[0].length === 4) return `${p[0]}${p[1].padStart(2, '0')}${p[2].padStart(2, '0')}`;
+                    return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
                 }
-                return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
             }
+            return bersih.replace(/[\/\-]/g, '');
+        } else {
+            dateObj = new Date(strTanggal);
         }
 
-        return bersih.replace(/[\/\-]/g, '');
+        if (dateObj && !isNaN(dateObj.getTime())) {
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            return `${yyyy}${mm}${dd}`;
+        }
+
+        return String(strTanggal);
     }
 
     function formatWaktu(date) {
@@ -398,38 +397,18 @@
         return `${d} ${m} ${y} pukul ${jam}:${menit}:${detik} WIB`;
     }
 
-    async function ambilTeksFile(filename) {
-        const url = `${filename}?v=${new Date().getTime()}`;
-        const respon = await fetch(url);
-        if (!respon.ok) throw new Error(`Gagal memuat ${filename}`);
-        
-        // Ambil header Last-Modified dari server jika tersedia
-        const lastModHeader = respon.headers.get('Last-Modified');
-        const tglMod = lastModHeader ? new Date(lastModHeader) : null;
-
-        const teksData = await respon.text();
-        const barisRaw = teksData.split(/\r?\n/);
-        const dataParsed = [];
-
-        for (let i = 0; i < barisRaw.length; i++) {
-            if (!barisRaw[i].trim()) continue;
-            
-            const kolom = barisRaw[i].split(';').map(sel => sel.trim());
-            if (kolom.length < 3) continue;
-            
-            dataParsed.push({
-                tanggal: kolom[0],
-                supplier: kolom[1],
-                material: kolom[2],
-                jumlah: kolom[3] || '-',
-                jam: kolom[4] || '-'
-            });
+    function formatJam(val) {
+        if (!val || val === '-') return '-';
+        if (typeof val === 'string' && val.includes('T')) {
+            const d = new Date(val);
+            if (!isNaN(d.getTime())) {
+                return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            }
         }
-        return { data: dataParsed, lastModified: tglMod };
+        return val;
     }
 
-    async function muatDataInternal() {
-        const supplierDipilih = document.getElementById('pilihSupplier').value;
+    async function muatDataGoogleSheets() {
         const loadingEl = document.getElementById('loadingInfo');
         const lastUpdatedEl = document.getElementById('lastUpdated');
         
@@ -437,35 +416,44 @@
         loadingEl.style.backgroundColor = '#e0f2fe';
         loadingEl.style.borderColor = '#bae6fd';
         loadingEl.style.color = '#0369a1';
-        loadingEl.innerHTML = 'Sedang mengambil data jadwal terbaru...';
+        loadingEl.innerHTML = 'Sedang mengambil data jadwal dari Google Sheets...';
 
         try {
+            const respon = await fetch(SCRIPT_URL);
+            if (!respon.ok) throw new Error("Gagal terhubung ke Google Sheets API");
+            
+            const rawData = await respon.json();
             databaseKedatangan = [];
-            let listLastModified = [];
 
-            if (supplierDipilih === 'semua') {
-                const [resIRC, resEMIX] = await Promise.all([
-                    ambilTeksFile('data_irc.txt'),
-                    ambilTeksFile('data_emix.txt')
-                ]);
-                databaseKedatangan = [...resIRC.data, ...resEMIX.data];
-                if (resIRC.lastModified) listLastModified.push(resIRC.lastModified);
-                if (resEMIX.lastModified) listLastModified.push(resEMIX.lastModified);
-            } else {
-                const res = await ambilTeksFile(supplierDipilih);
-                databaseKedatangan = res.data;
-                if (res.lastModified) listLastModified.push(res.lastModified);
+            // Lewati baris header spreadsheet (indeks 0 & 1 jika data dimulai dari baris 3)
+            for (let i = 0; i < rawData.length; i++) {
+                const row = rawData[i];
+                if (!row || row.length < 3) continue;
+
+                // Membaca susunan kolom:
+                // Kolom A (row[0]) = No / Info
+                // Kolom B (row[1]) = Tanggal Kedatangan
+                // Kolom C (row[2]) = Supplier
+                // Kolom D (row[3]) = Nama Material
+                // Kolom E (row[4]) = Jumlah Batch
+                // Kolom F (row[5]) = Jam Kedatangan
+                const tgl = row[1];
+                const supp = row[2];
+                const mat = row[3];
+
+                if (!tgl || !supp || !mat) continue;
+                if (String(tgl).toLowerCase().includes('tanggal')) continue;
+
+                databaseKedatangan.push({
+                    tanggal: tgl,
+                    supplier: supp,
+                    material: mat,
+                    jumlah: row[4] || '-',
+                    jam: formatJam(row[5])
+                });
             }
 
-            // Cari tanggal update paling baru
-            if (listLastModified.length > 0) {
-                const terbatuMs = Math.max(...listLastModified.map(d => d.getTime()));
-                waktuTerakhirUpdate = new Date(terbatuMs);
-                lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <b>${formatWaktu(waktuTerakhirUpdate)}</b>`;
-            } else {
-                lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <b>Data lokal (Live)</b>`;
-            }
-
+            lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <b>${formatWaktu(new Date())}</b>`;
             loadingEl.style.display = 'none';
             filterData();
         } catch (error) {
@@ -473,17 +461,14 @@
             loadingEl.style.backgroundColor = '#fee2e2';
             loadingEl.style.borderColor = '#fca5a5';
             loadingEl.style.color = '#991b1b';
-            loadingEl.innerHTML = '❌ Gagal memuat data file internal.';
+            loadingEl.innerHTML = '❌ Gagal memuat data dari Google Sheets.';
             lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <i>Gagal memuat status</i>`;
         }
     }
 
-    function gantiDataSupplier() {
-        muatDataInternal();
-    }
-
     function filterData() {
         const tanggalDipilih = document.getElementById('pilihTanggal').value;
+        const supplierDipilih = document.getElementById('pilihSupplier').value;
         const isiTabel = document.getElementById('isiTabel');
         const statsSummary = document.getElementById('statsSummary');
         
@@ -492,8 +477,10 @@
         const tglPilihNorm = normalkanTanggal(tanggalDipilih);
 
         const hasilFilter = databaseKedatangan.filter(item => {
-            if (!item.tanggal) return false;
-            return normalkanTanggal(item.tanggal) === tglPilihNorm;
+            const matchTanggal = normalkanTanggal(item.tanggal) === tglPilihNorm;
+            const matchSupplier = (supplierDipilih === 'semua') || 
+                                  (String(item.supplier).trim().toUpperCase() === supplierDipilih.toUpperCase());
+            return matchTanggal && matchSupplier;
         });
 
         isiTabel.innerHTML = '';
@@ -513,7 +500,7 @@
         let totalBatch = 0;
         hasilFilter.forEach(item => {
             if (item.jumlah && item.jumlah !== '-') {
-                const nilaiAngka = parseFloat(item.jumlah.replace(',', '.'));
+                const nilaiAngka = parseFloat(String(item.jumlah).replace(',', '.'));
                 if (!isNaN(nilaiAngka)) {
                     totalBatch += nilaiAngka;
                 }
@@ -559,7 +546,7 @@
         }, 1000);
     }
 
-    window.onload = muatDataInternal;
+    window.onload = muatDataGoogleSheets;
 </script>
 
 </body>
