@@ -332,8 +332,8 @@
 </div>
 
 <script>
-    // URL API Google Apps Script Live
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRSVQNa0-NexroJoKIZ7lSk0dpZkIFEZjgDvUgAIa8UQtkVxwlTgRFCYxT1bTsnhydWA/exec';
+    // URL API Google Apps Script versi terbaru
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbznuxpmqZ4qc1z1Vg0YOae0XtJdaWxCG9mcsyV1xg7NkyY1kK5qT8XS9yMJTnr7waAG/exec';
 
     let databaseKedatangan = [];
     const NAMA_BULAN = [
@@ -350,6 +350,7 @@
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
         });
+        muatDataJSONP();
     });
 
     function normalkanTanggal(strTanggal) {
@@ -408,35 +409,18 @@
         return val;
     }
 
-    async function muatDataGoogleSheets() {
+    // Callback JSONP untuk menerima data dari Apps Script
+    function olahDataGoogleSheets(rawData) {
         const loadingEl = document.getElementById('loadingInfo');
         const lastUpdatedEl = document.getElementById('lastUpdated');
         
-        loadingEl.style.display = 'block';
-        loadingEl.style.backgroundColor = '#e0f2fe';
-        loadingEl.style.borderColor = '#bae6fd';
-        loadingEl.style.color = '#0369a1';
-        loadingEl.innerHTML = 'Sedang mengambil data jadwal dari Google Sheets...';
-
         try {
-            const respon = await fetch(SCRIPT_URL);
-            if (!respon.ok) throw new Error("Gagal terhubung ke Google Sheets API");
-            
-            const rawData = await respon.json();
             databaseKedatangan = [];
 
-            // Lewati baris header spreadsheet (indeks 0 & 1 jika data dimulai dari baris 3)
             for (let i = 0; i < rawData.length; i++) {
                 const row = rawData[i];
                 if (!row || row.length < 3) continue;
 
-                // Membaca susunan kolom:
-                // Kolom A (row[0]) = No / Info
-                // Kolom B (row[1]) = Tanggal Kedatangan
-                // Kolom C (row[2]) = Supplier
-                // Kolom D (row[3]) = Nama Material
-                // Kolom E (row[4]) = Jumlah Batch
-                // Kolom F (row[5]) = Jam Kedatangan
                 const tgl = row[1];
                 const supp = row[2];
                 const mat = row[3];
@@ -461,9 +445,22 @@
             loadingEl.style.backgroundColor = '#fee2e2';
             loadingEl.style.borderColor = '#fca5a5';
             loadingEl.style.color = '#991b1b';
-            loadingEl.innerHTML = '❌ Gagal memuat data dari Google Sheets.';
-            lastUpdatedEl.innerHTML = `🕒 Terakhir Diperbarui: <i>Gagal memuat status</i>`;
+            loadingEl.innerHTML = '❌ Gagal memproses data Google Sheets.';
         }
+    }
+
+    // Memuat data dengan teknik Script Injection (JSONP)
+    function muatDataJSONP() {
+        const script = document.createElement('script');
+        script.src = `${SCRIPT_URL}?callback=olahDataGoogleSheets`;
+        script.onerror = function() {
+            const loadingEl = document.getElementById('loadingInfo');
+            loadingEl.style.backgroundColor = '#fee2e2';
+            loadingEl.style.borderColor = '#fca5a5';
+            loadingEl.style.color = '#991b1b';
+            loadingEl.innerHTML = '❌ Gagal memuat data dari Google Sheets.';
+        };
+        document.body.appendChild(script);
     }
 
     function filterData() {
@@ -545,8 +542,6 @@
             document.title = judulAsli;
         }, 1000);
     }
-
-    window.onload = muatDataGoogleSheets;
 </script>
 
 </body>
