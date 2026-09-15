@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORDER COMPOND EXTRUDER AUTOSEAL (LOCAL FILE)</title>
+    <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
     <!-- Library QR Code JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -79,29 +79,6 @@
             background-color: #047857;
         }
 
-        .file-upload-section {
-            background: #eff6ff;
-            border: 2px dashed #93c5fd;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .file-upload-section label {
-            color: #1e40af;
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-
-        .file-upload-section input[type="file"] {
-            background: #ffffff;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            width: 100%;
-            box-sizing: border-box;
-        }
-
         .filter-section {
             background: var(--accent-bg);
             padding: 16px;
@@ -136,6 +113,16 @@
             color: var(--text);
             box-sizing: border-box;
             outline: none;
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            cursor: text;
+        }
+
+        input[type="date"]:focus, input[type="text"]:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
 
         .status-bar {
@@ -149,12 +136,27 @@
 
         .status-tag {
             font-size: 12px;
-            color: #0369a1;
-            background-color: #e0f2fe;
             padding: 6px 12px;
             border-radius: 6px;
-            border: 1px solid #bae6fd;
             font-weight: 600;
+        }
+
+        .status-tag.loading {
+            color: #1e40af;
+            background-color: #dbeafe;
+            border: 1px solid #bfdbfe;
+        }
+
+        .status-tag.success {
+            color: #166534;
+            background-color: #dcfce7;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-tag.error {
+            color: #991b1b;
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
         }
 
         .stats {
@@ -210,6 +212,19 @@
             color: var(--text-secondary);
         }
 
+        .notes-section strong {
+            color: var(--text);
+        }
+
+        .notes-section ol {
+            margin: 5px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .notes-section li {
+            margin-bottom: 3px;
+        }
+
         .qr-print-container {
             display: none;
         }
@@ -219,14 +234,16 @@
             .container { padding: 16px; }
             h2 { font-size: 17px; }
             .filter-group { min-width: 100%; }
+            .status-bar { flex-direction: column; align-items: flex-start; }
             th, td { padding: 8px 10px; font-size: 13px; }
         }
 
         @media print {
             body { background: #ffffff !important; padding: 0; }
             .container { box-shadow: none; border: none; max-width: 100%; padding: 0; background: transparent; }
-            .filter-section, .file-upload-section, .btn-pdf, .status-tag { display: none !important; }
+            .filter-section, .btn-pdf, .status-tag { display: none !important; }
             th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; }
+
             .qr-print-container {
                 display: flex !important;
                 flex-direction: column;
@@ -236,9 +253,11 @@
                 right: 0px;
                 text-align: center;
             }
+
             .qr-print-container img, .qr-print-container canvas { width: 75px !important; height: 75px !important; }
             .qr-text { font-size: 9px; font-weight: 600; color: #334155; margin-top: 4px; max-width: 90px; line-height: 1.1; }
             .header-section { padding-right: 100px; }
+            .notes-section { background-color: transparent; border: 1px solid #cbd5e1; }
         }
     </style>
 </head>
@@ -253,12 +272,6 @@
     <div class="header-section">
         <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
         <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
-    </div>
-
-    <!-- Bagian Upload File TXT -->
-    <div class="file-upload-section">
-        <label for="inputFiles">📂 <b>Unggah File Data (.txt):</b> Pilih file <code>data_emix.txt</code> dan <code>data_irc.txt</code> sekaligus</label>
-        <input type="file" id="inputFiles" accept=".txt" multiple onchange="bacaFileLokal(this.files)">
     </div>
 
     <div class="filter-section">
@@ -281,7 +294,7 @@
     </div>
 
     <div class="status-bar">
-        <div id="statusInfo" class="status-tag">📁 Silakan pilih/unggah file data_emix.txt dan data_irc.txt</div>
+        <div id="loadingInfo" class="status-tag loading">⏳ Memuat data dari GitHub...</div>
     </div>
     
     <div id="statsSummary" class="stats"></div>
@@ -298,19 +311,26 @@
             </thead>
             <tbody id="isiTabel">
                 <tr>
-                    <td colspan="4" class="no-data">Belum ada file data yang dimuat.</td>
+                    <td colspan="4" class="no-data">Memuat data dari GitHub...</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <div class="notes-section">
-        <strong>Note Format File TXT:</strong>
-        <p style="margin: 5px 0 0 0;">Isi file TXT menggunakan pemisah koma/tab per baris: <code>Tanggal, Supplier, Nama Material, Jumlah, Jam</code></p>
+        <strong>Note:</strong>
+        <ol>
+            <li>1 batch = 71 kilogram (perhitungan internal ipi)</li>
+            <li>Data otomatis diambil dari file <code>data_irc.txt</code> dan <code>data_emix.txt</code> di GitHub.</li>
+        </ol>
     </div>
 </div>
 
 <script>
+    // URL Raw File dari GitHub
+    const URL_DATA_IRC = 'https://raw.githubusercontent.com/diandianlukmana-alt/Jadwal-kedatangan-compond/main/data_irc.txt';
+    const URL_DATA_EMIX = 'https://raw.githubusercontent.com/diandianlukmana-alt/Jadwal-kedatangan-compond/main/data_emix.txt';
+
     let databaseKedatangan = [];
 
     const NAMA_BULAN = [
@@ -330,54 +350,64 @@
 
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('pilihTanggal').value = today;
+
+        muatDataDariGithub();
     });
 
-    // Membaca file data_emix.txt dan data_irc.txt dari input
-    function bacaFileLokal(files) {
-        if (!files || files.length === 0) return;
-
+    async function muatDataDariGithub() {
+        const loadingEl = document.getElementById('loadingInfo');
         databaseKedatangan = [];
-        let fileSelesai = 0;
 
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const teks = e.target.result;
-                prosesTeksData(teks, file.name);
-                fileSelesai++;
+        try {
+            // Ambil kedua file secara bersamaan
+            const [resIRC, resEMIX] = await Promise.all([
+                fetch(URL_DATA_IRC + '?t=' + new Date().getTime()).catch(() => null),
+                fetch(URL_DATA_EMIX + '?t=' + new Date().getTime()).catch(() => null)
+            ]);
 
-                if (fileSelesai === files.length) {
-                    document.getElementById('statusInfo').innerText = `✅ Berhasil memuat ${files.length} file data lokal.`;
-                    filterData();
-                }
-            };
-            reader.readAsText(file);
-        });
+            if (resIRC && resIRC.ok) {
+                const teksIRC = await resIRC.text();
+                prosesTeksData(teksIRC, 'IRC RUBBER');
+            }
+
+            if (resEMIX && resEMIX.ok) {
+                const teksEMIX = await resEMIX.text();
+                prosesTeksData(teksEMIX, 'EMIX');
+            }
+
+            if (databaseKedatangan.length > 0) {
+                loadingEl.className = 'status-tag success';
+                loadingEl.innerHTML = '✅ Berhasil memuat data dari GitHub';
+            } else {
+                loadingEl.className = 'status-tag error';
+                loadingEl.innerHTML = '⚠️ Data tidak ditemukan dalam file TXT.';
+            }
+
+            filterData();
+        } catch (err) {
+            loadingEl.className = 'status-tag error';
+            loadingEl.innerHTML = '❌ Gagal membaca file dari GitHub.';
+            console.error(err);
+        }
     }
 
-    // Mengolah teks baris demi baris dari TXT
-    function prosesTeksData(teks, namaFile) {
+    function prosesTeksData(teks, defaultSupplier) {
         const barisArr = teks.split(/\r?\n/);
 
         barisArr.forEach(baris => {
             if (!baris.trim()) return;
 
-            // Mendukung pemisah Koma (,) atau Tab (\t) atau Semicolon (;)
-            const kolom = baris.split(/,|\t|;/).map(k => k.trim());
+            // Parser pemisah ';' atau ',' atau TAB
+            const kolom = baris.split(/;|;|\t/).map(k => k.trim());
 
             if (kolom.length >= 3) {
                 let tgl = kolom[0];
-                let supp = kolom[1];
+                let supp = kolom[1] || defaultSupplier;
                 let mat = kolom[2];
                 let jml = kolom[3] || '-';
                 let jam = kolom[4] || '-';
 
-                // Jika supplier tidak tertulis di TXT, tentukan otomatis dari nama file
-                if (!supp || supp === '-') {
-                    if (namaFile.toLowerCase().includes('emix')) supp = 'EMIX';
-                    else if (namaFile.toLowerCase().includes('irc')) supp = 'IRC RUBBER';
-                }
-
+                // Lewati baris header jika ada
                 if (!tgl.toLowerCase().includes('tanggal')) {
                     databaseKedatangan.push({
                         tanggal: tgl,
@@ -432,12 +462,6 @@
         const isiTabel = document.getElementById('isiTabel');
         const statsSummary = document.getElementById('statsSummary');
         
-        if (databaseKedatangan.length === 0) {
-            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Silakan unggah file data_emix.txt atau data_irc.txt terlebih dahulu.</td></tr>`;
-            statsSummary.innerHTML = '';
-            return;
-        }
-
         if (!tanggalDipilih) {
             isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Silakan pilih tanggal kedatangan.</td></tr>`;
             statsSummary.innerHTML = '';
