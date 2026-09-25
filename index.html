@@ -247,11 +247,12 @@
 
     <div class="filter-section">
         <div class="filter-group">
-            <label for="pilihSupplier">Pilih Supplier:</label>
+            <label for="pilihSupplier">Pilih Supplier / Kategori:</label>
             <select id="pilihSupplier" onchange="filterData()">
-                <option value="semua">Semua Supplier (IRC & EMIX)</option>
-                <option value="IRC RUBBER">IRC RUBBER</option>
+                <option value="semua">Semua Kategori</option>
+                <option value="DCM">DCM</option>
                 <option value="EMIX">EMIX</option>
+                <option value="IRC RUBBER">IRC RUBBER</option>
             </select>
         </div>
         <div class="filter-group">
@@ -271,15 +272,15 @@
         <table id="tabelMaterial">
             <thead>
                 <tr>
-                    <th>Supplier</th>
-                    <th>Nama Material</th>
-                    <th>Jumlah Batch</th>
-                    <th>Jam Kedatangan</th>
+                    <th>Kategori</th>
+                    <th>Tujuan</th>
+                    <th>Jumlah Rit</th>
+                    <th>Keterangan / Jam</th>
                 </tr>
             </thead>
             <tbody id="isiTabel">
                 <tr>
-                    <td colspan="4" class="no-data">Memuat data dari GitHub...</td>
+                    <td colspan="4" class="no-data">Memuat data dari Google Sheet...</td>
                 </tr>
             </tbody>
         </table>
@@ -294,9 +295,8 @@
 </div>
 
 <script>
-    // URL Raw File dari GitHub
-    const URL_DATA_IRC = 'https://raw.githubusercontent.com/diandianlukmana-alt/Jadwal-kedatangan-compond/main/data_irc.txt';
-    const URL_DATA_EMIX = 'https://raw.githubusercontent.com/diandianlukmana-alt/Jadwal-kedatangan-compond/main/data_emix.txt';
+    // URL Web App Google Apps Script Anda
+    const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxprJFXjLDuh6DoEDeovpVsc1EizVtajf5fyL1G6Gk3Mb7Q6PDjyYx7rrLfCWH8eGtL/exec';
 
     let databaseKedatangan = [];
 
@@ -318,35 +318,32 @@
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('pilihTanggal').value = today;
 
-        muatDataDariGithub();
+        muatDataDariSheet();
     });
 
-    async function muatDataDariGithub() {
+    async function muatDataDariSheet() {
         databaseKedatangan = [];
 
         try {
-            const [resIRC, resEMIX] = await Promise.all([
-                fetch(URL_DATA_IRC + '?t=' + new Date().getTime()).catch(() => null),
-                fetch(URL_DATA_EMIX + '?t=' + new Date().getTime()).catch(() => null)
-            ]);
+            const response = await fetch(URL_APPS_SCRIPT + '?t=' + new Date().getTime());
+            const hasil = await response.json();
 
-            if (resIRC && resIRC.ok) {
-                const teksIRC = await resIRC.text();
-                prosesTeksData(teksIRC, 'IRC RUBBER');
+            if (hasil.status === "success" && hasil.data) {
+                databaseKedatangan = hasil.data.map(item => ({
+                    tanggal: item.tanggal,
+                    supplier: item.kategori || 'DCM',
+                    material: item.tujuan,
+                    jumlah: item.jumlahRit,
+                    jam: '-'
+                }));
             }
 
-            if (resEMIX && resEMIX.ok) {
-                const teksEMIX = await resEMIX.text();
-                prosesTeksData(teksEMIX, 'EMIX');
-            }
-
-            // Update Tanggal/Jam Last Update
             updateWaktuLastUpdate();
-
             filterData();
         } catch (err) {
             console.error(err);
-            document.getElementById('lastUpdateText').innerText = "Gagal memperbarui data";
+            document.getElementById('lastUpdateText').innerText = "Gagal memperbarui data dari Google Sheet";
+            document.getElementById('isiTabel').innerHTML = `<tr><td colspan="4" class="no-data">Gagal memuat data.</td></tr>`;
         }
     }
 
@@ -360,34 +357,6 @@
         const detik = String(sekarang.getSeconds()).padStart(2, '0');
 
         document.getElementById('lastUpdateText').innerText = `${tgl} ${bln} ${thn} pukul ${jam}:${menit}:${detik} WIB`;
-    }
-
-    function prosesTeksData(teks, defaultSupplier) {
-        const barisArr = teks.split(/\r?\n/);
-
-        barisArr.forEach(baris => {
-            if (!baris.trim()) return;
-
-            const kolom = baris.split(/;|;|\t/).map(k => k.trim());
-
-            if (kolom.length >= 3) {
-                let tgl = kolom[0];
-                let supp = kolom[1] || defaultSupplier;
-                let mat = kolom[2];
-                let jml = kolom[3] || '-';
-                let jam = kolom[4] || '-';
-
-                if (!tgl.toLowerCase().includes('tanggal')) {
-                    databaseKedatangan.push({
-                        tanggal: tgl,
-                        supplier: supp,
-                        material: mat,
-                        jumlah: jml,
-                        jam: jam
-                    });
-                }
-            }
-        });
     }
 
     function normalkanTanggal(strTanggal) {
@@ -456,23 +425,23 @@
 
         if (hasilFilter.length === 0) {
             statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
-            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal kedatangan material yang cocok.</td></tr>`;
+            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal pengiriman yang cocok.</td></tr>`;
             return;
         }
 
-        let totalBatch = 0;
+        let totalRit = 0;
         hasilFilter.forEach(item => {
             if (item.jumlah && item.jumlah !== '-') {
                 const nilaiAngka = parseFloat(String(item.jumlah).replace(',', '.'));
                 if (!isNaN(nilaiAngka)) {
-                    totalBatch += nilaiAngka;
+                    totalRit += nilaiAngka;
                 }
             }
         });
 
-        const totalBatchFormatted = parseFloat(totalBatch.toFixed(2)).toString().replace('.', ',');
+        const totalRitFormatted = parseFloat(totalRit.toFixed(2)).toString().replace('.', ',');
 
-        statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | 📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman (Total: <b>${totalBatchFormatted}</b> batch)`;
+        statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | 📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman (Total: <b>${totalRitFormatted}</b> rit)`;
 
         hasilFilter.forEach(item => {
             const baris = document.createElement('tr');
