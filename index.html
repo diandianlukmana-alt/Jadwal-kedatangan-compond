@@ -34,7 +34,7 @@
 
         .container {
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             background: var(--surface);
             backdrop-filter: blur(12px);
             padding: 24px;
@@ -56,179 +56,97 @@
             flex-wrap: wrap;
         }
 
-        h2 {
-            margin: 0;
-            color: var(--text);
-            font-size: 20px;
+        h2 { margin: 0; color: var(--text); font-size: 20px; }
+
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white; border: none; padding: 9px 16px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;
+            transition: background-color 0.2s; white-space: nowrap;
         }
+        .btn-action:hover { background-color: var(--primary-hover); }
 
         .btn-pdf {
-            background-color: #059669;
-            color: white;
-            border: none;
-            padding: 9px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-            white-space: nowrap;
+            background-color: #059669; color: white; border: none; padding: 9px 16px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;
+            transition: background-color 0.2s; white-space: nowrap;
         }
-
-        .btn-pdf:hover {
-            background-color: #047857;
-        }
+        .btn-pdf:hover { background-color: #047857; }
 
         .filter-section {
-            background: var(--accent-bg);
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
+            background: var(--accent-bg); padding: 16px; border-radius: 8px;
+            border: 1px solid var(--border); display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;
         }
+        .filter-group { flex: 1; min-width: 200px; }
 
-        .filter-group {
-            flex: 1;
-            min-width: 200px;
+        label { font-weight: 600; display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 13px; }
+
+        input[type="date"], input[type="text"], select {
+            width: 100%; padding: 10px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 14px; background-color: #ffffff; color: var(--text);
+            box-sizing: border-box; outline: none; cursor: pointer;
         }
-
-        label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 13px;
-        }
-
-        input[type="date"], select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            background-color: #ffffff;
-            color: var(--text);
-            box-sizing: border-box;
-            outline: none;
-            cursor: pointer;
-        }
-
-        input[type="date"]:focus, select:focus {
+        input:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
 
-        .last-update-info {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 500;
-        }
+        .last-update-info { font-size: 12px; color: #64748b; margin-bottom: 15px; display: flex; align-items: center; gap: 5px; font-weight: 500; }
+        .stats { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; font-weight: 500; }
 
-        .stats {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; min-width: 600px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background-color: #f1f5f9; font-weight: 600; color: var(--text-secondary); }
+        tr:hover { background-color: #f8fafc; }
+        .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; }
 
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        .btn-edit {
+            background-color: #d97706; color: white; border: none; padding: 5px 10px;
+            border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;
         }
+        .btn-edit:hover { background-color: #b45309; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-            min-width: 500px;
+        /* Modal Popup */
+        .modal {
+            display: none; position: fixed; z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center;
         }
-
-        th, td {
-            padding: 12px 14px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
+        .modal-content {
+            background: white; padding: 24px; border-radius: 10px;
+            width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); box-sizing: border-box;
         }
-
-        th {
-            background-color: #f1f5f9;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
+        .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { cursor: pointer; font-size: 20px; color: #64748b; }
+        .form-group { margin-bottom: 12px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-cancel { background-color: #e2e8f0; color: #334155; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
         .notes-section {
-            margin-top: 15px;
-            padding: 12px 16px;
-            background-color: #f8fafc;
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-            font-size: 13px;
-            color: var(--text-secondary);
+            margin-top: 15px; padding: 12px 16px; background-color: #f8fafc;
+            border: 1px dashed var(--border); border-radius: 8px; font-size: 13px; color: var(--text-secondary);
         }
+        .notes-section strong { color: var(--text); }
+        .notes-section ol { margin: 5px 0 0 0; padding-left: 20px; }
+        .notes-section li { margin-bottom: 3px; }
 
-        .notes-section strong {
-            color: var(--text);
-        }
-
-        .notes-section ol {
-            margin: 5px 0 0 0;
-            padding-left: 20px;
-        }
-
-        .notes-section li {
-            margin-bottom: 3px;
-        }
-
-        .qr-print-container {
-            display: none;
-        }
-
-        @media (max-width: 600px) {
-            body { padding: 10px 5px; }
-            .container { padding: 16px; }
-            h2 { font-size: 17px; }
-            .filter-group { min-width: 100%; }
-            th, td { padding: 8px 10px; font-size: 13px; }
-        }
+        .qr-print-container { display: none; }
 
         @media print {
             body { background: #ffffff !important; padding: 0; }
             .container { box-shadow: none; border: none; max-width: 100%; padding: 0; background: transparent; }
-            .filter-section, .btn-pdf { display: none !important; }
+            .filter-section, .btn-group, .action-col, th.action-col { display: none !important; }
             th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; }
-
             .qr-print-container {
-                display: flex !important;
-                flex-direction: column;
-                align-items: center;
-                position: absolute;
-                top: 0px;
-                right: 0px;
-                text-align: center;
+                display: flex !important; flex-direction: column; align-items: center;
+                position: absolute; top: 0px; right: 0px; text-align: center;
             }
-
             .qr-print-container img, .qr-print-container canvas { width: 75px !important; height: 75px !important; }
             .qr-text { font-size: 9px; font-weight: 600; color: #334155; margin-top: 4px; max-width: 90px; line-height: 1.1; }
             .header-section { padding-right: 100px; }
-            .notes-section { background-color: transparent; border: 1px solid #cbd5e1; }
         }
     </style>
 </head>
@@ -242,16 +160,19 @@
 
     <div class="header-section">
         <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
-        <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
+        <div class="btn-group">
+            <button class="btn-action" onclick="bukaModalTambah()">➕ Input Order</button>
+            <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
+        </div>
     </div>
 
     <div class="filter-section">
         <div class="filter-group">
             <label for="pilihSupplier">Pilih Supplier:</label>
             <select id="pilihSupplier" onchange="filterData()">
-                <option value="semua">Semua Supplier (IRC & EMIX)</option>
-                <option value="IRC RUBBER">IRC RUBBER</option>
-                <option value="EMIX">EMIX</option>
+                <option value="semua">Semua Supplier</option>
+                <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
+                <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
             </select>
         </div>
         <div class="filter-group">
@@ -260,7 +181,6 @@
         </div>
     </div>
 
-    <!-- Informasi Last Update -->
     <div class="last-update-info">
         ⏱️ <span>Last Update: <strong id="lastUpdateText">Memuat...</strong></span>
     </div>
@@ -274,13 +194,12 @@
                     <th>Supplier</th>
                     <th>Nama Material</th>
                     <th>Jumlah Batch</th>
-                    <th>Jam Kedatangan</th>
+                    <th>Tanggal Kedatangan</th>
+                    <th class="action-col">Aksi</th>
                 </tr>
             </thead>
             <tbody id="isiTabel">
-                <tr>
-                    <td colspan="4" class="no-data">Memuat data dari GitHub...</td>
-                </tr>
+                <tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>
             </tbody>
         </table>
     </div>
@@ -293,221 +212,254 @@
     </div>
 </div>
 
+<!-- Modal Form Input / Revisi Order dengan Dropdown -->
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="modalTitle">Tambah Order Baru</span>
+            <span class="close-btn" onclick="tutupModal()">&times;</span>
+        </div>
+        <form id="orderForm" onsubmit="simpanData(event)">
+            <input type="hidden" id="editRowId">
+            <div class="form-group">
+                <label for="inputTanggal">Tanggal Kedatangan:</label>
+                <input type="date" id="inputTanggal" required>
+            </div>
+            <div class="form-group">
+                <label for="inputMaterial">Nama Material (Dropdown Masterdata):</label>
+                <select id="inputMaterial" onchange="onMaterialChange()" required>
+                    <option value="">-- Pilih Material --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputSupplier">Supplier (Otomatis / Dropdown):</label>
+                <select id="inputSupplier" required>
+                    <option value="">-- Pilih Supplier --</option>
+                    <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
+                    <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputJumlah">Jumlah Batch:</label>
+                <input type="text" id="inputJumlah" placeholder="Contoh: 28 atau 46,5" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="tutupModal()">Batal</button>
+                <button type="submit" class="btn-action" id="btnSimpan">Simpan Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    // URL Raw File dari GitHub
-    const URL_DATA_IRC = 'https://raw.githubusercontent.com/diandianlukmana-alt/Jadwal-kedatangan-compond/main/data_irc.txt';
-    const URL_DATA_EMIX = 'https://raw.githubusercontent.com/diandianlukmana-alt/Jadwal-kedatangan-compond/main/data_emix.txt';
+    // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyAw6zGmsRW25EvUzLz1zZWjhtjACTJ2Trtx8r-x2fu_kTTMQZMu5oMODZSZwS6awHy/exec";
 
-    let databaseKedatangan = [];
+    let semuaDataGlobal = [];
+    let masterMapping = {}; // Menyimpan relasi Material -> Supplier
 
-    const NAMA_BULAN = [
-        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-    ];
-
-    window.addEventListener('DOMContentLoaded', () => {
-        new QRCode(document.getElementById("qrcode"), {
-            text: window.location.href,
-            width: 75,
-            height: 75,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
-
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('pilihTanggal').value = today;
-
-        muatDataDariGithub();
+    new QRCode(document.getElementById("qrcode"), {
+        text: window.location.href,
+        width: 75,
+        height: 75,
     });
 
-    async function muatDataDariGithub() {
-        databaseKedatangan = [];
+    async function init() {
+        await muatMasterdataDropdown();
+        await ambilDataOrder();
+    }
 
+    async function muatMasterdataDropdown() {
         try {
-            const [resIRC, resEMIX] = await Promise.all([
-                fetch(URL_DATA_IRC + '?t=' + new Date().getTime()).catch(() => null),
-                fetch(URL_DATA_EMIX + '?t=' + new Date().getTime()).catch(() => null)
-            ]);
-
-            if (resIRC && resIRC.ok) {
-                const teksIRC = await resIRC.text();
-                prosesTeksData(teksIRC, 'IRC RUBBER');
-            }
-
-            if (resEMIX && resEMIX.ok) {
-                const teksEMIX = await resEMIX.text();
-                prosesTeksData(teksEMIX, 'EMIX');
-            }
-
-            // Update Tanggal/Jam Last Update
-            updateWaktuLastUpdate();
-
-            filterData();
+            let res = await fetch(WEB_APP_URL + "?action=getMasterdata");
+            let data = await res.json();
+            
+            masterMapping = data.mapping || {};
+            
+            let selectMat = document.getElementById("inputMaterial");
+            selectMat.innerHTML = '<option value="">-- Pilih Material --</option>';
+            
+            (data.materials || []).forEach(mat => {
+                let opt = document.createElement("option");
+                opt.value = mat;
+                opt.textContent = mat;
+                selectMat.appendChild(opt);
+            });
         } catch (err) {
-            console.error(err);
-            document.getElementById('lastUpdateText').innerText = "Gagal memperbarui data";
+            console.error("Gagal memuat masterdata dropdown:", err);
         }
     }
 
-    function updateWaktuLastUpdate() {
-        const sekarang = new Date();
-        const tgl = String(sekarang.getDate()).padStart(2, '0');
-        const bln = NAMA_BULAN[sekarang.getMonth()];
-        const thn = sekarang.getFullYear();
-        const jam = String(sekarang.getHours()).padStart(2, '0');
-        const menit = String(sekarang.getMinutes()).padStart(2, '0');
-        const detik = String(sekarang.getSeconds()).padStart(2, '0');
-
-        document.getElementById('lastUpdateText').innerText = `${tgl} ${bln} ${thn} pukul ${jam}:${menit}:${detik} WIB`;
+    // Fitur cerdas: Ketika material dipilih, supplier otomatis terisi sesuai masterdata
+    function onMaterialChange() {
+        let selectedMat = document.getElementById("inputMaterial").value;
+        let supplierField = document.getElementById("inputSupplier");
+        
+        if (masterMapping[selectedMat]) {
+            supplierField.value = masterMapping[selectedMat];
+        }
     }
 
-    function prosesTeksData(teks, defaultSupplier) {
-        const barisArr = teks.split(/\r?\n/);
+    async function ambilDataOrder() {
+        try {
+            let response = await fetch(WEB_APP_URL);
+            let data = await response.json();
+            semuaDataGlobal = data;
 
-        barisArr.forEach(baris => {
-            if (!baris.trim()) return;
+            let now = new Date();
+            let formatWaktu = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
+                              now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdateText').innerText = formatWaktu;
 
-            const kolom = baris.split(/;|;|\t/).map(k => k.trim());
+            tampilkanData(semuaDataGlobal);
+        } catch (error) {
+            console.error("Gagal memuat data order:", error);
+            document.getElementById("isiTabel").innerHTML = `
+                <tr><td colspan="5" class="no-data" style="color: red;">Gagal memuat data dari Google Sheets. Periksa URL Web App Anda.</td></tr>
+            `;
+        }
+    }
 
-            if (kolom.length >= 3) {
-                let tgl = kolom[0];
-                let supp = kolom[1] || defaultSupplier;
-                let mat = kolom[2];
-                let jml = kolom[3] || '-';
-                let jam = kolom[4] || '-';
+    function ubahFormatTanggal(tglStr) {
+        if (!tglStr) return "";
+        if (tglStr.includes('-') && tglStr.length === 10) return tglStr;
+        let parts = tglStr.split('/');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return tglStr;
+    }
 
-                if (!tgl.toLowerCase().includes('tanggal')) {
-                    databaseKedatangan.push({
-                        tanggal: tgl,
-                        supplier: supp,
-                        material: mat,
-                        jumlah: jml,
-                        jam: jam
-                    });
-                }
-            }
+    function formatKeSheetDate(tglInput) {
+        if (!tglInput) return "";
+        let parts = tglInput.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return tglInput;
+    }
+
+    function tampilkanData(data) {
+        let tbody = document.getElementById("isiTabel");
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada jadwal order yang ditemukan.</td></tr>`;
+            document.getElementById("statsSummary").innerText = "";
+            return;
+        }
+
+        data.forEach(row => {
+            let tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${row.supplier || "-"}</strong></td>
+                <td>${row.material || "-"}</td>
+                <td>${row.jumlah || "-"}</td>
+                <td>${row.tanggal || "-"}</td>
+                <td class="action-col">
+                    <button class="btn-edit" onclick='bukaModalEdit(${JSON.stringify(row)})'>✏️ Revisi</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
-    }
 
-    function normalkanTanggal(strTanggal) {
-        if (!strTanggal) return '';
-        let dateObj;
-
-        if (typeof strTanggal === 'string' && strTanggal.includes('T')) {
-            dateObj = new Date(strTanggal);
-        } else if (typeof strTanggal === 'string') {
-            const bersih = strTanggal.trim();
-            if (bersih.includes('/')) {
-                const p = bersih.split('/');
-                if (p.length === 3) return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
-            }
-            if (bersih.includes('-')) {
-                const p = bersih.split('-');
-                if (p.length === 3) {
-                    if (p[0].length === 4) return `${p[0]}${p[1].padStart(2, '0')}${p[2].padStart(2, '0')}`;
-                    return `${p[2]}${p[1].padStart(2, '0')}${p[0].padStart(2, '0')}`;
-                }
-            }
-            return bersih.replace(/[\/\-]/g, '');
-        } else {
-            dateObj = new Date(strTanggal);
-        }
-
-        if (dateObj && !isNaN(dateObj.getTime())) {
-            const yyyy = dateObj.getFullYear();
-            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const dd = String(dateObj.getDate()).padStart(2, '0');
-            return `${yyyy}${mm}${dd}`;
-        }
-
-        return String(strTanggal);
+        document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data material order.`;
     }
 
     function filterData() {
-        const tanggalDipilih = document.getElementById('pilihTanggal').value;
-        const supplierDipilih = document.getElementById('pilihSupplier').value;
-        const isiTabel = document.getElementById('isiTabel');
-        const statsSummary = document.getElementById('statsSummary');
-        
-        if (!tanggalDipilih) {
-            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Silakan pilih tanggal kedatangan.</td></tr>`;
-            statsSummary.innerHTML = '';
-            return;
-        }
+        let supplierFilter = document.getElementById("pilihSupplier").value;
+        let tanggalFilter = document.getElementById("pilihTanggal").value;
 
-        const tglPilihNorm = normalkanTanggal(tanggalDipilih);
+        let dataFiltered = semuaDataGlobal.filter(row => {
+            let matchSupplier = true;
+            let matchTanggal = true;
 
-        const hasilFilter = databaseKedatangan.filter(item => {
-            const matchTanggal = normalkanTanggal(item.tanggal) === tglPilihNorm;
-            const matchSupplier = (supplierDipilih === 'semua') || 
-                                  (String(item.supplier).trim().toUpperCase() === supplierDipilih.toUpperCase());
-
-            return matchTanggal && matchSupplier;
-        });
-
-        isiTabel.innerHTML = '';
-
-        const pTgl = tanggalDipilih.split('-');
-        const hari = pTgl[2];
-        const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
-        const tahun = pTgl[0];
-        const tglTampilFormatted = `${hari} ${bulanTeks} ${tahun}`;
-
-        if (hasilFilter.length === 0) {
-            statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | Total: 0 pengiriman`;
-            isiTabel.innerHTML = `<tr><td colspan="4" class="no-data">Tidak ada jadwal kedatangan material yang cocok.</td></tr>`;
-            return;
-        }
-
-        let totalBatch = 0;
-        hasilFilter.forEach(item => {
-            if (item.jumlah && item.jumlah !== '-') {
-                const nilaiAngka = parseFloat(String(item.jumlah).replace(',', '.'));
-                if (!isNaN(nilaiAngka)) {
-                    totalBatch += nilaiAngka;
-                }
+            if (supplierFilter !== "semua") {
+                let supData = (row.supplier || "").toUpperCase();
+                matchSupplier = supData.includes(supplierFilter.toUpperCase());
             }
+
+            if (tanggalFilter) {
+                let tglBarisNormalized = ubahFormatTanggal(row.tanggal);
+                matchTanggal = (tglBarisNormalized === tanggalFilter);
+            }
+
+            return matchSupplier && matchTanggal;
         });
 
-        const totalBatchFormatted = parseFloat(totalBatch.toFixed(2)).toString().replace('.', ',');
+        tampilkanData(dataFiltered);
+    }
 
-        statsSummary.innerHTML = `📅 Tanggal: <b>${tglTampilFormatted}</b> | 📋 Menampilkan <b>${hasilFilter.length}</b> pengiriman (Total: <b>${totalBatchFormatted}</b> batch)`;
+    function bukaModalTambah() {
+        document.getElementById("modalTitle").innerText = "Tambah Order Baru";
+        document.getElementById("btnSimpan").innerText = "Simpan Order";
+        document.getElementById("editRowId").value = "";
+        document.getElementById("orderForm").reset();
+        document.getElementById("orderModal").style.display = "flex";
+    }
 
-        hasilFilter.forEach(item => {
-            const baris = document.createElement('tr');
-            baris.innerHTML = `
-                <td><b>${item.supplier}</b></td>
-                <td>${item.material}</td>
-                <td>${item.jumlah}</td>
-                <td>${item.jam}</td>
-            `;
-            isiTabel.appendChild(baris);
-        });
+    function bukaModalEdit(row) {
+        document.getElementById("modalTitle").innerText = "Revisi / Edit Order";
+        document.getElementById("btnSimpan").innerText = "Perbarui Order";
+        document.getElementById("editRowId").value = row.rowId;
+        
+        document.getElementById("inputTanggal").value = ubahFormatTanggal(row.tanggal);
+        document.getElementById("inputMaterial").value = row.material;
+        document.getElementById("inputSupplier").value = row.supplier;
+        document.getElementById("inputJumlah").value = row.jumlah;
+        
+        document.getElementById("orderModal").style.display = "flex";
+    }
+
+    function tutupModal() {
+        document.getElementById("orderModal").style.display = "none";
+    }
+
+    async function simpanData(event) {
+        event.preventDefault();
+        
+        let rowId = document.getElementById("editRowId").value;
+        let tglRaw = document.getElementById("inputTanggal").value;
+        
+        let payload = {
+            action: rowId ? "edit" : "add",
+            rowId: rowId ? parseInt(rowId) : null,
+            tanggal: formatKeSheetDate(tglRaw),
+            supplier: document.getElementById("inputSupplier").value,
+            material: document.getElementById("inputMaterial").value,
+            jumlah: document.getElementById("inputJumlah").value
+        };
+
+        document.getElementById("btnSimpan").innerText = "Menyimpan...";
+        document.getElementById("btnSimpan").disabled = true;
+
+        try {
+            let response = await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            let result = await response.json();
+            
+            if (result.status === "success") {
+                tutupModal();
+                ambilDataOrder();
+            } else {
+                alert("Gagal menyimpan: " + result.message);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan koneksi saat menyimpan data.");
+        } finally {
+            document.getElementById("btnSimpan").disabled = false;
+        }
     }
 
     function unduhPDF() {
-        const tanggalDipilih = document.getElementById('pilihTanggal').value;
-        const judulAsli = "ORDER COMPOND EXTRUDER AUTOSEAL";
-
-        if (tanggalDipilih) {
-            const pTgl = tanggalDipilih.split('-');
-            const hari = pTgl[2];
-            const bulanTeks = NAMA_BULAN[parseInt(pTgl[1], 10) - 1];
-            const tahun = pTgl[0];
-            const tglFormatted = `${hari} ${bulanTeks} ${tahun}`;
-
-            document.title = `${judulAsli} - ${tglFormatted}`;
-        } else {
-            document.title = judulAsli;
-        }
-
         window.print();
-
-        setTimeout(() => {
-            document.title = judulAsli;
-        }, 1000);
     }
+
+    // Jalankan inisialisasi saat halaman dibuka
+    init();
 </script>
 
 </body>
