@@ -61,8 +61,7 @@
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .btn-action {
-            background-color: var(--primary);
-            color: white; border: none; padding: 9px 16px;
+            background-color: var(--primary); color: white; border: none; padding: 9px 16px;
             border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;
             transition: background-color 0.2s; white-space: nowrap;
         }
@@ -83,7 +82,7 @@
 
         label { font-weight: 600; display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 13px; }
 
-        input[type="date"], input[type="text"], select {
+        input[type="date"], input[type="text"], input[type="password"], select {
             width: 100%; padding: 10px; border: 1px solid var(--border);
             border-radius: 6px; font-size: 14px; background-color: #ffffff; color: var(--text);
             box-sizing: border-box; outline: none; cursor: pointer;
@@ -105,7 +104,7 @@
 
         .btn-edit {
             background-color: #d97706; color: white; border: none; padding: 5px 10px;
-            border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;
+            border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; display: none; /* Sembunyikan tombol revisi sebelum login */
         }
         .btn-edit:hover { background-color: #b45309; }
 
@@ -117,13 +116,14 @@
         }
         .modal-content {
             background: white; padding: 24px; border-radius: 10px;
-            width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); box-sizing: border-box;
+            width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); box-sizing: border-box;
         }
         .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .close-btn { cursor: pointer; font-size: 20px; color: #64748b; }
         .form-group { margin-bottom: 12px; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
         .btn-cancel { background-color: #e2e8f0; color: #334155; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .error-msg { color: #dc2626; font-size: 12px; margin-top: 5px; display: none; }
 
         .notes-section {
             margin-top: 15px; padding: 12px 16px; background-color: #f8fafc;
@@ -161,7 +161,7 @@
     <div class="header-section">
         <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
         <div class="btn-group">
-            <button class="btn-action" onclick="bukaModalTambah()">➕ Input Order</button>
+            <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order</button>
             <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
         </div>
     </div>
@@ -212,12 +212,37 @@
     </div>
 </div>
 
-<!-- Modal Form Input / Revisi Order dengan Dropdown -->
-<div id="orderModal" class="modal">
+<!-- Modal Login Admin -->
+<div id="loginModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
+            <span>Login Akses Admin</span>
+            <span class="close-btn" onclick="tutupModalLogin()">&times;</span>
+        </div>
+        <form onsubmit="prosesLogin(event)">
+            <div class="form-group">
+                <label for="inputUsername">Username:</label>
+                <input type="text" id="inputUsername" placeholder="Masukkan username" required>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword">Password:</label>
+                <input type="password" id="inputPassword" placeholder="Masukkan password" required>
+                <div id="loginError" class="error-msg">Username atau Password salah!</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="tutupModalLogin()">Batal</button>
+                <button type="submit" class="btn-action">Masuk</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Form Input / Revisi Order dengan Dropdown -->
+<div id="orderModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-header">
             <span id="modalTitle">Tambah Order Baru</span>
-            <span class="close-btn" onclick="tutupModal()">&times;</span>
+            <span class="close-btn" onclick="tutupModalOrder()">&times;</span>
         </div>
         <form id="orderForm" onsubmit="simpanData(event)">
             <input type="hidden" id="editRowId">
@@ -226,7 +251,7 @@
                 <input type="date" id="inputTanggal" required>
             </div>
             <div class="form-group">
-                <label for="inputMaterial">Nama Material (Dropdown Masterdata):</label>
+                <label for="inputMaterial">Nama Material:</label>
                 <select id="inputMaterial" onchange="onMaterialChange()" required>
                     <option value="">-- Pilih Material --</option>
                 </select>
@@ -244,7 +269,7 @@
                 <input type="text" id="inputJumlah" placeholder="Contoh: 28 atau 46,5" required>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="tutupModal()">Batal</button>
+                <button type="button" class="btn-cancel" onclick="tutupModalOrder()">Batal</button>
                 <button type="submit" class="btn-action" id="btnSimpan">Simpan Order</button>
             </div>
         </form>
@@ -252,11 +277,17 @@
 </div>
 
 <script>
-    // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyAw6zGmsRW25EvUzLz1zZWjhtjACTJ2Trtx8r-x2fu_kTTMQZMu5oMODZSZwS6awHy/exec";
 
+    // ATUR USERNAME DAN PASSWORD ANDA DI SINI
+    const ADMIN_USER = "admin";
+    const ADMIN_PASS = "12345";
+
+    let sudahLogin = false;
     let semuaDataGlobal = [];
-    let masterMapping = {}; // Menyimpan relasi Material -> Supplier
+    let masterMapping = {}; 
+    let pendingAction = null; // Menyimpan aksi yang ingin dilakukan setelah login (tambah/edit)
+    let pendingRowData = null;
 
     new QRCode(document.getElementById("qrcode"), {
         text: window.location.href,
@@ -290,7 +321,6 @@
         }
     }
 
-    // Fitur cerdas: Ketika material dipilih, supplier otomatis terisi sesuai masterdata
     function onMaterialChange() {
         let selectedMat = document.getElementById("inputMaterial").value;
         let supplierField = document.getElementById("inputSupplier");
@@ -320,12 +350,17 @@
         }
     }
 
-    function ubahFormatTanggal(tglStr) {
+    function formatTampilTanggal(tglStr) {
         if (!tglStr) return "";
-        if (tglStr.includes('-') && tglStr.length === 10) return tglStr;
-        let parts = tglStr.split('/');
-        if (parts.length === 3) {
-            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        if (tglStr.includes('T')) {
+            let partsTgl = tglStr.split('T')[0].split('-');
+            if (partsTgl.length === 3) {
+                return `${partsTgl[2]}-${partsTgl[1]}-${partsTgl[0]}`;
+            }
+        }
+        if (tglStr.includes('/') && tglStr.length === 10) {
+            let parts = tglStr.split('/');
+            return `${parts[0]}-${parts[1]}-${parts[2]}`;
         }
         return tglStr;
     }
@@ -334,9 +369,19 @@
         if (!tglInput) return "";
         let parts = tglInput.split('-');
         if (parts.length === 3) {
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
         }
         return tglInput;
+    }
+
+    function ubahFormatUntukInputDate(tglStr) {
+        if (!tglStr) return "";
+        let parts = tglStr.split('-');
+        if (parts.length === 3) {
+            if (parts[0].length === 4) return tglStr;
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return tglStr;
     }
 
     function tampilkanData(data) {
@@ -351,13 +396,18 @@
 
         data.forEach(row => {
             let tr = document.createElement("tr");
+            let tanggalRapi = formatTampilTanggal(row.tanggal);
+
+            // Tombol revisi hanya muncul jika sudah login
+            let displayEditBtn = sudahLogin ? "inline-block" : "none";
+
             tr.innerHTML = `
                 <td><strong>${row.supplier || "-"}</strong></td>
                 <td>${row.material || "-"}</td>
                 <td>${row.jumlah || "-"}</td>
-                <td>${row.tanggal || "-"}</td>
+                <td>${tanggalRapi}</td>
                 <td class="action-col">
-                    <button class="btn-edit" onclick='bukaModalEdit(${JSON.stringify(row)})'>✏️ Revisi</button>
+                    <button class="btn-edit" style="display: ${displayEditBtn};" onclick='mintaLoginDanEdit(${JSON.stringify(row)})'>✏️ Revisi</button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -380,7 +430,7 @@
             }
 
             if (tanggalFilter) {
-                let tglBarisNormalized = ubahFormatTanggal(row.tanggal);
+                let tglBarisNormalized = ubahFormatUntukInputDate(row.tanggal);
                 matchTanggal = (tglBarisNormalized === tanggalFilter);
             }
 
@@ -388,6 +438,60 @@
         });
 
         tampilkanData(dataFiltered);
+    }
+
+    // Sistem Validasi Login
+    function validasiAksesInput() {
+        if (sudahLogin) {
+            bukaModalTambah();
+        } else {
+            pendingAction = "tambah";
+            document.getElementById("loginError").style.display = "none";
+            document.getElementById("inputUsername").value = "";
+            document.getElementById("inputPassword").value = "";
+            document.getElementById("loginModal").style.display = "flex";
+        }
+    }
+
+    function mintaLoginDanEdit(row) {
+        if (sudahLogin) {
+            bukaModalEdit(row);
+        } else {
+            pendingAction = "edit";
+            pendingRowData = row;
+            document.getElementById("loginError").style.display = "none";
+            document.getElementById("inputUsername").value = "";
+            document.getElementById("inputPassword").value = "";
+            document.getElementById("loginModal").style.display = "flex";
+        }
+    }
+
+    function prosesLogin(event) {
+        event.preventDefault();
+        let u = document.getElementById("inputUsername").value;
+        let p = document.getElementById("inputPassword").value;
+
+        if (u === ADMIN_USER && p === ADMIN_PASS) {
+            sudahLogin = true;
+            tutupModalLogin();
+            // Tampilkan tombol revisi di tabel
+            tampilkanData(semuaDataGlobal);
+
+            // Lanjutkan aksi yang tadinya tertunda
+            if (pendingAction === "tambah") {
+                bukaModalTambah();
+            } else if (pendingAction === "edit" && pendingRowData) {
+                bukaModalEdit(pendingRowData);
+            }
+            pendingAction = null;
+            pendingRowData = null;
+        } else {
+            document.getElementById("loginError").style.display = "block";
+        }
+    }
+
+    function tutupModalLogin() {
+        document.getElementById("loginModal").style.display = "none";
     }
 
     function bukaModalTambah() {
@@ -403,7 +507,7 @@
         document.getElementById("btnSimpan").innerText = "Perbarui Order";
         document.getElementById("editRowId").value = row.rowId;
         
-        document.getElementById("inputTanggal").value = ubahFormatTanggal(row.tanggal);
+        document.getElementById("inputTanggal").value = ubahFormatUntukInputDate(row.tanggal);
         document.getElementById("inputMaterial").value = row.material;
         document.getElementById("inputSupplier").value = row.supplier;
         document.getElementById("inputJumlah").value = row.jumlah;
@@ -411,7 +515,7 @@
         document.getElementById("orderModal").style.display = "flex";
     }
 
-    function tutupModal() {
+    function tutupModalOrder() {
         document.getElementById("orderModal").style.display = "none";
     }
 
@@ -441,8 +545,8 @@
             let result = await response.json();
             
             if (result.status === "success") {
-                tutupModal();
-                ambilDataOrder();
+                tutupModalOrder();
+                init(); 
             } else {
                 alert("Gagal menyimpan: " + result.message);
             }
@@ -458,7 +562,6 @@
         window.print();
     }
 
-    // Jalankan inisialisasi saat halaman dibuka
     init();
 </script>
 
