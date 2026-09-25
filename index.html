@@ -104,7 +104,7 @@
 
         .btn-edit {
             background-color: #d97706; color: white; border: none; padding: 5px 10px;
-            border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; display: none; /* Sembunyikan tombol revisi sebelum login */
+            border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; display: none;
         }
         .btn-edit:hover { background-color: #b45309; }
 
@@ -199,7 +199,7 @@
                 </tr>
             </thead>
             <tbody id="isiTabel">
-                <tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>
+                <tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>
             </tbody>
         </table>
     </div>
@@ -237,7 +237,7 @@
     </div>
 </div>
 
-<!-- Modal Form Input / Revisi Order dengan Dropdown -->
+<!-- Modal Form Input / Revisi Order -->
 <div id="orderModal" class="modal">
     <div class="modal-content" style="max-width: 450px;">
         <div class="modal-header">
@@ -257,7 +257,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="inputSupplier">Supplier (Otomatis / Dropdown):</label>
+                <label for="inputSupplier">Supplier:</label>
                 <select id="inputSupplier" required>
                     <option value="">-- Pilih Supplier --</option>
                     <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
@@ -286,7 +286,7 @@
     let sudahLogin = false;
     let semuaDataGlobal = [];
     let masterMapping = {}; 
-    let pendingAction = null; // Menyimpan aksi yang ingin dilakukan setelah login (tambah/edit)
+    let pendingAction = null; 
     let pendingRowData = null;
 
     new QRCode(document.getElementById("qrcode"), {
@@ -341,7 +341,8 @@
                               now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('lastUpdateText').innerText = formatWaktu;
 
-            tampilkanData(semuaDataGlobal);
+            // Jangan langsung tampilkan semua data saat pertama kali load (menunggu filter tanggal dipilih)
+            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
         } catch (error) {
             console.error("Gagal memuat data order:", error);
             document.getElementById("isiTabel").innerHTML = `
@@ -389,7 +390,7 @@
         tbody.innerHTML = "";
 
         if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada jadwal order yang ditemukan.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada jadwal order pada tanggal tersebut.</td></tr>`;
             document.getElementById("statsSummary").innerText = "";
             return;
         }
@@ -398,7 +399,7 @@
             let tr = document.createElement("tr");
             let tanggalRapi = formatTampilTanggal(row.tanggal);
 
-            // Tombol revisi hanya muncul jika sudah login
+            // Tombol revisi tampil jika sudah login
             let displayEditBtn = sudahLogin ? "inline-block" : "none";
 
             tr.innerHTML = `
@@ -420,6 +421,13 @@
         let supplierFilter = document.getElementById("pilihSupplier").value;
         let tanggalFilter = document.getElementById("pilihTanggal").value;
 
+        // Wajib pilih tanggal dulu agar tabel terisi
+        if (!tanggalFilter) {
+            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
+            document.getElementById("statsSummary").innerText = "";
+            return;
+        }
+
         let dataFiltered = semuaDataGlobal.filter(row => {
             let matchSupplier = true;
             let matchTanggal = true;
@@ -429,10 +437,8 @@
                 matchSupplier = supData.includes(supplierFilter.toUpperCase());
             }
 
-            if (tanggalFilter) {
-                let tglBarisNormalized = ubahFormatUntukInputDate(row.tanggal);
-                matchTanggal = (tglBarisNormalized === tanggalFilter);
-            }
+            let tglBarisNormalized = ubahFormatUntukInputDate(row.tanggal);
+            matchTanggal = (tglBarisNormalized === tanggalFilter);
 
             return matchSupplier && matchTanggal;
         });
@@ -440,7 +446,6 @@
         tampilkanData(dataFiltered);
     }
 
-    // Sistem Validasi Login
     function validasiAksesInput() {
         if (sudahLogin) {
             bukaModalTambah();
@@ -474,10 +479,10 @@
         if (u === ADMIN_USER && p === ADMIN_PASS) {
             sudahLogin = true;
             tutupModalLogin();
-            // Tampilkan tombol revisi di tabel
-            tampilkanData(semuaDataGlobal);
+            
+            // Refresh filter agar tombol edit/revisi muncul sesuai tanggal yang sedang dipilih
+            filterData();
 
-            // Lanjutkan aksi yang tadinya tertunda
             if (pendingAction === "tambah") {
                 bukaModalTambah();
             } else if (pendingAction === "edit" && pendingRowData) {
@@ -546,7 +551,8 @@
             
             if (result.status === "success") {
                 tutupModalOrder();
-                init(); 
+                await ambilDataOrder();
+                filterData(); // Refresh tampilan berdasarkan tanggal yang aktif dipilih
             } else {
                 alert("Gagal menyimpan: " + result.message);
             }
