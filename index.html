@@ -341,7 +341,6 @@
                               now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('lastUpdateText').innerText = formatWaktu;
 
-            // Jangan langsung tampilkan semua data saat pertama kali load (menunggu filter tanggal dipilih)
             document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
         } catch (error) {
             console.error("Gagal memuat data order:", error);
@@ -353,15 +352,12 @@
 
     function formatTampilTanggal(tglStr) {
         if (!tglStr) return "";
-        if (tglStr.includes('T')) {
-            let partsTgl = tglStr.split('T')[0].split('-');
-            if (partsTgl.length === 3) {
-                return `${partsTgl[2]}-${partsTgl[1]}-${partsTgl[0]}`;
+        let normalized = ubahFormatUntukInputDate(tglStr);
+        if (normalized && normalized.includes('-')) {
+            let parts = normalized.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
             }
-        }
-        if (tglStr.includes('/') && tglStr.length === 10) {
-            let parts = tglStr.split('/');
-            return `${parts[0]}-${parts[1]}-${parts[2]}`;
         }
         return tglStr;
     }
@@ -377,11 +373,29 @@
 
     function ubahFormatUntukInputDate(tglStr) {
         if (!tglStr) return "";
-        let parts = tglStr.split('-');
-        if (parts.length === 3) {
-            if (parts[0].length === 4) return tglStr;
-            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        
+        // Jika format dari sheet berupa ISO format (mengandung 'T')
+        if (typeof tglStr === 'string' && tglStr.includes('T')) {
+            return tglStr.split('T')[0];
         }
+        
+        // Jika format dari sheet menggunakan slash (contoh: 27/09/2026)
+        if (typeof tglStr === 'string' && tglStr.includes('/')) {
+            let parts = tglStr.split('/');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+        }
+        
+        // Jika format menggunakan dash (contoh: 27-09-2026 atau 2026-09-27)
+        if (typeof tglStr === 'string' && tglStr.includes('-')) {
+            let parts = tglStr.split('-');
+            if (parts.length === 3) {
+                if (parts[0].length === 4) return tglStr; // Sudah YYYY-MM-DD
+                return `${parts[2]}-${parts[1]}-${parts[0]}`; // DD-MM-YYYY ke YYYY-MM-DD
+            }
+        }
+        
         return tglStr;
     }
 
@@ -399,7 +413,6 @@
             let tr = document.createElement("tr");
             let tanggalRapi = formatTampilTanggal(row.tanggal);
 
-            // Tombol revisi tampil jika sudah login
             let displayEditBtn = sudahLogin ? "inline-block" : "none";
 
             tr.innerHTML = `
@@ -421,7 +434,6 @@
         let supplierFilter = document.getElementById("pilihSupplier").value;
         let tanggalFilter = document.getElementById("pilihTanggal").value;
 
-        // Wajib pilih tanggal dulu agar tabel terisi
         if (!tanggalFilter) {
             document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
             document.getElementById("statsSummary").innerText = "";
@@ -480,7 +492,6 @@
             sudahLogin = true;
             tutupModalLogin();
             
-            // Refresh filter agar tombol edit/revisi muncul sesuai tanggal yang sedang dipilih
             filterData();
 
             if (pendingAction === "tambah") {
@@ -552,7 +563,7 @@
             if (result.status === "success") {
                 tutupModalOrder();
                 await ambilDataOrder();
-                filterData(); // Refresh tampilan berdasarkan tanggal yang aktif dipilih
+                filterData(); 
             } else {
                 alert("Gagal menyimpan: " + result.message);
             }
