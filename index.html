@@ -298,6 +298,19 @@
     async function init() {
         await muatMasterdataDropdown();
         await ambilDataOrder();
+        
+        // Mengisi tanggal secara otomatis ke tanggal hari ini jika input masih kosong
+        let tglInput = document.getElementById("pilihTanggal");
+        if (!tglInput.value) {
+            let today = new Date();
+            let yyyy = today.getFullYear();
+            let mm = String(today.getMonth() + 1).padStart(2, '0');
+            let dd = String(today.getDate()).padStart(2, '0');
+            tglInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+        
+        // Langsung jalankan filter agar data langsung muncul otomatis saat halaman dibuka
+        filterData();
     }
 
     async function muatMasterdataDropdown() {
@@ -340,8 +353,6 @@
             let formatWaktu = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
                               now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('lastUpdateText').innerText = formatWaktu;
-
-            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
         } catch (error) {
             console.error("Gagal memuat data order:", error);
             document.getElementById("isiTabel").innerHTML = `
@@ -374,9 +385,11 @@
     function ubahFormatUntukInputDate(tglStr) {
         if (!tglStr) return "";
         
-        // Mencegah pergeseran waktu UTC dengan memparsing string secara presisi
         if (typeof tglStr === 'string' && tglStr.includes('T')) {
-            return tglStr.split('T')[0];
+            let parts = tglStr.split('T')[0].split('-');
+            if (parts.length === 3) {
+                return `${parts[0]}-${parts[1]}-${parts[2]}`;
+            }
         }
         
         if (typeof tglStr === 'string' && tglStr.includes('/')) {
