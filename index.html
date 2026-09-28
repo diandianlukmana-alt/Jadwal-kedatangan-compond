@@ -277,7 +277,7 @@
 </div>
 
 <script>
-    // URL Web App terbaru yang Anda berikan
+    // URL Web App terbaru Anda
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXDLcwAmWpC4g8OMp_gcDMVbx6DLL6aX1iuPblAUU_CQ5mqvpbpGo7ER2A8bSsn0od/exec";
 
     const ADMIN_USER = "admin";
@@ -374,11 +374,9 @@
     function ubahFormatUntukInputDate(tglStr) {
         if (!tglStr) return "";
         
+        // Mencegah pergeseran waktu UTC dengan memparsing string secara presisi
         if (typeof tglStr === 'string' && tglStr.includes('T')) {
-            let parts = tglStr.split('T')[0].split('-');
-            if (parts.length === 3) {
-                return `${parts[0]}-${parts[1]}-${parts[2]}`;
-            }
+            return tglStr.split('T')[0];
         }
         
         if (typeof tglStr === 'string' && tglStr.includes('/')) {
@@ -451,7 +449,7 @@
             if (supplierFilter !== "semua") {
                 let supData = (row.supplier || "").trim().toUpperCase();
                 let supFilter = supplierFilter.trim().toUpperCase();
-                matchSupplier = supData === supFilter;
+                matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
             }
 
             let tglBarisNormalized = ubahFormatUntukInputDate(row.tanggal);
