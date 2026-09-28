@@ -286,7 +286,7 @@
 
 <script>
     // URL Web App Google Apps Script terbaru
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzD3Emp4j70eAvqLoYhNYVDY8XtPmXPv7g2r1x7uVgvdmyXathfRKfZ4UXcGezSZreT/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyM1gARd33iDhxQTpoVJZwKQ70cbsNIPl-OZC8L1tWqyba1VVwlRmZCm818RY0nRlTk/exec";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -341,6 +341,14 @@
         }
     }
 
+    function onMaterialChange() {
+        let selectedMat = document.getElementById("inputMaterial").value;
+        let supplierSelect = document.getElementById("inputSupplier");
+        if (masterMapping[selectedMat]) {
+            supplierSelect.value = masterMapping[selectedMat];
+        }
+    }
+
     async function ambilDataOrder() {
         try {
             let response = await fetch(WEB_APP_URL);
@@ -362,39 +370,10 @@
     function formatTampilTanggal(tglStr) {
         if (!tglStr) return "";
         let s = tglStr.toString().trim();
-        // Jika format dari Apps Script sudah dd-MM-yyyy, ubah ke dd-MM-yyyy yang rapi atau biarkan
-        return s;
-    }
-
-    function formatKeSheetDate(tglInput) {
-        if (!tglInput) return "";
-        // Mengubah dari YYYY-MM-DD (input date) ke DD-MM-YYYY untuk Google Sheet
-        let parts = tglInput.split('-');
-        if (parts.length === 3) {
+        // Format yyyy-mm-dd dari sheet dikonversi ke tampilan dd-MM-yyyy yang rapi
+        let parts = s.split('-');
+        if (parts.length === 3 && parts[0].length === 4) {
             return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-        return tglInput;
-    }
-
-    function ubahFormatUntukPerbandingan(tglStr) {
-        if (!tglStr) return "";
-        let s = tglStr.toString().trim();
-        
-        // Parsing format DD-MM-YYYY dari Google Sheet ke YYYY-MM-DD agar cocok dengan input type="date"
-        let parts = s.split(/[\/-]/);
-        if (parts.length === 3) {
-            let p1 = parts[0].padStart(2, '0');
-            let p2 = parts[1].padStart(2, '0');
-            let p3 = parts[2];
-            
-            // Jika format DD-MM-YYYY atau DD/MM/YYYY
-            if (p3.length === 4) {
-                return `${p3}-${p2}-${p1}`;
-            }
-            // Jika format sudah YYYY-MM-DD
-            if (p1.length === 4) {
-                return `${p1}-${p2}-${p3}`;
-            }
         }
         return s;
     }
@@ -449,8 +428,9 @@
                 matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
             }
 
-            let tglBarisNormalized = ubahFormatUntukPerbandingan(row.tanggal);
-            if (tglBarisNormalized === tanggalFilter) {
+            // row.tanggal sudah berformat yyyy-mm-dd, cocok langsung dengan tanggalFilter (yyyy-mm-dd)
+            let tglBaris = (row.tanggal || "").trim();
+            if (tglBaris === tanggalFilter) {
                 matchTanggal = true;
             }
 
@@ -524,8 +504,7 @@
         document.getElementById("btnSimpan").innerText = "Perbarui Order";
         document.getElementById("editRowId").value = row.rowId;
         
-        let tglNorm = ubahFormatUntukPerbandingan(row.tanggal);
-        document.getElementById("inputTanggal").value = tglNorm;
+        document.getElementById("inputTanggal").value = row.tanggal;
         document.getElementById("inputMaterial").value = row.material;
         document.getElementById("inputSupplier").value = row.supplier;
         document.getElementById("inputJumlah").value = row.jumlah;
@@ -541,12 +520,12 @@
         event.preventDefault();
         
         let rowId = document.getElementById("editRowId").value;
-        let tglRaw = document.getElementById("inputTanggal").value;
+        let tglValue = document.getElementById("inputTanggal").value; // Format yyyy-mm-dd langsung dari input date
         
         let payload = {
             action: rowId ? "edit" : "add",
             rowId: rowId ? parseInt(rowId) : null,
-            tanggal: formatKeSheetDate(tglRaw),
+            tanggal: tglValue,
             supplier: document.getElementById("inputSupplier").value,
             material: document.getElementById("inputMaterial").value,
             jumlah: document.getElementById("inputJumlah").value
