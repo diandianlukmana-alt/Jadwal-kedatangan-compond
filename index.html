@@ -138,23 +138,35 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
         table { width: 100%; border-collapse: collapse; min-width: 650px; background: white; }
-        th, td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        
+        /* Padding diperkecil agar baris lebih compact/tidak terlalu lebar */
+        th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        
         th { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); font-weight: 700; color: #475569; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #f8fafc; transition: background 0.2s; }
-        .no-data { text-align: center; padding: 40px; color: var(--text-secondary); font-style: italic; font-weight: 500; }
+        .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; font-weight: 500; }
+
+        /* Tombol Aksi dibuat mendatar dan lebih ringkas */
+        .action-cell {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
 
         .btn-edit {
-            background-color: var(--warning); color: white; border: none; padding: 6px 12px;
-            border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; display: none;
+            background-color: var(--warning); color: white; border: none; padding: 5px 10px;
+            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
             transition: background 0.2s; box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
+            white-space: nowrap;
         }
         .btn-edit:hover { background-color: var(--warning-hover); }
 
         .btn-delete {
-            background-color: var(--danger); color: white; border: none; padding: 6px 12px;
-            border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; display: none; margin-left: 6px;
+            background-color: var(--danger); color: white; border: none; padding: 5px 10px;
+            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
             transition: background 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+            white-space: nowrap;
         }
         .btn-delete:hover { background-color: var(--danger-hover); }
 
@@ -378,7 +390,6 @@
         await muatMasterdataDropdown();
         await ambilDataOrder(true); 
         
-        // Auto-refresh latar belakang setiap 30 detik tanpa membuat lag
         setInterval(() => {
             ambilDataOrder(false);
         }, 30000);
@@ -459,10 +470,16 @@
             return;
         }
 
+        let totalBatch = 0;
+
         data.forEach(row => {
             let tr = document.createElement("tr");
             let tanggalRapi = formatTampilTanggal(row.tanggal);
             let displayActionBtn = sudahLogin ? "inline-block" : "none";
+
+            // Hitung total batch (konversi ke float untuk menangani angka desimal koma/titik)
+            let jumlahNum = parseFloat(String(row.jumlah).replace(',', '.')) || 0;
+            totalBatch += jumlahNum;
 
             tr.innerHTML = `
                 <td><strong>${row.supplier || "-"}</strong></td>
@@ -470,14 +487,17 @@
                 <td>${row.jumlah || "-"}</td>
                 <td>${tanggalRapi}</td>
                 <td class="action-col">
-                    <button class="btn-edit" style="display: ${displayActionBtn};" onclick='mintaLoginDanEdit(${JSON.stringify(row)})'>✏️ Revisi</button>
-                    <button class="btn-delete" style="display: ${displayActionBtn};" onclick='konfirmasiHapus(${row.rowId})'>🗑️ Hapus</button>
+                    <div class="action-cell">
+                        <button class="btn-edit" style="display: ${displayActionBtn};" onclick='mintaLoginDanEdit(${JSON.stringify(row)})'>✏️ Revisi</button>
+                        <button class="btn-delete" style="display: ${displayActionBtn};" onclick='konfirmasiHapus(${row.rowId})'>🗑️ Hapus</button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
         });
 
-        document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data material order.`;
+        // Menampilkan jumlah data dan total batch
+        document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data (Total: ${totalBatch} Batch)`;
     }
 
     function filterData() {
