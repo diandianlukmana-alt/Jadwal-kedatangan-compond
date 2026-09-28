@@ -74,6 +74,13 @@
         }
         .btn-pdf:hover { background-color: #047857; }
 
+        .btn-refresh {
+            background-color: #475569; color: white; border: none; padding: 9px 16px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;
+            transition: background-color 0.2s; white-space: nowrap;
+        }
+        .btn-refresh:hover { background-color: #334155; }
+
         .filter-section {
             background: var(--accent-bg); padding: 16px; border-radius: 8px;
             border: 1px solid var(--border); display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;
@@ -162,6 +169,7 @@
         <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
         <div class="btn-group">
             <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order</button>
+            <button class="btn-refresh" onclick="init()">🔄 Refresh</button>
             <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
         </div>
     </div>
@@ -199,7 +207,7 @@
                 </tr>
             </thead>
             <tbody id="isiTabel">
-                <tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>
+                <tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>
             </tbody>
         </table>
     </div>
@@ -278,7 +286,7 @@
 
 <script>
     // URL Web App terbaru yang Anda berikan
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyeC7sfJ7-BUH0CpNTipOFLiX0tv67DVHPkcT6zJIb-XhQKZvj_5RpQFagCfmOrCss/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBopGyKP_aJS7HsaWsr7b4vuj4gDx-3yonXXsjpA4vwkBrU-fR_vb1fJZwAW_juY95/exec";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -296,10 +304,8 @@
     });
 
     async function init() {
-        await muatMasterdataDropdown();
-        await ambilDataOrder();
+        document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>`;
         
-        // Mengisi tanggal secara otomatis ke tanggal hari ini jika input masih kosong
         let tglInput = document.getElementById("pilihTanggal");
         if (!tglInput.value) {
             let today = new Date();
@@ -308,8 +314,9 @@
             let dd = String(today.getDate()).padStart(2, '0');
             tglInput.value = `${yyyy}-${mm}-${dd}`;
         }
-        
-        // Langsung jalankan filter agar data langsung muncul otomatis saat halaman dibuka
+
+        await muatMasterdataDropdown();
+        await ambilDataOrder();
         filterData();
     }
 
@@ -331,15 +338,6 @@
             });
         } catch (err) {
             console.error("Gagal memuat masterdata dropdown:", err);
-        }
-    }
-
-    function onMaterialChange() {
-        let selectedMat = document.getElementById("inputMaterial").value;
-        let supplierField = document.getElementById("inputSupplier");
-        
-        if (masterMapping[selectedMat]) {
-            supplierField.value = masterMapping[selectedMat];
         }
     }
 
@@ -418,7 +416,7 @@
         let tbody = document.getElementById("isiTabel");
         tbody.innerHTML = "";
 
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada jadwal order pada tanggal tersebut.</td></tr>`;
             document.getElementById("statsSummary").innerText = "";
             return;
