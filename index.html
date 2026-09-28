@@ -277,7 +277,8 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyAw6zGmsRW25EvUzLz1zZWjhtjACTJ2Trtx8r-x2fu_kTTMQZMu5oMODZSZwS6awHy/exec";
+    // URL Web App terbaru yang Anda berikan
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXDLcwAmWpC4g8OMp_gcDMVbx6DLL6aX1iuPblAUU_CQ5mqvpbpGo7ER2A8bSsn0od/exec";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -373,7 +374,6 @@
     function ubahFormatUntukInputDate(tglStr) {
         if (!tglStr) return "";
         
-        // Mengatasi pergeseran waktu UTC dengan membaca tanggal lokal objek Date / string ISO secara presisi
         if (typeof tglStr === 'string' && tglStr.includes('T')) {
             let parts = tglStr.split('T')[0].split('-');
             if (parts.length === 3) {
