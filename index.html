@@ -279,7 +279,6 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyAw6zGmsRW25EvUzLz1zZWjhtjACTJ2Trtx8r-x2fu_kTTMQZMu5oMODZSZwS6awHy/exec";
 
-    // ATUR USERNAME DAN PASSWORD ANDA DI SINI
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
 
@@ -374,12 +373,14 @@
     function ubahFormatUntukInputDate(tglStr) {
         if (!tglStr) return "";
         
-        // Jika berupa format ISO (mengandung 'T', misal: 2026-09-28T00:00:00.000Z)
+        // Mengatasi pergeseran waktu UTC dengan membaca tanggal lokal objek Date / string ISO secara presisi
         if (typeof tglStr === 'string' && tglStr.includes('T')) {
-            return tglStr.split('T')[0];
+            let parts = tglStr.split('T')[0].split('-');
+            if (parts.length === 3) {
+                return `${parts[0]}-${parts[1]}-${parts[2]}`;
+            }
         }
         
-        // Jika format dari sheet menggunakan slash (contoh: 28/09/2026)
         if (typeof tglStr === 'string' && tglStr.includes('/')) {
             let parts = tglStr.split('/');
             if (parts.length === 3) {
@@ -391,12 +392,11 @@
             }
         }
         
-        // Jika format menggunakan dash (contoh: 28-09-2026 atau 2026-09-28)
         if (typeof tglStr === 'string' && tglStr.includes('-')) {
             let parts = tglStr.split('-');
             if (parts.length === 3) {
-                if (parts[0].length === 4) return tglStr; // Sudah YYYY-MM-DD
-                return `${parts[2]}-${parts[1]}-${parts[0]}`; // DD-MM-YYYY ke YYYY-MM-DD
+                if (parts[0].length === 4) return tglStr;
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
             }
         }
         
