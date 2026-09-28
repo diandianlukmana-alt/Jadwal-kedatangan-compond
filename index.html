@@ -285,8 +285,7 @@
 </div>
 
 <script>
-    // URL Web App terbaru yang Anda berikan
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSTI7o979lMR8-KGcCr6FiY2Z9EpzzbT4YLj4dKdOXMptQW8oC2jPPVYVNwJL2ATYy/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBopGyKP_aJS7HsaWsr7b4vuj4gDx-3yonXXsjpA4vwkBrU-fR_vb1fJZwAW_juY95/exec";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -359,57 +358,62 @@
         }
     }
 
+    // Mengubah tanggal dari Sheet (DD/MM/YYYY atau YYYY-MM-DD) menjadi format DD-MM-YYYY untuk tampilan tabel
     function formatTampilTanggal(tglStr) {
         if (!tglStr) return "";
-        let normalized = ubahFormatUntukInputDate(tglStr);
-        if (normalized && normalized.includes('-')) {
-            let parts = normalized.split('-');
+        let s = tglStr.toString().trim();
+        if (s.includes("/")) {
+            let parts = s.split("/");
             if (parts.length === 3) {
-                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                // Jika formatnya DD/MM/YYYY
+                return `${parts[0]}-${parts[1]}-${parts[2]}`;
+            }
+        } else if (s.includes("-")) {
+            let parts = s.split("-");
+            if (parts.length === 3) {
+                // Jika formatnya YYYY-MM-DD, ubah ke DD-MM-YYYY
+                if (parts[0].length === 4) {
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
             }
         }
-        return tglStr;
+        return s;
     }
 
     function formatKeSheetDate(tglInput) {
         if (!tglInput) return "";
         let parts = tglInput.split('-');
         if (parts.length === 3) {
-            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            // Ubah dari YYYY-MM-DD (input browser) menjadi DD/MM/YYYY untuk Google Sheets
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
         return tglInput;
     }
 
-    function ubahFormatUntukInputDate(tglStr) {
+    // Menormalkan tanggal dari Sheet menjadi YYYY-MM-DD agar cocok dengan nilai input date browser
+    function ubahFormatUntukPerbandingan(tglStr) {
         if (!tglStr) return "";
+        let s = tglStr.toString().trim();
         
-        if (typeof tglStr === 'string' && tglStr.includes('T')) {
-            let parts = tglStr.split('T')[0].split('-');
+        // Jika format dari Sheet adalah DD/MM/YYYY
+        if (s.includes("/")) {
+            let parts = s.split("/");
             if (parts.length === 3) {
-                return `${parts[0]}-${parts[1]}-${parts[2]}`;
+                let day = parts[0].padStart(2, '0');
+                let month = parts[1].padStart(2, '0');
+                let year = parts[2];
+                return `${year}-${month}-${day}`;
             }
         }
         
-        if (typeof tglStr === 'string' && tglStr.includes('/')) {
-            let parts = tglStr.split('/');
-            if (parts.length === 3) {
-                let p0 = parts[0].padStart(2, '0');
-                let p1 = parts[1].padStart(2, '0');
-                let p2 = parts[2];
-                if (p0.length === 4) return `${p0}-${p1}-${p2}`;
-                return `${p2}-${p1}-${p0}`;
+        // Jika format sudah YYYY-MM-DD
+        if (s.includes("-")) {
+            let parts = s.split("-");
+            if (parts.length === 3 && parts[0].length === 4) {
+                return s;
             }
         }
-        
-        if (typeof tglStr === 'string' && tglStr.includes('-')) {
-            let parts = tglStr.split('-');
-            if (parts.length === 3) {
-                if (parts[0].length === 4) return tglStr;
-                return `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
-        }
-        
-        return tglStr;
+        return s;
     }
 
     function tampilkanData(data) {
@@ -425,7 +429,6 @@
         data.forEach(row => {
             let tr = document.createElement("tr");
             let tanggalRapi = formatTampilTanggal(row.tanggal);
-
             let displayEditBtn = sudahLogin ? "inline-block" : "none";
 
             tr.innerHTML = `
@@ -445,7 +448,7 @@
 
     function filterData() {
         let supplierFilter = document.getElementById("pilihSupplier").value;
-        let tanggalFilter = document.getElementById("pilihTanggal").value;
+        let tanggalFilter = document.getElementById("pilihTanggal").value; // Format: YYYY-MM-DD dari input browser
 
         if (!tanggalFilter) {
             document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
@@ -463,7 +466,8 @@
                 matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
             }
 
-            let tglBarisNormalized = ubahFormatUntukInputDate(row.tanggal);
+            // Normalisasi tanggal dari baris data agar formatnya sama (YYYY-MM-DD)
+            let tglBarisNormalized = ubahFormatUntukPerbandingan(row.tanggal);
             matchTanggal = (tglBarisNormalized === tanggalFilter);
 
             return matchSupplier && matchTanggal;
@@ -505,7 +509,6 @@
         if (u === ADMIN_USER && p === ADMIN_PASS) {
             sudahLogin = true;
             tutupModalLogin();
-            
             filterData();
 
             if (pendingAction === "tambah") {
@@ -537,7 +540,8 @@
         document.getElementById("btnSimpan").innerText = "Perbarui Order";
         document.getElementById("editRowId").value = row.rowId;
         
-        document.getElementById("inputTanggal").value = ubahFormatUntukInputDate(row.tanggal);
+        let tglNorm = ubahFormatUntukPerbandingan(row.tanggal);
+        document.getElementById("inputTanggal").value = tglNorm;
         document.getElementById("inputMaterial").value = row.material;
         document.getElementById("inputSupplier").value = row.supplier;
         document.getElementById("inputJumlah").value = row.jumlah;
@@ -558,7 +562,7 @@
         let payload = {
             action: rowId ? "edit" : "add",
             rowId: rowId ? parseInt(rowId) : null,
-            tanggal: formatKeSheetDate(tglRaw),
+            tanggal: formatKeSheetDate(tglRaw), // Disimpan ke format DD/MM/YYYY di Google Sheets
             supplier: document.getElementById("inputSupplier").value,
             material: document.getElementById("inputMaterial").value,
             jumlah: document.getElementById("inputJumlah").value
