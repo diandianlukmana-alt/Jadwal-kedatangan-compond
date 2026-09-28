@@ -374,20 +374,24 @@
     function ubahFormatUntukInputDate(tglStr) {
         if (!tglStr) return "";
         
-        // Jika format dari sheet berupa ISO format (mengandung 'T')
+        // Jika berupa format ISO (mengandung 'T', misal: 2026-09-28T00:00:00.000Z)
         if (typeof tglStr === 'string' && tglStr.includes('T')) {
             return tglStr.split('T')[0];
         }
         
-        // Jika format dari sheet menggunakan slash (contoh: 27/09/2026)
+        // Jika format dari sheet menggunakan slash (contoh: 28/09/2026)
         if (typeof tglStr === 'string' && tglStr.includes('/')) {
             let parts = tglStr.split('/');
             if (parts.length === 3) {
-                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                let p0 = parts[0].padStart(2, '0');
+                let p1 = parts[1].padStart(2, '0');
+                let p2 = parts[2];
+                if (p0.length === 4) return `${p0}-${p1}-${p2}`;
+                return `${p2}-${p1}-${p0}`;
             }
         }
         
-        // Jika format menggunakan dash (contoh: 27-09-2026 atau 2026-09-27)
+        // Jika format menggunakan dash (contoh: 28-09-2026 atau 2026-09-28)
         if (typeof tglStr === 'string' && tglStr.includes('-')) {
             let parts = tglStr.split('-');
             if (parts.length === 3) {
@@ -445,8 +449,9 @@
             let matchTanggal = true;
 
             if (supplierFilter !== "semua") {
-                let supData = (row.supplier || "").toUpperCase();
-                matchSupplier = supData.includes(supplierFilter.toUpperCase());
+                let supData = (row.supplier || "").trim().toUpperCase();
+                let supFilter = supplierFilter.trim().toUpperCase();
+                matchSupplier = supData === supFilter;
             }
 
             let tglBarisNormalized = ubahFormatUntukInputDate(row.tanggal);
