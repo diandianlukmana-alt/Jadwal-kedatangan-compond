@@ -285,7 +285,8 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBopGyKP_aJS7HsaWsr7b4vuj4gDx-3yonXXsjpA4vwkBrU-fR_vb1fJZwAW_juY95/exec";
+    // URL Web App Google Apps Script terbaru
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzD3Emp4j70eAvqLoYhNYVDY8XtPmXPv7g2r1x7uVgvdmyXathfRKfZ4UXcGezSZreT/exec";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -361,27 +362,16 @@
     function formatTampilTanggal(tglStr) {
         if (!tglStr) return "";
         let s = tglStr.toString().trim();
-        if (s.includes("/")) {
-            let parts = s.split("/");
-            if (parts.length === 3) {
-                return `${parts[0]}-${parts[1]}-${parts[2]}`;
-            }
-        } else if (s.includes("-")) {
-            let parts = s.split("-");
-            if (parts.length === 3) {
-                if (parts[0].length === 4) {
-                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                }
-            }
-        }
+        // Jika format dari Apps Script sudah dd-MM-yyyy, ubah ke dd-MM-yyyy yang rapi atau biarkan
         return s;
     }
 
     function formatKeSheetDate(tglInput) {
         if (!tglInput) return "";
+        // Mengubah dari YYYY-MM-DD (input date) ke DD-MM-YYYY untuk Google Sheet
         let parts = tglInput.split('-');
         if (parts.length === 3) {
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
         }
         return tglInput;
     }
@@ -390,26 +380,20 @@
         if (!tglStr) return "";
         let s = tglStr.toString().trim();
         
-        if (s.includes("/")) {
-            let parts = s.split("/");
-            if (parts.length === 3) {
-                let p1 = parts[0].padStart(2, '0');
-                let p2 = parts[1].padStart(2, '0');
-                let p3 = parts[2];
-                
-                if (p3.length === 4) {
-                    return `${p3}-${p2}-${p1}`;
-                }
-                if (p1.length === 4) {
-                    return `${p1}-${p2}-${p3}`;
-                }
+        // Parsing format DD-MM-YYYY dari Google Sheet ke YYYY-MM-DD agar cocok dengan input type="date"
+        let parts = s.split(/[\/-]/);
+        if (parts.length === 3) {
+            let p1 = parts[0].padStart(2, '0');
+            let p2 = parts[1].padStart(2, '0');
+            let p3 = parts[2];
+            
+            // Jika format DD-MM-YYYY atau DD/MM/YYYY
+            if (p3.length === 4) {
+                return `${p3}-${p2}-${p1}`;
             }
-        }
-        
-        if (s.includes("-")) {
-            let parts = s.split("-");
-            if (parts.length === 3 && parts[0].length === 4) {
-                return s;
+            // Jika format sudah YYYY-MM-DD
+            if (p1.length === 4) {
+                return `${p1}-${p2}-${p3}`;
             }
         }
         return s;
