@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
-    <!-- Library QR Code JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -97,33 +96,24 @@
         .filter-section {
             background: var(--accent-bg); padding: 20px; border-radius: 14px;
             border: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02) inset;
         }
         .filter-group { flex: 1; min-width: 220px; }
 
         label { font-weight: 700; display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         input[type="date"], input[type="text"], input[type="password"], select {
-            width: 100%; padding: 12px 14px; border: 2px solid var(--border);
+            width: 100%; padding: 10px 12px; border: 2px solid var(--border);
             border-radius: 10px; font-size: 14px; background-color: #ffffff; color: var(--text);
-            box-sizing: border-box; outline: none; cursor: pointer; transition: all 0.2s;
-            font-weight: 500;
+            box-sizing: border-box; outline: none; transition: all 0.2s; font-weight: 500;
         }
         input:focus, select:focus {
             border-color: var(--primary);
-            background-color: #fff;
             box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
         .meta-info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
         }
-
         .last-update-info { 
             font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; font-weight: 600; 
             background: #f1f5f9; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
@@ -131,103 +121,52 @@
         .stats { font-size: 14px; color: var(--primary); font-weight: 700; }
 
         .table-responsive { 
-            overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; 
-            border-radius: 12px; 
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);
         }
         table { width: 100%; border-collapse: collapse; min-width: 650px; background: white; }
-        
-        /* Padding diperkecil agar baris lebih compact/tidak terlalu lebar */
         th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
-        
-        th { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); font-weight: 700; color: #475569; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f8fafc; transition: background 0.2s; }
-        .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; font-weight: 500; }
+        th { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); font-weight: 700; color: #475569; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background-color: #f8fafc; }
+        .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; }
 
-        /* Tombol Aksi dibuat mendatar dan lebih ringkas */
-        .action-cell {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .btn-edit {
-            background-color: var(--warning); color: white; border: none; padding: 5px 10px;
-            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
-            white-space: nowrap;
-        }
-        .btn-edit:hover { background-color: var(--warning-hover); }
-
-        .btn-delete {
-            background-color: var(--danger); color: white; border: none; padding: 5px 10px;
-            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
-            white-space: nowrap;
-        }
-        .btn-delete:hover { background-color: var(--danger-hover); }
+        .action-cell { display: flex; gap: 6px; align-items: center; }
+        .btn-edit { background-color: var(--warning); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none; }
+        .btn-delete { background-color: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none; }
 
         /* Modal Popup Premium */
         .modal {
-            display: none; position: fixed; z-index: 1000;
-            left: 0; top: 0; width: 100%; height: 100%;
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
             justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;
         }
         .modal-content {
-            background: white; padding: 30px; border-radius: 16px;
-            width: 100%; max-width: 450px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); box-sizing: border-box;
-            animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: white; padding: 25px; border-radius: 16px;
+            width: 100%; max-width: 850px; max-height: 90vh; display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); box-sizing: border-box;
         }
-        @keyframes modalSlideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .modal-header { font-size: 20px; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: #0f172a; }
-        .close-btn { cursor: pointer; font-size: 22px; color: #94a3b8; transition: color 0.2s; }
-        .close-btn:hover { color: var(--text); }
-        .form-group { margin-bottom: 16px; }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
-        .btn-cancel { background-color: #f1f5f9; color: #475569; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: background 0.2s; }
-        .btn-cancel:hover { background-color: #e2e8f0; }
+        .modal-header { font-size: 20px; font-weight: 800; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; color: #0f172a; }
+        .close-btn { cursor: pointer; font-size: 22px; color: #94a3b8; }
+        .modal-body { overflow-y: auto; max-height: 60vh; padding-right: 5px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-cancel { background-color: #f1f5f9; color: #475569; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
         .error-msg { color: var(--danger); font-size: 13px; margin-top: 6px; display: none; font-weight: 600; }
 
+        .multi-input-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .multi-input-table th { font-size: 11px; padding: 8px; background: #f1f5f9; }
+        .multi-input-table td { padding: 6px; border-bottom: 1px solid var(--border); }
+
         .notes-section {
-            margin-top: 20px; padding: 16px 20px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            margin-top: 20px; padding: 16px 20px; background: var(--accent-bg);
             border: 1px solid var(--border); border-radius: 12px; font-size: 13px; color: var(--text-secondary);
         }
-        .notes-section strong { color: var(--text); }
-        .notes-section ol { margin: 6px 0 0 0; padding-left: 20px; }
-        .notes-section li { margin-bottom: 4px; font-weight: 500; }
-
         .qr-print-container { display: none; }
-
-        /* Mobile Optimization */
-        @media (max-width: 768px) {
-            body { padding: 10px 5px; }
-            .container { padding: 16px; border-radius: 12px; }
-            .header-section { flex-direction: column; align-items: stretch; }
-            .btn-group { justify-content: stretch; }
-            .btn-group button { flex: 1; text-align: center; justify-content: center; }
-            .filter-section { padding: 12px; gap: 10px; }
-            h2 { font-size: 18px; }
-        }
 
         @media print {
             body { background: #ffffff !important; padding: 0; }
             .container { box-shadow: none; border: none; max-width: 100%; padding: 0; background: transparent; }
             .filter-section, .btn-group, .action-col, th.action-col { display: none !important; }
-            th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
-            .qr-print-container {
-                display: flex !important; flex-direction: column; align-items: center;
-                position: absolute; top: 0px; right: 0px; text-align: center;
-            }
+            .qr-print-container { display: flex !important; flex-direction: column; align-items: center; position: absolute; top: 0px; right: 0px; }
             .qr-print-container img, .qr-print-container canvas { width: 75px !important; height: 75px !important; }
-            .qr-text { font-size: 9px; font-weight: 600; color: #334155; margin-top: 4px; max-width: 90px; line-height: 1.1; }
-            .header-section { padding-right: 100px; }
         }
     </style>
 </head>
@@ -236,13 +175,13 @@
 <div class="container" id="areaCetak">
     <div class="qr-print-container">
         <div id="qrcode"></div>
-        <div class="qr-text">Scan disini untuk melihat jadwal via web</div>
+        <div class="qr-text" style="font-size:9px; font-weight:600; margin-top:4px;">Scan web jadwal</div>
     </div>
 
     <div class="header-section">
         <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
         <div class="btn-group">
-            <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order</button>
+            <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order Massal</button>
             <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
         </div>
     </div>
@@ -263,9 +202,7 @@
     </div>
 
     <div class="meta-info-bar">
-        <div class="last-update-info">
-            ⏱️ <span>Auto-Sync: <strong id="lastUpdateText">Memuat...</strong></span>
-        </div>
+        <div class="last-update-info">⏱️ <span>Auto-Sync: <strong id="lastUpdateText">Memuat...</strong></span></div>
         <div id="statsSummary" class="stats"></div>
     </div>
 
@@ -288,7 +225,7 @@
 
     <div class="notes-section">
         <strong>Note:</strong>
-        <ol>
+        <ol style="margin: 6px 0 0 0; padding-left: 20px;">
             <li>1 batch = 71 kilogram (perhitungan internal ipi)</li>
         </ol>
     </div>
@@ -296,17 +233,17 @@
 
 <!-- Modal Login Admin -->
 <div id="loginModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 400px;">
         <div class="modal-header">
             <span>Login Akses Admin</span>
             <span class="close-btn" onclick="tutupModalLogin()">&times;</span>
         </div>
         <form onsubmit="prosesLogin(event)">
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom:15px;">
                 <label for="inputUsername">Username:</label>
                 <input type="text" id="inputUsername" placeholder="Masukkan username" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom:15px;">
                 <label for="inputPassword">Password:</label>
                 <input type="password" id="inputPassword" placeholder="Masukkan password" required>
                 <div id="loginError" class="error-msg">Username atau Password salah!</div>
@@ -319,108 +256,117 @@
     </div>
 </div>
 
-<!-- Modal Form Input / Revisi Order -->
+<!-- Modal Form Input Massal (Banyak Baris Sekaligus) -->
 <div id="orderModal" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
+    <div class="modal-content">
         <div class="modal-header">
-            <span id="modalTitle">Tambah Order Baru</span>
+            <span id="modalTitle">Input Order Komponen (Massal)</span>
             <span class="close-btn" onclick="tutupModalOrder()">&times;</span>
         </div>
-        <form id="orderForm" onsubmit="simpanData(event)">
-            <input type="hidden" id="editRowId">
-            <div class="form-group">
-                <label for="inputTanggal">Tanggal Kedatangan:</label>
-                <input type="date" id="inputTanggal" required>
+        <div class="modal-body">
+            <form id="orderForm" onsubmit="simpanDataMassal(event)">
+                <input type="hidden" id="editRowId">
+                <div style="margin-bottom: 15px;" id="singleDateContainer">
+                    <label for="globalTanggal">Tanggal Kedatangan (Berlaku untuk semua baris di bawah):</label>
+                    <input type="date" id="globalTanggal" required style="max-width: 250px;">
+                </div>
+
+                <table class="multi-input-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 35%;">Nama Material</th>
+                            <th style="width: 35%;">Supplier</th>
+                            <th style="width: 20%;">Jumlah Batch</th>
+                            <th style="width: 10%;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="multiInputRows">
+                        <!-- Baris dinamis akan digenerate via JS -->
+                    </tbody>
+                </table>
+                <button type="button" class="btn-cancel" onclick="tambahBarisInput()" style="margin-top: 5px; background: #e0e7ff; color: var(--primary);">➕ Tambah Baris Lagi</button>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="tutupModalOrder()">Batal</button>
+                    <button type="submit" class="btn-action" id="btnSimpan">Simpan Semua Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Single Row -->
+<div id="editSingleModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-header">
+            <span>Revisi / Edit Order</span>
+            <span class="close-btn" onclick="tutupModalEditSingle()">&times;</span>
+        </div>
+        <form onsubmit="simpanEditSingle(event)">
+            <input type="hidden" id="singleEditRowId">
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>Tanggal Kedatangan:</label>
+                <input type="date" id="editTanggal" required>
             </div>
-            <div class="form-group">
-                <label for="inputMaterial">Nama Material:</label>
-                <select id="inputMaterial" onchange="onMaterialChange()" required>
-                    <option value="">-- Pilih Material --</option>
-                </select>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>Nama Material:</label>
+                <select id="editMaterial" onchange="onEditMaterialChange()" required></select>
             </div>
-            <div class="form-group">
-                <label for="inputSupplier">Supplier:</label>
-                <select id="inputSupplier" required>
-                    <option value="">-- Pilih Supplier --</option>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>Supplier:</label>
+                <select id="editSupplier" required>
+                    <option value="-">-</option>
                     <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
                     <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="inputJumlah">Jumlah Batch:</label>
-                <input type="text" id="inputJumlah" placeholder="Contoh: 28 atau 46,5" required>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>Jumlah Batch:</label>
+                <input type="text" id="editJumlah" required>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="tutupModalOrder()">Batal</button>
-                <button type="submit" class="btn-action" id="btnSimpan">Simpan Order</button>
+                <button type="button" class="btn-cancel" onclick="tutupModalEditSingle()">Batal</button>
+                <button type="submit" class="btn-action" id="btnSimpanEdit">Perbarui Order</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // URL Web App Google Apps Script terbaru
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbymdpOMQIeRooj4tF6ra8IDadUJTI-B-t45aGGrRtg3WJKbmqTv6vDoCuNEd2SP_I3n/exec";
-
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzX4yaMg-ewk7VfuoxUsI07wqUYOyBDahpRQg12yovTVZMQk9IkEsDSVV5JZQN2LFc/exec";
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
 
     let sudahLogin = false;
     let semuaDataGlobal = [];
     let masterMapping = {}; 
+    let listMaterialsGlobal = [];
     let pendingAction = null; 
     let pendingRowData = null;
 
-    new QRCode(document.getElementById("qrcode"), {
-        text: window.location.href,
-        width: 75,
-        height: 75,
-    });
+    new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 75, height: 75 });
 
     async function init() {
         let tglInput = document.getElementById("pilihTanggal");
         if (!tglInput.value) {
             let today = new Date();
-            let yyyy = today.getFullYear();
-            let mm = String(today.getMonth() + 1).padStart(2, '0');
-            let dd = String(today.getDate()).padStart(2, '0');
-            tglInput.value = `${yyyy}-${mm}-${dd}`;
+            tglInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         }
-
         await muatMasterdataDropdown();
-        await ambilDataOrder(true); 
-        
-        setInterval(() => {
-            ambilDataOrder(false);
-        }, 30000);
+        await ambilDataOrder(true);
+        setInterval(() => ambilDataOrder(false), 30000);
     }
 
     async function muatMasterdataDropdown() {
         try {
             let res = await fetch(WEB_APP_URL + "?action=getMasterdata");
             let data = await res.json();
-            
             masterMapping = data.mapping || {};
-            
-            let selectMat = document.getElementById("inputMaterial");
-            selectMat.innerHTML = '<option value="">-- Pilih Material --</option>';
-            
-            (data.materials || []).forEach(mat => {
-                let opt = document.createElement("option");
-                opt.value = mat;
-                opt.textContent = mat;
-                selectMat.appendChild(opt);
-            });
+            listMaterialsGlobal = data.materials || [];
         } catch (err) {
             console.error("Gagal memuat masterdata dropdown:", err);
-        }
-    }
-
-    function onMaterialChange() {
-        let selectedMat = document.getElementById("inputMaterial").value;
-        let supplierSelect = document.getElementById("inputSupplier");
-        if (masterMapping[selectedMat]) {
-            supplierSelect.value = masterMapping[selectedMat];
+            listMaterialsGlobal = ["No Order", "E-6024", "E-6715", "E-6714", "E-6030"];
+            masterMapping = { "E-6024": "PT. IRC RUBBER MIX.PLANT", "E-6715": "PT. IRC RUBBER MIX.PLANT", "E-6714": "PT. IRC RUBBER MIX.PLANT", "E-6030": "PT. ELASTOMIX" };
         }
     }
 
@@ -429,23 +375,17 @@
             if (isInitial) {
                 document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>`;
             }
-            
             let response = await fetch(WEB_APP_URL);
             let data = await response.json();
             semuaDataGlobal = data;
 
             let now = new Date();
-            let formatWaktu = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
-                              now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('lastUpdateText').innerText = formatWaktu;
-            
+            document.getElementById('lastUpdateText').innerText = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             filterData();
         } catch (error) {
             console.error("Gagal memuat data order:", error);
             if (isInitial) {
-                document.getElementById("isiTabel").innerHTML = `
-                    <tr><td colspan="5" class="no-data" style="color: var(--danger);">Gagal memuat data dari Google Sheets. Periksa koneksi atau URL Web App Anda.</td></tr>
-                `;
+                document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data" style="color: var(--danger);">Gagal memuat data dari Google Sheets.</td></tr>`;
             }
         }
     }
@@ -471,15 +411,11 @@
         }
 
         let totalBatch = 0;
-
         data.forEach(row => {
             let tr = document.createElement("tr");
             let tanggalRapi = formatTampilTanggal(row.tanggal);
             let displayActionBtn = sudahLogin ? "inline-block" : "none";
-
-            // Hitung total batch (konversi ke float untuk menangani angka desimal koma/titik)
-            let jumlahNum = parseFloat(String(row.jumlah).replace(',', '.')) || 0;
-            totalBatch += jumlahNum;
+            totalBatch += parseFloat(String(row.jumlah).replace(',', '.')) || 0;
 
             tr.innerHTML = `
                 <td><strong>${row.supplier || "-"}</strong></td>
@@ -495,8 +431,6 @@
             `;
             tbody.appendChild(tr);
         });
-
-        // Menampilkan jumlah data dan total batch
         document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data (Total: ${totalBatch} Batch)`;
     }
 
@@ -512,28 +446,19 @@
 
         let dataFiltered = semuaDataGlobal.filter(row => {
             let matchSupplier = true;
-            let matchTanggal = false;
-
             if (supplierFilter !== "semua") {
                 let supData = (row.supplier || "").trim().toUpperCase();
                 let supFilter = supplierFilter.trim().toUpperCase();
                 matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
             }
-
-            let tglBaris = (row.tanggal || "").trim();
-            if (tglBaris === tanggalFilter) {
-                matchTanggal = true;
-            }
-
-            return matchSupplier && matchTanggal;
+            return matchSupplier && (row.tanggal || "").trim() === tanggalFilter;
         });
-
         tampilkanData(dataFiltered);
     }
 
     function validasiAksesInput() {
         if (sudahLogin) {
-            bukaModalTambah();
+            bukaModalTambahMassal();
         } else {
             pendingAction = "tambah";
             document.getElementById("loginError").style.display = "none";
@@ -545,7 +470,7 @@
 
     function mintaLoginDanEdit(row) {
         if (sudahLogin) {
-            bukaModalEdit(row);
+            bukaModalEditSingle(row);
         } else {
             pendingAction = "edit";
             pendingRowData = row;
@@ -583,7 +508,6 @@
                     alert("Gagal menghapus: " + result.message);
                 }
             } catch (err) {
-                console.error("Error:", err);
                 alert("Terjadi kesalahan koneksi saat menghapus data.");
             }
         }
@@ -599,13 +523,9 @@
             tutupModalLogin();
             filterData();
 
-            if (pendingAction === "tambah") {
-                bukaModalTambah();
-            } else if (pendingAction === "edit" && pendingRowData) {
-                bukaModalEdit(pendingRowData);
-            } else if (pendingAction === "delete" && pendingRowData) {
-                eksekusiHapus(pendingRowData);
-            }
+            if (pendingAction === "tambah") bukaModalTambahMassal();
+            else if (pendingAction === "edit" && pendingRowData) bukaModalEditSingle(pendingRowData);
+            else if (pendingAction === "delete" && pendingRowData) eksekusiHapus(pendingRowData);
             pendingAction = null;
             pendingRowData = null;
         } else {
@@ -613,52 +533,183 @@
         }
     }
 
-    function tutupModalLogin() {
-        document.getElementById("loginModal").style.display = "none";
-    }
+    function tutupModalLogin() { document.getElementById("loginModal").style.display = "none"; }
 
-    function bukaModalTambah() {
-        document.getElementById("modalTitle").innerText = "Tambah Order Baru";
-        document.getElementById("btnSimpan").innerText = "Simpan Order";
-        document.getElementById("editRowId").value = "";
-        document.getElementById("orderForm").reset();
-        document.getElementById("orderModal").style.display = "flex";
-    }
-
-    function bukaModalEdit(row) {
-        document.getElementById("modalTitle").innerText = "Revisi / Edit Order";
-        document.getElementById("btnSimpan").innerText = "Perbarui Order";
-        document.getElementById("editRowId").value = row.rowId;
+    // --- FORM INPUT MASSAL (8+ Baris Sekaligus) ---
+    function bukaModalTambahMassal() {
+        let tglVal = document.getElementById("pilihTanggal").value;
+        document.getElementById("globalTanggal").value = tglVal;
         
-        document.getElementById("inputTanggal").value = row.tanggal;
-        document.getElementById("inputMaterial").value = row.material;
-        document.getElementById("inputSupplier").value = row.supplier;
-        document.getElementById("inputJumlah").value = row.jumlah;
+        let tbody = document.getElementById("multiInputRows");
+        tbody.innerHTML = "";
+        
+        // Langsung sediakan 8 baris kosong secara default
+        for (let i = 0; i < 8; i++) {
+            tambahBarisInput();
+        }
         
         document.getElementById("orderModal").style.display = "flex";
     }
 
-    function tutupModalOrder() {
-        document.getElementById("orderModal").style.display = "none";
+    function tambahBarisInput() {
+        let tbody = document.getElementById("multiInputRows");
+        let tr = document.createElement("tr");
+        
+        let optionsHtml = '<option value="">-- Pilih Material --</option>';
+        listMaterialsGlobal.forEach(mat => {
+            optionsHtml += `<option value="${mat}">${mat}</option>`;
+        });
+
+        tr.innerHTML = `
+            <td>
+                <select class="row-material" onchange="onRowMaterialChange(this)" required>
+                    ${optionsHtml}
+                </select>
+            </td>
+            <td>
+                <select class="row-supplier" required>
+                    <option value="-">-</option>
+                    <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
+                    <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" class="row-jumlah" placeholder="Batch" value="" required>
+            </td>
+            <td style="text-align: center;">
+                <button type="button" onclick="hapusBarisInput(this)" style="background: var(--danger); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;">&times;</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
     }
 
-    async function simpanData(event) {
+    function hapusBarisInput(btn) {
+        let tr = btn.closest("tr");
+        if (document.querySelectorAll("#multiInputRows tr").length > 1) {
+            tr.remove();
+        } else {
+            alert("Minimal harus ada 1 baris input!");
+        }
+    }
+
+    function onRowMaterialChange(selectElem) {
+        let tr = selectElem.closest("tr");
+        let mat = selectElem.value;
+        let supplierSelect = tr.querySelector(".row-supplier");
+        let jumlahInput = tr.querySelector(".row-jumlah");
+
+        if (mat === "No Order") {
+            supplierSelect.value = "-";
+            jumlahInput.value = "0";
+        } else if (masterMapping[mat]) {
+            supplierSelect.value = masterMapping[mat];
+            if (!jumlahInput.value) jumlahInput.value = "";
+        }
+    }
+
+    function tutupModalOrder() { document.getElementById("orderModal").style.display = "none"; }
+
+    async function simpanDataMassal(event) {
         event.preventDefault();
-        
-        let rowId = document.getElementById("editRowId").value;
-        let tglValue = document.getElementById("inputTanggal").value;
-        
+        let globalTanggal = document.getElementById("globalTanggal").value;
+        let rowsTr = document.querySelectorAll("#multiInputRows tr");
+        let rowsPayload = [];
+
+        rowsTr.forEach(tr => {
+            let material = tr.querySelector(".row-material").value;
+            let supplier = tr.querySelector(".row-supplier").value;
+            let jumlah = tr.querySelector(".row-jumlah").value;
+
+            if (material && material !== "") {
+                rowsPayload.push({
+                    tanggal: globalTanggal,
+                    supplier: supplier,
+                    material: material,
+                    jumlah: jumlah
+                });
+            }
+        });
+
+        if (rowsPayload.length === 0) {
+            alert("Tidak ada data material yang diisi!");
+            return;
+        }
+
+        let btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerText = "Menyimpan Massal...";
+        btnSimpan.disabled = true;
+
+        try {
+            let response = await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "add", rows: rowsPayload })
+            });
+            let result = await response.json();
+            
+            if (result.status === "success") {
+                tutupModalOrder();
+                // Ubah filter tanggal di halaman utama menyesuaikan tanggal input massal agar langsung terlihat
+                document.getElementById("pilihTanggal").value = globalTanggal;
+                await ambilDataOrder(false);
+            } else {
+                alert("Gagal menyimpan: " + result.message);
+            }
+        } catch (error) {
+            alert("Terjadi kesalahan koneksi saat menyimpan data.");
+        } finally {
+            btnSimpan.innerText = "Simpan Semua Order";
+            btnSimpan.disabled = false;
+        }
+    }
+
+    // --- FORM EDIT SINGLE ROW ---
+    function bukaModalEditSingle(row) {
+        document.getElementById("singleEditRowId").value = row.rowId;
+        document.getElementById("editTanggal").value = row.tanggal;
+        document.getElementById("editSupplier").value = row.supplier;
+        document.getElementById("editJumlah").value = row.jumlah;
+
+        let selectMat = document.getElementById("editMaterial");
+        selectMat.innerHTML = '';
+        listMaterialsGlobal.forEach(mat => {
+            let opt = document.createElement("option");
+            opt.value = mat;
+            opt.textContent = mat;
+            if (mat === row.material) opt.selected = true;
+            selectMat.appendChild(opt);
+        });
+
+        document.getElementById("editSingleModal").style.display = "flex";
+    }
+
+    function onEditMaterialChange() {
+        let mat = document.getElementById("editMaterial").value;
+        let supSelect = document.getElementById("editSupplier");
+        let jmlInput = document.getElementById("editJumlah");
+        if (mat === "No Order") {
+            supSelect.value = "-";
+            jmlInput.value = "0";
+        } else if (masterMapping[mat]) {
+            supSelect.value = masterMapping[mat];
+        }
+    }
+
+    function tutupModalEditSingle() { document.getElementById("editSingleModal").style.display = "none"; }
+
+    async function simpanEditSingle(event) {
+        event.preventDefault();
         let payload = {
-            action: rowId ? "edit" : "add",
-            rowId: rowId ? parseInt(rowId) : null,
-            tanggal: tglValue,
-            supplier: document.getElementById("inputSupplier").value,
-            material: document.getElementById("inputMaterial").value,
-            jumlah: document.getElementById("inputJumlah").value
+            action: "edit",
+            rowId: parseInt(document.getElementById("singleEditRowId").value),
+            tanggal: document.getElementById("editTanggal").value,
+            supplier: document.getElementById("editSupplier").value,
+            material: document.getElementById("editMaterial").value,
+            jumlah: document.getElementById("editJumlah").value
         };
 
-        document.getElementById("btnSimpan").innerText = "Menyimpan...";
-        document.getElementById("btnSimpan").disabled = true;
+        let btn = document.getElementById("btnSimpanEdit");
+        btn.innerText = "Memperbarui...";
+        btn.disabled = true;
 
         try {
             let response = await fetch(WEB_APP_URL, {
@@ -666,24 +717,21 @@
                 body: JSON.stringify(payload)
             });
             let result = await response.json();
-            
             if (result.status === "success") {
-                tutupModalOrder();
-                await ambilDataOrder(false); 
+                tutupModalEditSingle();
+                await ambilDataOrder(false);
             } else {
-                alert("Gagal menyimpan: " + result.message);
+                alert("Gagal memperbarui: " + result.message);
             }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Terjadi kesalahan koneksi saat menyimpan data.");
+        } catch (err) {
+            alert("Terjadi kesalahan koneksi saat memperbarui data.");
         } finally {
-            document.getElementById("btnSimpan").disabled = false;
+            btn.innerText = "Perbarui Order";
+            btn.disabled = false;
         }
     }
 
-    function unduhPDF() {
-        window.print();
-    }
+    function unduhPDF() { window.print(); }
 
     init();
 </script>
