@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
-    <!-- Library QR Code JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -94,6 +93,13 @@
         }
         .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4); }
 
+        .btn-refresh {
+            background: #f1f5f9; color: var(--text); border: 1px solid var(--border);
+            padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;
+            display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;
+        }
+        .btn-refresh:hover { background: #e2e8f0; }
+
         .filter-section {
             background: var(--accent-bg); padding: 20px; border-radius: 14px;
             border: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
@@ -125,8 +131,8 @@
         }
 
         .last-update-info { 
-            font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; font-weight: 600; 
-            background: #f1f5f9; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+            font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; font-weight: 600; 
+            background: #f1f5f9; padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border);
         }
         .stats { font-size: 14px; color: var(--primary); font-weight: 700; }
 
@@ -139,38 +145,28 @@
         }
         table { width: 100%; border-collapse: collapse; min-width: 650px; background: white; }
         
-        /* Padding diperkecil agar baris lebih compact/tidak terlalu lebar */
         th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
-        
         th { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); font-weight: 700; color: #475569; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #f8fafc; transition: background 0.2s; }
         .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; font-weight: 500; }
 
-        /* Tombol Aksi dibuat mendatar dan lebih ringkas */
-        .action-cell {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
+        .action-cell { display: flex; gap: 6px; align-items: center; }
 
         .btn-edit {
             background-color: var(--warning); color: white; border: none; padding: 5px 10px;
             border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
-            white-space: nowrap;
+            transition: background 0.2s; box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2); white-space: nowrap;
         }
         .btn-edit:hover { background-color: var(--warning-hover); }
 
         .btn-delete {
             background-color: var(--danger); color: white; border: none; padding: 5px 10px;
             border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
-            white-space: nowrap;
+            transition: background 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2); white-space: nowrap;
         }
         .btn-delete:hover { background-color: var(--danger-hover); }
 
-        /* Modal Popup Premium */
         .modal {
             display: none; position: fixed; z-index: 1000;
             left: 0; top: 0; width: 100%; height: 100%;
@@ -179,8 +175,9 @@
         }
         .modal-content {
             background: white; padding: 30px; border-radius: 16px;
-            width: 100%; max-width: 450px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); box-sizing: border-box;
+            width: 100%; max-width: 700px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); box-sizing: border-box;
             animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh; overflow-y: auto;
         }
         @keyframes modalSlideIn {
             from { transform: translateY(20px); opacity: 0; }
@@ -205,7 +202,6 @@
 
         .qr-print-container { display: none; }
 
-        /* Mobile Optimization */
         @media (max-width: 768px) {
             body { padding: 10px 5px; }
             .container { padding: 16px; border-radius: 12px; }
@@ -242,7 +238,7 @@
     <div class="header-section">
         <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
         <div class="btn-group">
-            <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order</button>
+            <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order Massal</button>
             <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
         </div>
     </div>
@@ -264,7 +260,8 @@
 
     <div class="meta-info-bar">
         <div class="last-update-info">
-            ⏱️ <span>Auto-Sync: <strong id="lastUpdateText">Memuat...</strong></span>
+            <span>Terakhir sinkron: <strong id="lastUpdateText">-</strong></span>
+            <button class="btn-refresh" onclick="ambilDataOrder(false)">🔄 Refresh Data</button>
         </div>
         <div id="statsSummary" class="stats"></div>
     </div>
@@ -296,7 +293,7 @@
 
 <!-- Modal Login Admin -->
 <div id="loginModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 450px;">
         <div class="modal-header">
             <span>Login Akses Admin</span>
             <span class="close-btn" onclick="tutupModalLogin()">&times;</span>
@@ -319,48 +316,75 @@
     </div>
 </div>
 
-<!-- Modal Form Input / Revisi Order -->
+<!-- Modal Form Input Massal / Revisi Order -->
 <div id="orderModal" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
+    <div class="modal-content" style="max-width: 750px;">
         <div class="modal-header">
-            <span id="modalTitle">Tambah Order Baru</span>
+            <span id="modalTitle">Input Order Komponen (Massal)</span>
             <span class="close-btn" onclick="tutupModalOrder()">&times;</span>
         </div>
         <form id="orderForm" onsubmit="simpanData(event)">
+            <input type="hidden" id="editMode" value="false">
             <input type="hidden" id="editRowId">
-            <div class="form-group">
-                <label for="inputTanggal">Tanggal Kedatangan:</label>
-                <input type="date" id="inputTanggal" required>
+            
+            <div class="form-group" id="groupTanggalGlobal">
+                <label for="inputTanggalGlobal">Tanggal Kedatangan (Berlaku untuk semua baris di bawah):</label>
+                <input type="date" id="inputTanggalGlobal" required>
             </div>
-            <div class="form-group">
-                <label for="inputMaterial">Nama Material:</label>
-                <select id="inputMaterial" onchange="onMaterialChange()" required>
-                    <option value="">-- Pilih Material --</option>
-                </select>
+
+            <div class="form-group" id="groupTanggalEdit" style="display:none;">
+                <label for="inputTanggalEdit">Tanggal Kedatangan:</label>
+                <input type="date" id="inputTanggalEdit">
             </div>
-            <div class="form-group">
-                <label for="inputSupplier">Supplier:</label>
-                <select id="inputSupplier" required>
-                    <option value="">-- Pilih Supplier --</option>
-                    <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
-                    <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
-                </select>
+
+            <div id="containerMultiInput">
+                <label>Daftar Material & Jumlah Batch:</label>
+                <div class="table-responsive" style="margin-bottom: 12px; max-height: 350px;">
+                    <table style="background: #f8fafc;">
+                        <thead>
+                            <tr>
+                                <th style="width: 38%;">Nama Material</th>
+                                <th style="width: 38%;">Supplier</th>
+                                <th style="width: 16%;">Jumlah Batch</th>
+                                <th style="width: 8%; text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="multiInputRows">
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn-action" onclick="tambahBarisInput()" style="background: #0284c7; padding: 6px 14px; font-size: 13px;">➕ Tambah Baris Lagi</button>
             </div>
-            <div class="form-group">
-                <label for="inputJumlah">Jumlah Batch:</label>
-                <input type="text" id="inputJumlah" placeholder="Contoh: 28 atau 46,5" required>
+
+            <div id="containerSingleInput" style="display:none;">
+                <div class="form-group">
+                    <label for="inputMaterialEdit">Nama Material:</label>
+                    <select id="inputMaterialEdit" onchange="onMaterialChangeEdit()">
+                        <option value="">-- Pilih Material --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inputSupplierEdit">Supplier:</label>
+                    <select id="inputSupplierEdit">
+                        <option value="">-- Pilih Supplier --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inputJumlahEdit">Jumlah Batch:</label>
+                    <input type="text" id="inputJumlahEdit" placeholder="Contoh: 28 atau 46,5">
+                </div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="tutupModalOrder()">Batal</button>
-                <button type="submit" class="btn-action" id="btnSimpan">Simpan Order</button>
+                <button type="submit" class="btn-action" id="btnSimpan">Simpan Semua Order</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // URL Web App Google Apps Script terbaru
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzGTNZ3WgHlXjaEONv04x3mOTaMqqzdrVskmN3UN07HTKsIhheguNixWQXyOi2jXQig/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEkwAJVoTwNGsEYzKdL1VjwHyosu74lLYedcYXrZvKtjFZOvsapeRSisBrYfp2H9t8/exec";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -368,6 +392,8 @@
     let sudahLogin = false;
     let semuaDataGlobal = [];
     let masterMapping = {}; 
+    let listMaterialsGlobal = [];
+    let listSuppliersGlobal = [];
     let pendingAction = null; 
     let pendingRowData = null;
 
@@ -389,10 +415,7 @@
 
         await muatMasterdataDropdown();
         await ambilDataOrder(true); 
-        
-        setInterval(() => {
-            ambilDataOrder(false);
-        }, 30000);
+        // Catatan: Auto-sync berkala (setInterval) sudah dihapus total di sini agar performa ringan.
     }
 
     async function muatMasterdataDropdown() {
@@ -401,24 +424,84 @@
             let data = await res.json();
             
             masterMapping = data.mapping || {};
+            listMaterialsGlobal = data.materials || [];
+            listSuppliersGlobal = data.suppliers || ["PT. IRC RUBBER MIX.PLANT", "PT. ELASTOMIX"];
             
-            let selectMat = document.getElementById("inputMaterial");
-            selectMat.innerHTML = '<option value="">-- Pilih Material --</option>';
-            
-            (data.materials || []).forEach(mat => {
-                let opt = document.createElement("option");
-                opt.value = mat;
-                opt.textContent = mat;
-                selectMat.appendChild(opt);
+            let selectFilter = document.getElementById("pilihSupplier");
+            let currentVal = selectFilter.value;
+            selectFilter.innerHTML = '<option value="semua">Semua Supplier</option>';
+            listSuppliersGlobal.forEach(sup => {
+                selectFilter.innerHTML += `<option value="${sup}">${sup}</option>`;
             });
+            selectFilter.value = currentVal;
+
         } catch (err) {
             console.error("Gagal memuat masterdata dropdown:", err);
+            listMaterialsGlobal = ["E-6024", "E-6715", "E-6030"];
+            listSuppliersGlobal = ["PT. IRC RUBBER MIX.PLANT", "PT. ELASTOMIX"];
+            masterMapping = {};
         }
     }
 
-    function onMaterialChange() {
-        let selectedMat = document.getElementById("inputMaterial").value;
-        let supplierSelect = document.getElementById("inputSupplier");
+    function tambahBarisInput(defaultMat = "", defaultSup = "", defaultJumlah = "") {
+        let tbody = document.getElementById("multiInputRows");
+        let tr = document.createElement("tr");
+        
+        let optionsHtml = '<option value="">-- Pilih Material --</option>';
+        listMaterialsGlobal.forEach(mat => {
+            let selected = (mat === defaultMat) ? "selected" : "";
+            optionsHtml += `<option value="${mat}" ${selected}>${mat}</option>`;
+        });
+
+        let optionsSup = '<option value="">-- Pilih Supplier --</option>';
+        listSuppliersGlobal.forEach(sup => {
+            let selected = (sup === defaultSup) ? "selected" : "";
+            optionsSup += `<option value="${sup}" ${selected}>${sup}</option>`;
+        });
+
+        tr.innerHTML = `
+            <td>
+                <select class="row-material" onchange="onRowMaterialChange(this)" required>
+                    ${optionsHtml}
+                </select>
+            </td>
+            <td>
+                <select class="row-supplier" required>
+                    ${optionsSup}
+                </select>
+            </td>
+            <td>
+                <input type="text" class="row-jumlah" placeholder="Batch" value="${defaultJumlah}" required>
+            </td>
+            <td style="text-align: center;">
+                <button type="button" onclick="hapusBarisInput(this)" style="background: var(--danger); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;">&times;</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function hapusBarisInput(btn) {
+        let tbody = document.getElementById("multiInputRows");
+        if (tbody.rows.length > 1) {
+            btn.closest("tr").remove();
+        } else {
+            alert("Minimal harus ada 1 baris input material.");
+        }
+    }
+
+    function onRowMaterialChange(selectElement) {
+        let selectedMat = selectElement.value;
+        let tr = selectElement.closest("tr");
+        let supplierSelect = tr.querySelector(".row-supplier");
+        
+        if (masterMapping[selectedMat]) {
+            supplierSelect.value = masterMapping[selectedMat];
+        }
+    }
+
+    function onMaterialChangeEdit() {
+        let selectedMat = document.getElementById("inputMaterialEdit").value;
+        let supplierSelect = document.getElementById("inputSupplierEdit");
         if (masterMapping[selectedMat]) {
             supplierSelect.value = masterMapping[selectedMat];
         }
@@ -477,7 +560,6 @@
             let tanggalRapi = formatTampilTanggal(row.tanggal);
             let displayActionBtn = sudahLogin ? "inline-block" : "none";
 
-            // Hitung total batch (konversi ke float untuk menangani angka desimal koma/titik)
             let jumlahNum = parseFloat(String(row.jumlah).replace(',', '.')) || 0;
             totalBatch += jumlahNum;
 
@@ -496,7 +578,6 @@
             tbody.appendChild(tr);
         });
 
-        // Menampilkan jumlah data dan total batch
         document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data (Total: ${totalBatch} Batch)`;
     }
 
@@ -618,22 +699,55 @@
     }
 
     function bukaModalTambah() {
-        document.getElementById("modalTitle").innerText = "Tambah Order Baru";
-        document.getElementById("btnSimpan").innerText = "Simpan Order";
+        document.getElementById("modalTitle").innerText = "Input Order Komponen (Massal)";
+        document.getElementById("btnSimpan").innerText = "Simpan Semua Order";
+        document.getElementById("editMode").value = "false";
         document.getElementById("editRowId").value = "";
-        document.getElementById("orderForm").reset();
+        
+        document.getElementById("groupTanggalGlobal").style.display = "block";
+        document.getElementById("groupTanggalEdit").style.display = "none";
+        document.getElementById("containerMultiInput").style.display = "block";
+        document.getElementById("containerSingleInput").style.display = "none";
+
+        let tglFilterVal = document.getElementById("pilihTanggal").value;
+        document.getElementById("inputTanggalGlobal").value = tglFilterVal || new Date().toISOString().split('T')[0];
+
+        let tbody = document.getElementById("multiInputRows");
+        tbody.innerHTML = "";
+        for (let i = 0; i < 3; i++) {
+            tambahBarisInput();
+        }
+
         document.getElementById("orderModal").style.display = "flex";
     }
 
     function bukaModalEdit(row) {
         document.getElementById("modalTitle").innerText = "Revisi / Edit Order";
         document.getElementById("btnSimpan").innerText = "Perbarui Order";
+        document.getElementById("editMode").value = "true";
         document.getElementById("editRowId").value = row.rowId;
         
-        document.getElementById("inputTanggal").value = row.tanggal;
-        document.getElementById("inputMaterial").value = row.material;
-        document.getElementById("inputSupplier").value = row.supplier;
-        document.getElementById("inputJumlah").value = row.jumlah;
+        document.getElementById("groupTanggalGlobal").style.display = "none";
+        document.getElementById("groupTanggalEdit").style.display = "block";
+        document.getElementById("containerMultiInput").style.display = "none";
+        document.getElementById("containerSingleInput").style.display = "block";
+
+        let selectMatEdit = document.getElementById("inputMaterialEdit");
+        selectMatEdit.innerHTML = '<option value="">-- Pilih Material --</option>';
+        listMaterialsGlobal.forEach(mat => {
+            selectMatEdit.innerHTML += `<option value="${mat}">${mat}</option>`;
+        });
+
+        let selectSupEdit = document.getElementById("inputSupplierEdit");
+        selectSupEdit.innerHTML = '<option value="">-- Pilih Supplier --</option>';
+        listSuppliersGlobal.forEach(sup => {
+            selectSupEdit.innerHTML += `<option value="${sup}">${sup}</option>`;
+        });
+
+        document.getElementById("inputTanggalEdit").value = row.tanggal;
+        document.getElementById("inputMaterialEdit").value = row.material;
+        document.getElementById("inputSupplierEdit").value = row.supplier;
+        document.getElementById("inputJumlahEdit").value = row.jumlah;
         
         document.getElementById("orderModal").style.display = "flex";
     }
@@ -645,17 +759,49 @@
     async function simpanData(event) {
         event.preventDefault();
         
-        let rowId = document.getElementById("editRowId").value;
-        let tglValue = document.getElementById("inputTanggal").value;
+        let isEdit = document.getElementById("editMode").value === "true";
+        let payload;
         
-        let payload = {
-            action: rowId ? "edit" : "add",
-            rowId: rowId ? parseInt(rowId) : null,
-            tanggal: tglValue,
-            supplier: document.getElementById("inputSupplier").value,
-            material: document.getElementById("inputMaterial").value,
-            jumlah: document.getElementById("inputJumlah").value
-        };
+        if (isEdit) {
+            let rowId = document.getElementById("editRowId").value;
+            payload = {
+                action: "edit",
+                rowId: parseInt(rowId),
+                tanggal: document.getElementById("inputTanggalEdit").value,
+                supplier: document.getElementById("inputSupplierEdit").value,
+                material: document.getElementById("inputMaterialEdit").value,
+                jumlah: document.getElementById("inputJumlahEdit").value
+            };
+        } else {
+            let tglGlobal = document.getElementById("inputTanggalGlobal").value;
+            let rowsTr = document.querySelectorAll("#multiInputRows tr");
+            let rowsData = [];
+
+            rowsTr.forEach(tr => {
+                let mat = tr.querySelector(".row-material").value;
+                let sup = tr.querySelector(".row-supplier").value;
+                let jml = tr.querySelector(".row-jumlah").value;
+
+                if (mat && mat !== "") {
+                    rowsData.push({
+                        tanggal: tglGlobal,
+                        supplier: sup,
+                        material: mat,
+                        jumlah: jml
+                    });
+                }
+            });
+
+            if (rowsData.length === 0) {
+                alert("Harap isi setidaknya satu baris material dengan benar.");
+                return;
+            }
+
+            payload = {
+                action: "add",
+                rows: rowsData
+            };
+        }
 
         document.getElementById("btnSimpan").innerText = "Menyimpan...";
         document.getElementById("btnSimpan").disabled = true;
