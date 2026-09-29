@@ -278,7 +278,7 @@
                 </tr>
             </thead>
             <tbody id="isiTabel">
-                <tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>
+                <tr><td colspan="5" class="no-data">Tunggu sebentar ya bos, data sedang di proses...</td></tr>
             </tbody>
         </table>
     </div>
@@ -384,7 +384,7 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEkwAJVoTwNGsEYzKdL1VjwHyosu74lLYedcYXrZvKtjFZOvsapeRSisBrYfp2H9t8/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw2t5RGxwvn9x4y0LyDDunF4yiKh2xxJFmS4vYid8wY-USzUMu_kJZ6yYvaxzYNUGFr/execc";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -415,7 +415,6 @@
 
         await muatMasterdataDropdown();
         await ambilDataOrder(true); 
-        // Catatan: Auto-sync berkala (setInterval) sudah dihapus total di sini agar performa ringan.
     }
 
     async function muatMasterdataDropdown() {
@@ -510,7 +509,7 @@
     async function ambilDataOrder(isInitial = false) {
         try {
             if (isInitial) {
-                document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>`;
+                document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Tunggu sebentar ya bos, data sedang di proses...</td></tr>`;
             }
             
             let response = await fetch(WEB_APP_URL);
@@ -659,6 +658,7 @@
                 });
                 let result = await response.json();
                 if (result.status === "success") {
+                    // Otomatis tarik data ulang dan langsung hilangkan dari tampilan seketika
                     await ambilDataOrder(false);
                 } else {
                     alert("Gagal menghapus: " + result.message);
