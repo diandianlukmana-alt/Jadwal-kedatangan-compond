@@ -390,9 +390,7 @@
         await muatMasterdataDropdown();
         await ambilDataOrder(true); 
         
-        setInterval(() => {
-            ambilDataOrder(false);
-        }, 30000);
+        // Auto-sync dihapus agar aplikasi jauh lebih cepat dan tidak membebani server
     }
 
     async function muatMasterdataDropdown() {
