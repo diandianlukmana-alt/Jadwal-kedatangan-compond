@@ -133,7 +133,6 @@
         .btn-edit { background-color: var(--warning); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none; }
         .btn-delete { background-color: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none; }
 
-        /* Modal Popup Premium */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
@@ -256,7 +255,7 @@
     </div>
 </div>
 
-<!-- Modal Form Input Massal (Banyak Baris Sekaligus) -->
+<!-- Modal Form Input Massal -->
 <div id="orderModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -281,7 +280,7 @@
                         </tr>
                     </thead>
                     <tbody id="multiInputRows">
-                        <!-- Baris dinamis akan digenerate via JS -->
+                        <!-- Baris dinamis -->
                     </tbody>
                 </table>
                 <button type="button" class="btn-cancel" onclick="tambahBarisInput()" style="margin-top: 5px; background: #e0e7ff; color: var(--primary);">➕ Tambah Baris Lagi</button>
@@ -333,7 +332,7 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzReBuwzK4pCEMSIP1vxRbHqGrl9bK7JDpcOlDoH9ycr253k96rb29irgTHiray2jKD/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzfTOEqUpdd6K_McFQO5KeTll_ERLGTjM_MMNy2PBpQY0Owe-7E_YR6lThfC_oNogWY/exec";
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
 
@@ -535,7 +534,6 @@
 
     function tutupModalLogin() { document.getElementById("loginModal").style.display = "none"; }
 
-    // --- FORM INPUT MASSAL (8+ Baris Sekaligus) ---
     function bukaModalTambahMassal() {
         let tglVal = document.getElementById("pilihTanggal").value;
         document.getElementById("globalTanggal").value = tglVal;
@@ -543,11 +541,9 @@
         let tbody = document.getElementById("multiInputRows");
         tbody.innerHTML = "";
         
-        // Langsung sediakan 8 baris kosong secara default
         for (let i = 0; i < 8; i++) {
             tambahBarisInput();
         }
-        
         document.getElementById("orderModal").style.display = "flex";
     }
 
@@ -660,7 +656,6 @@
         }
     }
 
-    // --- FORM EDIT SINGLE ROW ---
     function bukaModalEditSingle(row) {
         document.getElementById("singleEditRowId").value = row.rowId;
         document.getElementById("editTanggal").value = row.tanggal;
