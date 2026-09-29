@@ -581,38 +581,46 @@
     }
 
     // PERBAIKAN UTAMA: Normalisasi string tanggal dan supplier agar cocok dengan Google Sheets
-    function filterData() {
-        let supplierFilter = document.getElementById("pilihSupplier").value;
-        let tanggalFilter = document.getElementById("pilihTanggal").value;
+function filterData() {
+    let supplierFilter = document.getElementById("pilihSupplier").value;
+    let tanggalFilter = document.getElementById("pilihTanggal").value; // Format dari input date: "YYYY-MM-DD"
 
-        if (!tanggalFilter) {
-            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
-            document.getElementById("statsSummary").innerText = "";
-            return;
+    if (!tanggalFilter) {
+        document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
+        document.getElementById("statsSummary").innerText = "";
+        return;
+    }
+
+    // Ubah tanggal filter dari "YYYY-MM-DD" menjadi objek Date atau string pembanding universal
+    let [fYear, fMonth, fDay] = tanggalFilter.split("-");
+    let targetStandard = `${fYear}-${fMonth}-${fDay}`;       // Format YYYY-MM-DD
+    let targetSlash = `${fDay}/${fMonth}/${fYear}`;          // Format DD/MM/YYYY
+    let targetDash = `${fDay}-${fMonth}-${fYear}`;           // Format DD-MM-YYYY
+
+    let dataFiltered = semuaDataGlobal.filter(row => {
+        let matchSupplier = true;
+        let matchTanggal = false;
+
+        // 1. Filter Supplier
+        if (supplierFilter !== "semua") {
+            let supData = (row.supplier || "").trim().toUpperCase();
+            let supFilter = supplierFilter.trim().toUpperCase();
+            matchSupplier = (supData === supFilter) || supData.includes(supFilter) || supFilter.includes(supData);
         }
 
-        let cleanTanggalFilter = tanggalFilter.substring(0, 10);
+        // 2. Filter Tanggal (Mencocokkan berbagai kemungkinan format di Spreadsheet)
+        let tglBaris = (row.tanggal || "").trim();
+        
+        // Cek kecocokan langsung dengan salah satu format umum
+        if (tglBaris === targetStandard || tglBaris === targetSlash || tglBaris === targetDash || tglBaris.includes(targetStandard)) {
+            matchTanggal = true;
+        }
 
-        let dataFiltered = semuaDataGlobal.filter(row => {
-            let matchSupplier = true;
-            let matchTanggal = false;
+        return matchSupplier && matchTanggal;
+    });
 
-            if (supplierFilter !== "semua") {
-                let supData = (row.supplier || "").trim().toUpperCase();
-                let supFilter = supplierFilter.trim().toUpperCase();
-                matchSupplier = (supData === supFilter) || supData.includes(supFilter) || supFilter.includes(supData);
-            }
-
-            let tglBaris = (row.tanggal || "").trim().substring(0, 10);
-            if (tglBaris === cleanTanggalFilter) {
-                matchTanggal = true;
-            }
-
-            return matchSupplier && matchTanggal;
-        });
-
-        tampilkanData(dataFiltered);
-    }
+    tampilkanData(dataFiltered);
+}
 
     function validasiAksesInput() {
         if (sudahLogin) {
