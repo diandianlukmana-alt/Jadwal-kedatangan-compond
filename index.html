@@ -384,7 +384,7 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzM3lj2Srp94UGAHTft2MhRf7M0HvEIoLpXSJWRnfgT_dq83WnF3XI9nz7J-zgoBs30/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz3J6-ToNa5izJ2ggAbJ0vtatVDc1nkvsJjzVrVeQo-UFnyXSY3T5LvhEdFMYJleLfA/exec";
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
@@ -580,6 +580,7 @@
         document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data (Total: ${totalBatch} Batch)`;
     }
 
+    // PERBAIKAN UTAMA: Normalisasi string tanggal dan supplier agar cocok dengan Google Sheets
     function filterData() {
         let supplierFilter = document.getElementById("pilihSupplier").value;
         let tanggalFilter = document.getElementById("pilihTanggal").value;
@@ -590,6 +591,8 @@
             return;
         }
 
+        let cleanTanggalFilter = tanggalFilter.substring(0, 10);
+
         let dataFiltered = semuaDataGlobal.filter(row => {
             let matchSupplier = true;
             let matchTanggal = false;
@@ -597,11 +600,11 @@
             if (supplierFilter !== "semua") {
                 let supData = (row.supplier || "").trim().toUpperCase();
                 let supFilter = supplierFilter.trim().toUpperCase();
-                matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
+                matchSupplier = (supData === supFilter) || supData.includes(supFilter) || supFilter.includes(supData);
             }
 
-            let tglBaris = (row.tanggal || "").trim();
-            if (tglBaris === tanggalFilter) {
+            let tglBaris = (row.tanggal || "").trim().substring(0, 10);
+            if (tglBaris === cleanTanggalFilter) {
                 matchTanggal = true;
             }
 
@@ -658,7 +661,6 @@
                 });
                 let result = await response.json();
                 if (result.status === "success") {
-                    // Otomatis tarik data ulang dan langsung hilangkan dari tampilan seketika
                     await ambilDataOrder(false);
                 } else {
                     alert("Gagal menghapus: " + result.message);
