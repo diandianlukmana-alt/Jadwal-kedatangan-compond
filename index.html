@@ -8,9 +8,13 @@
     <style>
         :root {
             --primary: #4f46e5;
+            --primary-hover: #4338ca;
             --success: #059669;
+            --success-hover: #047857;
             --warning: #d97706;
+            --warning-hover: #b45309;
             --danger: #dc2626;
+            --danger-hover: #b91c1c;
             --surface: rgba(255, 255, 255, 0.95);
             --text: #1e293b;
             --text-secondary: #64748b;
@@ -24,44 +28,70 @@
                         url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover;
             color: var(--text);
-            margin: 0; padding: 30px 15px;
-            display: flex; justify-content: center; align-items: flex-start;
-            min-height: 100vh; box-sizing: border-box;
+            margin: 0;
+            padding: 30px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         .container {
-            width: 100%; max-width: 950px;
-            background: var(--surface); backdrop-filter: blur(16px);
-            padding: 30px; border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 950px;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
             box-sizing: border-box;
         }
 
         .header-section {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
-        h2 { margin: 0; color: #0f172a; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        h2 { 
+            margin: 0; 
+            color: #0f172a; 
+            font-size: 22px; 
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
 
         .btn-action {
             background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-            color: white; border: none; padding: 10px 18px; border-radius: 10px;
-            font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); display: inline-flex; align-items: center; gap: 6px;
+            color: white; border: none; padding: 10px 18px;
+            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
+            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
         }
-        .btn-action:hover { transform: translateY(-2px); }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
 
         .btn-pdf {
             background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            color: white; border: none; padding: 10px 18px; border-radius: 10px;
-            font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); display: inline-flex; align-items: center; gap: 6px;
+            color: white; border: none; padding: 10px 18px;
+            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
+            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
         }
-        .btn-pdf:hover { transform: translateY(-2px); }
+        .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4); }
 
         .filter-section {
             background: var(--accent-bg); padding: 20px; border-radius: 14px;
@@ -69,22 +99,32 @@
         }
         .filter-group { flex: 1; min-width: 220px; }
 
-        label { font-weight: 700; display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; }
+        label { font-weight: 700; display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         input[type="date"], input[type="text"], input[type="password"], select {
             width: 100%; padding: 10px 12px; border: 2px solid var(--border);
             border-radius: 10px; font-size: 14px; background-color: #ffffff; color: var(--text);
-            box-sizing: border-box; outline: none; font-weight: 500;
+            box-sizing: border-box; outline: none; transition: all 0.2s; font-weight: 500;
         }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
 
-        .meta-info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        .last-update-info { font-size: 13px; color: var(--text-secondary); font-weight: 600; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); }
+        .meta-info-bar {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
+        }
+        .last-update-info { 
+            font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; font-weight: 600; 
+            background: #f1f5f9; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+        }
         .stats { font-size: 14px; color: var(--primary); font-weight: 700; }
 
-        .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+        .table-responsive { 
+            overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);
+        }
         table { width: 100%; border-collapse: collapse; min-width: 650px; background: white; }
-        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); font-weight: 700; color: #475569; text-transform: uppercase; font-size: 12px; }
         tr:hover { background-color: #f8fafc; }
         .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; }
@@ -93,6 +133,7 @@
         .btn-edit { background-color: var(--warning); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none; }
         .btn-delete { background-color: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none; }
 
+        /* Modal Popup Premium */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
@@ -125,15 +166,16 @@
             .container { box-shadow: none; border: none; max-width: 100%; padding: 0; background: transparent; }
             .filter-section, .btn-group, .action-col, th.action-col { display: none !important; }
             .qr-print-container { display: flex !important; flex-direction: column; align-items: center; position: absolute; top: 0px; right: 0px; }
+            .qr-print-container img, .qr-print-container canvas { width: 75px !important; height: 75px !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="areaCetak">
     <div class="qr-print-container">
         <div id="qrcode"></div>
-        <div style="font-size:9px; font-weight:600; margin-top:4px;">Scan web jadwal</div>
+        <div class="qr-text" style="font-size:9px; font-weight:600; margin-top:4px;">Scan web jadwal</div>
     </div>
 
     <div class="header-section">
@@ -147,7 +189,6 @@
     <div class="filter-section">
         <div class="filter-group">
             <label for="pilihSupplier">Pilih Supplier:</label>
-            <!-- PERBAIKAN UTAMA: Ditambahkan tanda titik (PT. IRC RUBBER MIX.PLANT) agar cocok dengan Google Sheet -->
             <select id="pilihSupplier" onchange="filterData()">
                 <option value="semua">Semua Supplier</option>
                 <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
@@ -198,13 +239,13 @@
             <span class="close-btn" onclick="tutupModalLogin()">&times;</span>
         </div>
         <form onsubmit="prosesLogin(event)">
-            <div style="margin-bottom:15px;">
-                <label>Username:</label>
-                <input type="text" id="inputUsername" required>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label for="inputUsername">Username:</label>
+                <input type="text" id="inputUsername" placeholder="Masukkan username" required>
             </div>
-            <div style="margin-bottom:15px;">
-                <label>Password:</label>
-                <input type="password" id="inputPassword" required>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label for="inputPassword">Password:</label>
+                <input type="password" id="inputPassword" placeholder="Masukkan password" required>
                 <div id="loginError" class="error-msg">Username atau Password salah!</div>
             </div>
             <div class="modal-footer">
@@ -215,19 +256,21 @@
     </div>
 </div>
 
-<!-- Modal Input Massal -->
+<!-- Modal Form Input Massal (Banyak Baris Sekaligus) -->
 <div id="orderModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <span>Input Order Komponen (Massal)</span>
+            <span id="modalTitle">Input Order Komponen (Massal)</span>
             <span class="close-btn" onclick="tutupModalOrder()">&times;</span>
         </div>
         <div class="modal-body">
-            <form onsubmit="simpanDataMassal(event)">
-                <div style="margin-bottom: 15px;">
-                    <label>Tanggal Kedatangan:</label>
+            <form id="orderForm" onsubmit="simpanDataMassal(event)">
+                <input type="hidden" id="editRowId">
+                <div style="margin-bottom: 15px;" id="singleDateContainer">
+                    <label for="globalTanggal">Tanggal Kedatangan (Berlaku untuk semua baris di bawah):</label>
                     <input type="date" id="globalTanggal" required style="max-width: 250px;">
                 </div>
+
                 <table class="multi-input-table">
                     <thead>
                         <tr>
@@ -237,9 +280,12 @@
                             <th style="width: 10%;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="multiInputRows"></tbody>
+                    <tbody id="multiInputRows">
+                        <!-- Baris dinamis akan digenerate via JS -->
+                    </tbody>
                 </table>
-                <button type="button" class="btn-cancel" onclick="tambahBarisInput()" style="margin-top: 5px; background: #e0e7ff; color: var(--primary);">➕ Tambah Baris</button>
+                <button type="button" class="btn-cancel" onclick="tambahBarisInput()" style="margin-top: 5px; background: #e0e7ff; color: var(--primary);">➕ Tambah Baris Lagi</button>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="tutupModalOrder()">Batal</button>
                     <button type="submit" class="btn-action" id="btnSimpan">Simpan Semua Order</button>
@@ -258,15 +304,15 @@
         </div>
         <form onsubmit="simpanEditSingle(event)">
             <input type="hidden" id="singleEditRowId">
-            <div style="margin-bottom:12px;">
+            <div class="form-group" style="margin-bottom:12px;">
                 <label>Tanggal Kedatangan:</label>
                 <input type="date" id="editTanggal" required>
             </div>
-            <div style="margin-bottom:12px;">
+            <div class="form-group" style="margin-bottom:12px;">
                 <label>Nama Material:</label>
                 <select id="editMaterial" onchange="onEditMaterialChange()" required></select>
             </div>
-            <div style="margin-bottom:12px;">
+            <div class="form-group" style="margin-bottom:12px;">
                 <label>Supplier:</label>
                 <select id="editSupplier" required>
                     <option value="-">-</option>
@@ -274,7 +320,7 @@
                     <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
                 </select>
             </div>
-            <div style="margin-bottom:12px;">
+            <div class="form-group" style="margin-bottom:12px;">
                 <label>Jumlah Batch:</label>
                 <input type="text" id="editJumlah" required>
             </div>
@@ -287,8 +333,7 @@
 </div>
 
 <script>
-    // MASUKKAN URL WEB APP ANDA DI SINI
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby0XESlWENLlbu-oj4vgQsOt5BiYUlZq_EKTOXaXOJenFDBcdj-WQN-xAlF-4j_i6Kg/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrEmxaeCvVghdG273muTlif_ZuDwrWvS0Z0HaTFih9-UTCPWppj8Ex9GS879xm4AA/exec";
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
 
@@ -319,8 +364,9 @@
             masterMapping = data.mapping || {};
             listMaterialsGlobal = data.materials || [];
         } catch (err) {
-            listMaterialsGlobal = ["No Order"];
-            masterMapping = { "No Order": "-" };
+            console.error("Gagal memuat masterdata dropdown:", err);
+            listMaterialsGlobal = ["No Order", "E-6024", "E-6715", "E-6714", "E-6030"];
+            masterMapping = { "E-6024": "PT. IRC RUBBER MIX.PLANT", "E-6715": "PT. IRC RUBBER MIX.PLANT", "E-6714": "PT. IRC RUBBER MIX.PLANT", "E-6030": "PT. ELASTOMIX" };
         }
     }
 
@@ -337,8 +383,9 @@
             document.getElementById('lastUpdateText').innerText = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             filterData();
         } catch (error) {
+            console.error("Gagal memuat data order:", error);
             if (isInitial) {
-                document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data" style="color: var(--danger);">Gagal memuat data.</td></tr>`;
+                document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data" style="color: var(--danger);">Gagal memuat data dari Google Sheets.</td></tr>`;
             }
         }
     }
@@ -392,7 +439,7 @@
         let tanggalFilter = document.getElementById("pilihTanggal").value;
 
         if (!tanggalFilter) {
-            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Pilih tanggal terlebih dahulu.</td></tr>`;
+            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
             document.getElementById("statsSummary").innerText = "";
             return;
         }
@@ -402,7 +449,7 @@
             if (supplierFilter !== "semua") {
                 let supData = (row.supplier || "").trim().toUpperCase();
                 let supFilter = supplierFilter.trim().toUpperCase();
-                matchSupplier = supData === supFilter;
+                matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
             }
             return matchSupplier && (row.tanggal || "").trim() === tanggalFilter;
         });
@@ -410,25 +457,60 @@
     }
 
     function validasiAksesInput() {
-        if (sudahLogin) { bukaModalTambahMassal(); } 
-        else { pendingAction = "tambah"; bukaLoginModal(); }
+        if (sudahLogin) {
+            bukaModalTambahMassal();
+        } else {
+            pendingAction = "tambah";
+            document.getElementById("loginError").style.display = "none";
+            document.getElementById("inputUsername").value = "";
+            document.getElementById("inputPassword").value = "";
+            document.getElementById("loginModal").style.display = "flex";
+        }
     }
 
     function mintaLoginDanEdit(row) {
-        if (sudahLogin) { bukaModalEditSingle(row); } 
-        else { pendingAction = "edit"; pendingRowData = row; bukaLoginModal(); }
+        if (sudahLogin) {
+            bukaModalEditSingle(row);
+        } else {
+            pendingAction = "edit";
+            pendingRowData = row;
+            document.getElementById("loginError").style.display = "none";
+            document.getElementById("inputUsername").value = "";
+            document.getElementById("inputPassword").value = "";
+            document.getElementById("loginModal").style.display = "flex";
+        }
     }
 
     function konfirmasiHapus(rowId) {
-        if (sudahLogin) { eksekusiHapus(rowId); } 
-        else { pendingAction = "delete"; pendingRowData = rowId; bukaLoginModal(); }
+        if (sudahLogin) {
+            eksekusiHapus(rowId);
+        } else {
+            pendingAction = "delete";
+            pendingRowData = rowId;
+            document.getElementById("loginError").style.display = "none";
+            document.getElementById("inputUsername").value = "";
+            document.getElementById("inputPassword").value = "";
+            document.getElementById("loginModal").style.display = "flex";
+        }
     }
 
-    function bukaLoginModal() {
-        document.getElementById("loginError").style.display = "none";
-        document.getElementById("inputUsername").value = "";
-        document.getElementById("inputPassword").value = "";
-        document.getElementById("loginModal").style.display = "flex";
+    async function eksekusiHapus(rowId) {
+        if (confirm("Apakah Anda yakin ingin menghapus data order ini?")) {
+            try {
+                let response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "delete", rowId: rowId })
+                });
+                let result = await response.json();
+                if (result.status === "success") {
+                    await ambilDataOrder(false);
+                } else {
+                    alert("Gagal menghapus: " + result.message);
+                }
+            } catch (err) {
+                alert("Terjadi kesalahan koneksi saat menghapus data.");
+            }
+        }
     }
 
     function prosesLogin(event) {
@@ -440,10 +522,12 @@
             sudahLogin = true;
             tutupModalLogin();
             filterData();
+
             if (pendingAction === "tambah") bukaModalTambahMassal();
             else if (pendingAction === "edit" && pendingRowData) bukaModalEditSingle(pendingRowData);
             else if (pendingAction === "delete" && pendingRowData) eksekusiHapus(pendingRowData);
-            pendingAction = null; pendingRowData = null;
+            pendingAction = null;
+            pendingRowData = null;
         } else {
             document.getElementById("loginError").style.display = "block";
         }
@@ -451,22 +535,37 @@
 
     function tutupModalLogin() { document.getElementById("loginModal").style.display = "none"; }
 
+    // --- FORM INPUT MASSAL (8+ Baris Sekaligus) ---
     function bukaModalTambahMassal() {
-        document.getElementById("globalTanggal").value = document.getElementById("pilihTanggal").value;
+        let tglVal = document.getElementById("pilihTanggal").value;
+        document.getElementById("globalTanggal").value = tglVal;
+        
         let tbody = document.getElementById("multiInputRows");
         tbody.innerHTML = "";
-        for (let i = 0; i < 8; i++) tambahBarisInput();
+        
+        // Langsung sediakan 8 baris kosong secara default
+        for (let i = 0; i < 8; i++) {
+            tambahBarisInput();
+        }
+        
         document.getElementById("orderModal").style.display = "flex";
     }
 
     function tambahBarisInput() {
         let tbody = document.getElementById("multiInputRows");
         let tr = document.createElement("tr");
+        
         let optionsHtml = '<option value="">-- Pilih Material --</option>';
-        listMaterialsGlobal.forEach(mat => { optionsHtml += `<option value="${mat}">${mat}</option>`; });
+        listMaterialsGlobal.forEach(mat => {
+            optionsHtml += `<option value="${mat}">${mat}</option>`;
+        });
 
         tr.innerHTML = `
-            <td><select class="row-material" onchange="onRowMaterialChange(this)" required>${optionsHtml}</select></td>
+            <td>
+                <select class="row-material" onchange="onRowMaterialChange(this)" required>
+                    ${optionsHtml}
+                </select>
+            </td>
             <td>
                 <select class="row-supplier" required>
                     <option value="-">-</option>
@@ -474,10 +573,23 @@
                     <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
                 </select>
             </td>
-            <td><input type="text" class="row-jumlah" placeholder="Batch" required></td>
-            <td style="text-align: center;"><button type="button" onclick="this.closest('tr').remove()" style="background: var(--danger); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;">&times;</button></td>
+            <td>
+                <input type="text" class="row-jumlah" placeholder="Batch" value="" required>
+            </td>
+            <td style="text-align: center;">
+                <button type="button" onclick="hapusBarisInput(this)" style="background: var(--danger); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;">&times;</button>
+            </td>
         `;
         tbody.appendChild(tr);
+    }
+
+    function hapusBarisInput(btn) {
+        let tr = btn.closest("tr");
+        if (document.querySelectorAll("#multiInputRows tr").length > 1) {
+            tr.remove();
+        } else {
+            alert("Minimal harus ada 1 baris input!");
+        }
     }
 
     function onRowMaterialChange(selectElem) {
@@ -491,6 +603,7 @@
             jumlahInput.value = "0";
         } else if (masterMapping[mat]) {
             supplierSelect.value = masterMapping[mat];
+            if (!jumlahInput.value) jumlahInput.value = "";
         }
     }
 
@@ -506,26 +619,50 @@
             let material = tr.querySelector(".row-material").value;
             let supplier = tr.querySelector(".row-supplier").value;
             let jumlah = tr.querySelector(".row-jumlah").value;
-            if (material) rowsPayload.push({ tanggal: globalTanggal, supplier, material, jumlah });
+
+            if (material && material !== "") {
+                rowsPayload.push({
+                    tanggal: globalTanggal,
+                    supplier: supplier,
+                    material: material,
+                    jumlah: jumlah
+                });
+            }
         });
 
-        if (rowsPayload.length === 0) { alert("Isi data material terlebih dahulu!"); return; }
+        if (rowsPayload.length === 0) {
+            alert("Tidak ada data material yang diisi!");
+            return;
+        }
 
-        let btn = document.getElementById("btnSimpan");
-        btn.innerText = "Menyimpan..."; btn.disabled = true;
+        let btnSimpan = document.getElementById("btnSimpan");
+        btnSimpan.innerText = "Menyimpan Massal...";
+        btnSimpan.disabled = true;
 
         try {
-            let res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "add", rows: rowsPayload }) });
-            let result = await res.json();
+            let response = await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "add", rows: rowsPayload })
+            });
+            let result = await response.json();
+            
             if (result.status === "success") {
                 tutupModalOrder();
+                // Ubah filter tanggal di halaman utama menyesuaikan tanggal input massal agar langsung terlihat
                 document.getElementById("pilihTanggal").value = globalTanggal;
                 await ambilDataOrder(false);
-            } else { alert("Gagal: " + result.message); }
-        } catch (e) { alert("Kesalahan koneksi."); }
-        finally { btn.innerText = "Simpan Semua Order"; btn.disabled = false; }
+            } else {
+                alert("Gagal menyimpan: " + result.message);
+            }
+        } catch (error) {
+            alert("Terjadi kesalahan koneksi saat menyimpan data.");
+        } finally {
+            btnSimpan.innerText = "Simpan Semua Order";
+            btnSimpan.disabled = false;
+        }
     }
 
+    // --- FORM EDIT SINGLE ROW ---
     function bukaModalEditSingle(row) {
         document.getElementById("singleEditRowId").value = row.rowId;
         document.getElementById("editTanggal").value = row.tanggal;
@@ -536,17 +673,25 @@
         selectMat.innerHTML = '';
         listMaterialsGlobal.forEach(mat => {
             let opt = document.createElement("option");
-            opt.value = mat; opt.textContent = mat;
+            opt.value = mat;
+            opt.textContent = mat;
             if (mat === row.material) opt.selected = true;
             selectMat.appendChild(opt);
         });
+
         document.getElementById("editSingleModal").style.display = "flex";
     }
 
     function onEditMaterialChange() {
         let mat = document.getElementById("editMaterial").value;
         let supSelect = document.getElementById("editSupplier");
-        if (masterMapping[mat]) supSelect.value = masterMapping[mat];
+        let jmlInput = document.getElementById("editJumlah");
+        if (mat === "No Order") {
+            supSelect.value = "-";
+            jmlInput.value = "0";
+        } else if (masterMapping[mat]) {
+            supSelect.value = masterMapping[mat];
+        }
     }
 
     function tutupModalEditSingle() { document.getElementById("editSingleModal").style.display = "none"; }
@@ -563,26 +708,26 @@
         };
 
         let btn = document.getElementById("btnSimpanEdit");
-        btn.innerText = "Memperbarui..."; btn.disabled = true;
+        btn.innerText = "Memperbarui...";
+        btn.disabled = true;
 
         try {
-            let res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) });
-            let result = await res.json();
+            let response = await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            let result = await response.json();
             if (result.status === "success") {
                 tutupModalEditSingle();
                 await ambilDataOrder(false);
-            } else { alert("Gagal: " + result.message); }
-        } catch (e) { alert("Kesalahan koneksi."); }
-        finally { btn.innerText = "Perbarui Order"; btn.disabled = false; }
-    }
-
-    async function eksekusiHapus(rowId) {
-        if (confirm("Hapus data order ini?")) {
-            try {
-                let res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "delete", rowId }) });
-                let result = await res.json();
-                if (result.status === "success") await ambilDataOrder(false);
-            } catch (e) { alert("Gagal menghapus."); }
+            } else {
+                alert("Gagal memperbarui: " + result.message);
+            }
+        } catch (err) {
+            alert("Terjadi kesalahan koneksi saat memperbarui data.");
+        } finally {
+            btn.innerText = "Perbarui Order";
+            btn.disabled = false;
         }
     }
 
