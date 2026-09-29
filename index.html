@@ -333,9 +333,9 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyMFlAlf58B_mokaFp-0hWgahKR0_QF_dnnfr2vcO_Yk7spT7tyNsR3qtyrLeNq0PWt/exec";
-    const ADMIN_USER = "ordercompond";
-    const ADMIN_PASS = "123456";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxflxYUBb045waAiZWpzz-va0Ddcn8sDnD-NB40QWhEr0FwXY66SywfkwTvksgTrVBh/exec";
+    const ADMIN_USER = "admin";
+    const ADMIN_PASS = "12345";
 
     let sudahLogin = false;
     let semuaDataGlobal = [];
@@ -365,8 +365,8 @@
             listMaterialsGlobal = data.materials || [];
         } catch (err) {
             console.error("Gagal memuat masterdata dropdown:", err);
-            listMaterialsGlobal = ["No Order", "E-6024", "E-6715", "E-6714", "E-6030"];
-            masterMapping = { "E-6024": "PT. IRC RUBBER MIX.PLANT", "E-6715": "PT. IRC RUBBER MIX.PLANT", "E-6714": "PT. IRC RUBBER MIX.PLANT", "E-6030": "PT. ELASTOMIX" };
+            listMaterialsGlobal = ["No Order"];
+            masterMapping = { "No Order": "-" };
         }
     }
 
@@ -603,7 +603,6 @@
             jumlahInput.value = "0";
         } else if (masterMapping[mat]) {
             supplierSelect.value = masterMapping[mat];
-            if (!jumlahInput.value) jumlahInput.value = "";
         }
     }
 
@@ -648,7 +647,6 @@
             
             if (result.status === "success") {
                 tutupModalOrder();
-                // Ubah filter tanggal di halaman utama menyesuaikan tanggal input massal agar langsung terlihat
                 document.getElementById("pilihTanggal").value = globalTanggal;
                 await ambilDataOrder(false);
             } else {
