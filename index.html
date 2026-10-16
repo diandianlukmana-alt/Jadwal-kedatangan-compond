@@ -239,7 +239,7 @@
     </div>
 
     <div class="filter-section">
-        <div class="filter-group">
+        <div class="filter-group" id="containerFilterSupplier">
             <label for="pilihSupplier">Pilih Supplier:</label>
             <select id="pilihSupplier" onchange="filterData()">
                 <option value="semua">Semua Supplier</option>
@@ -310,7 +310,7 @@
     </div>
 </div>
 
-<!-- Modal Form Input / Revisi Order (Mendukung Massal & Satuan Edit) -->
+<!-- Modal Form Input / Revisi Order -->
 <div id="orderModal" class="modal">
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
@@ -350,7 +350,6 @@
             <div id="massAddContainer">
                 <label>Daftar Material yang Diorder:</label>
                 <div id="massRowsWrapper" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px; border: 1px solid var(--border); padding: 10px; border-radius: 10px; background: #f8fafc;">
-                    <!-- Baris dinamis ditambahkan lewat JS -->
                 </div>
                 <button type="button" class="btn-action" onclick="tambahBarisMassal()" style="background: var(--success); font-size: 12px; padding: 6px 12px; margin-bottom: 10px;">➕ Tambah Baris Material</button>
             </div>
@@ -364,7 +363,7 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxZL8AsR1ESe3RlIPwbR2IBTq5AhzYN4ttoy91afZJbrJ6i-qbh4CCrcO2kpskWUhEx/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyO5Xh3ncI2TdhYfMDSg0T_iqeBkTJtbTKzIEU0qYxXHsjl-_DotrFxtlSjYXMLFRao/exec";
 
     const ADMIN_USER = "ordercompond";
     const ADMIN_PASS = "inoac12345";
@@ -376,6 +375,10 @@
     let pendingAction = null; 
     let pendingRowData = null;
 
+    // Deteksi Parameter Supplier dari URL Browser
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeSupplierParam = urlParams.get('supplier') || "";
+
     new QRCode(document.getElementById("qrcode"), {
         text: window.location.href,
         width: 75,
@@ -383,6 +386,14 @@
     });
 
     async function init() {
+        // Jika diakses menggunakan link khusus supplier, sembunyikan dropdown filter supplier
+        if (activeSupplierParam) {
+            let containerFilter = document.getElementById("containerFilterSupplier");
+            if (containerFilter) {
+                containerFilter.style.display = "none";
+            }
+        }
+
         let tglInput = document.getElementById("pilihTanggal");
         if (!tglInput.value) {
             let today = new Date();
@@ -398,7 +409,11 @@
 
     async function muatMasterdataDropdown() {
         try {
-            let res = await fetch(WEB_APP_URL + "?action=getMasterdata");
+            let reqUrl = WEB_APP_URL + "?action=getMasterdata";
+            if (activeSupplierParam) {
+                reqUrl += "&supplier=" + encodeURIComponent(activeSupplierParam);
+            }
+            let res = await fetch(reqUrl);
             let data = await res.json();
             
             masterMapping = data.mapping || {};
@@ -438,7 +453,12 @@
                 document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Memuat data dari Google Sheets...</td></tr>`;
             }
             
-            let response = await fetch(WEB_APP_URL);
+            let reqUrl = WEB_APP_URL;
+            if (activeSupplierParam) {
+                reqUrl += "?supplier=" + encodeURIComponent(activeSupplierParam);
+            }
+
+            let response = await fetch(reqUrl);
             let data = await response.json();
             semuaDataGlobal = data;
 
@@ -507,7 +527,7 @@
     }
 
     function filterData() {
-        let supplierFilter = document.getElementById("pilihSupplier").value;
+        let supplierFilter = document.getElementById("pilihSupplier") ? document.getElementById("pilihSupplier").value : "semua";
         let tanggalFilter = document.getElementById("pilihTanggal").value;
 
         if (!tanggalFilter) {
@@ -520,7 +540,7 @@
             let matchSupplier = true;
             let matchTanggal = false;
 
-            if (supplierFilter !== "semua") {
+            if (supplierFilter !== "semua" && !activeSupplierParam) {
                 let supData = (row.supplier || "").trim().toUpperCase();
                 let supFilter = supplierFilter.trim().toUpperCase();
                 matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
