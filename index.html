@@ -16,18 +16,18 @@
             --warning-hover: #b45309;
             --danger: #dc2626;
             --danger-hover: #b91c1c;
-            --surface: rgba(255, 255, 255, 0.88);
+            --surface: rgba(255, 255, 255, 0.92);
             --text: #1e293b;
             --text-secondary: #475569;
-            --border: rgba(226, 232, 240, 0.8);
-            --accent-bg: rgba(241, 245, 249, 0.7);
+            --border: #cbd5e1;
+            --accent-bg: #f1f5f9;
         }
 
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Latar belakang cerah, jelas, dan mantap seperti web delivery */
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(241, 245, 249, 0.25)), 
-                        url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            /* Background diganti dengan foto alam yang sangat tajam, kontras tinggi, dan cerah */
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.1)), 
+                        url('https://images.unsplash.com/photo-1511497584788-876761142212?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover;
             color: var(--text);
             margin: 0;
@@ -41,14 +41,14 @@
 
         .container {
             width: 100%;
-            max-width: 1150px; /* Dilebarkan sesuai gambar referensi */
+            max-width: 1150px;
             background: var(--surface);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             padding: 30px 35px;
             border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+            border: 1px solid rgba(255, 255, 255, 0.8);
             position: relative;
             box-sizing: border-box;
         }
@@ -98,7 +98,7 @@
         .filter-section {
             background: var(--accent-bg); padding: 20px; border-radius: 16px;
             border: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02) inset;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03) inset;
         }
         .filter-group { flex: 1; min-width: 220px; }
 
@@ -106,14 +106,14 @@
 
         input[type="date"], input[type="text"], input[type="password"], select {
             width: 100%; padding: 12px 14px; border: 2px solid var(--border);
-            border-radius: 10px; font-size: 14px; background-color: rgba(255, 255, 255, 0.9); color: var(--text);
+            border-radius: 10px; font-size: 14px; background-color: #ffffff; color: var(--text);
             box-sizing: border-box; outline: none; cursor: pointer; transition: all 0.2s;
-            font-weight: 500;
+            font-weight: 600;
         }
         input:focus, select:focus {
             border-color: var(--primary);
             background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
         }
 
         .meta-info-bar {
@@ -127,7 +127,7 @@
 
         .last-update-info { 
             font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; font-weight: 600; 
-            background: rgba(241, 245, 249, 0.8); padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+            background: #f1f5f9; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
         }
         .stats { font-size: 14px; color: var(--primary); font-weight: 700; }
 
@@ -136,14 +136,14 @@
             -webkit-overflow-scrolling: touch; 
             border-radius: 14px; 
             border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
-        table { width: 100%; border-collapse: collapse; min-width: 650px; background: rgba(255, 255, 255, 0.95); }
+        table { width: 100%; border-collapse: collapse; min-width: 650px; background: white; }
         
         th, td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { background: rgba(248, 250, 252, 0.9); font-weight: 700; color: #475569; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        th { background: #f8fafc; font-weight: 700; color: #334155; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
         tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: rgba(248, 250, 252, 0.8); transition: background 0.2s; }
+        tr:hover { background-color: #f8fafc; transition: background 0.2s; }
         .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; font-weight: 500; }
 
         .action-cell { display: flex; gap: 6px; align-items: center; }
@@ -167,7 +167,7 @@
         .modal {
             display: none; position: fixed; z-index: 1000;
             left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.5); backdrop-filter: blur(5px);
+            background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
             justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;
         }
         .modal-content {
@@ -189,8 +189,8 @@
         .error-msg { color: var(--danger); font-size: 13px; margin-top: 6px; display: none; font-weight: 600; }
 
         .notes-section {
-            margin-top: 20px; padding: 16px 20px; background: rgba(254, 252, 232, 0.85);
-            border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 14px; font-size: 13px; color: #713f12;
+            margin-top: 20px; padding: 16px 20px; background: #fefce8;
+            border: 1px solid #fde047; border-radius: 14px; font-size: 13px; color: #713f12;
         }
         .notes-section strong { color: #854d0e; }
         .notes-section ol { margin: 6px 0 0 0; padding-left: 20px; }
