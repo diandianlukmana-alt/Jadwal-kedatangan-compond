@@ -3,788 +3,667 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
-    <!-- Library QR Code JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>Laporan Problem Harian Produksi Extruder</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --success: #059669;
-            --success-hover: #047857;
-            --warning: #d97706;
-            --warning-hover: #b45309;
-            --danger: #dc2626;
-            --danger-hover: #b91c1c;
-            --surface: rgba(255, 255, 255, 0.92);
-            --text: #1e293b;
-            --text-secondary: #475569;
-            --border: #cbd5e1;
-            --accent-bg: #f1f5f9;
+            --bg-primary: #f1f5f9;
+            --bg-secondary: #ffffff;
+            --accent-blue: #0284c7;
+            --accent-dark: #1e293b;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #475569;
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15)), 
-                        url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text);
-            margin: 0;
-            padding: 25px 15px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e2e8f0 0%, #f8fafc 50%, #f1f5f9 100%);
+            color: var(--text-main);
             min-height: 100vh;
-            box-sizing: border-box;
+            padding-bottom: 3rem;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1150px;
-            background: var(--surface);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            padding: 30px 35px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
-            border: 1px solid rgba(255, 255, 255, 0.8);
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #0f172a !important;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+        }
+
+        .container-fluid-custom {
+            max-width: 98%;
+            margin: 0 auto;
+        }
+
+        .form-control, .form-select {
+            background-color: #f8fafc;
+            border: 1px solid #94a3b8;
+            color: #0f172a;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #ffffff;
+            border-color: var(--accent-blue);
+            color: #0f172a;
+            box-shadow: 0 0 0 0.25rem rgba(2, 132, 199, 0.2);
+        }
+
+        .problem-item-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
             position: relative;
-            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-            gap: 15px;
-            flex-wrap: wrap;
+        .problem-item-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
         }
 
-        h2 { 
-            margin: 0; 
-            color: #0f172a; 
-            font-size: 23px; 
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-
-        .btn-action {
-            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-            color: white; border: none; padding: 10px 18px;
-            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
-            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
-
-        .btn-pdf {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            color: white; border: none; padding: 10px 18px;
-            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
-            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4); }
-
-        .filter-section {
-            background: var(--accent-bg); padding: 20px; border-radius: 16px;
-            border: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03) inset;
-        }
-        .filter-group { flex: 1; min-width: 220px; }
-
-        label { font-weight: 700; display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        input[type="date"], input[type="text"], input[type="password"], select {
-            width: 100%; padding: 12px 14px; border: 2px solid var(--border);
-            border-radius: 10px; font-size: 14px; background-color: #ffffff; color: var(--text);
-            box-sizing: border-box; outline: none; cursor: pointer; transition: all 0.2s;
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            border: none;
             font-weight: 600;
-        }
-        input:focus, select:focus {
-            border-color: var(--primary);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.2s;
         }
 
-        .meta-info-bar {
+        .btn-primary-custom:hover {
+            background: linear-gradient(135deg, #0369a1 100%, #075985 100%);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);
+        }
+
+        .img-preview-box {
+            width: 100%;
+            height: 120px;
+            border: 2px dashed #94a3b8;
+            border-radius: 0.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
+            justify-content: center;
+            overflow: hidden;
+            background: #f1f5f9;
+            cursor: pointer;
+            position: relative;
+            color: #475569;
         }
 
-        .last-update-info { 
-            font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; font-weight: 600; 
-            background: #f1f5f9; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+        .img-preview-box:hover {
+            border-color: var(--accent-blue);
+            background: #e2e8f0;
         }
-        .stats { font-size: 14px; color: var(--primary); font-weight: 700; }
 
-        .table-responsive { 
-            overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; 
-            border-radius: 14px; 
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        .img-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        table { width: 100%; border-collapse: collapse; min-width: 650px; background: white; }
-        
-        th, td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { background: #f8fafc; font-weight: 700; color: #334155; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f8fafc; transition: background 0.2s; }
-        .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; font-weight: 500; }
 
-        .action-cell { display: flex; gap: 6px; align-items: center; }
-
-        .btn-edit {
-            background-color: var(--warning); color: white; border: none; padding: 5px 10px;
-            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
+        .table-custom th {
+            background-color: #1e293b;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 1rem 0.75rem;
+            border-bottom: 2px solid #cbd5e1;
             white-space: nowrap;
         }
-        .btn-edit:hover { background-color: var(--warning-hover); }
 
-        .btn-delete {
-            background-color: var(--danger); color: white; border: none; padding: 5px 10px;
-            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
-            white-space: nowrap;
-        }
-        .btn-delete:hover { background-color: var(--danger-hover); }
-
-        .modal {
-            display: none; position: fixed; z-index: 1000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
-            justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;
-        }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 18px;
-            width: 100%; max-width: 600px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); box-sizing: border-box;
-            animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes modalSlideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .modal-header { font-size: 20px; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: #0f172a; }
-        .close-btn { cursor: pointer; font-size: 22px; color: #94a3b8; transition: color 0.2s; }
-        .close-btn:hover { color: var(--text); }
-        .form-group { margin-bottom: 16px; }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
-        .btn-cancel { background-color: #f1f5f9; color: #475569; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: background 0.2s; }
-        .btn-cancel:hover { background-color: #e2e8f0; }
-        .error-msg { color: var(--danger); font-size: 13px; margin-top: 6px; display: none; font-weight: 600; }
-
-        .notes-section {
-            margin-top: 20px; padding: 16px 20px; background: #fefce8;
-            border: 1px solid #fde047; border-radius: 14px; font-size: 13px; color: #713f12;
-        }
-        .notes-section strong { color: #854d0e; }
-        .notes-section ol { margin: 6px 0 0 0; padding-left: 20px; }
-        .notes-section li { margin-bottom: 4px; font-weight: 600; }
-
-        .qr-print-container { display: none; }
-
-        @media (max-width: 768px) {
-            body { padding: 10px 5px; }
-            .container { padding: 20px 16px; border-radius: 16px; }
-            .header-section { flex-direction: column; align-items: stretch; }
-            .btn-group { justify-content: stretch; }
-            .btn-group button { flex: 1; text-align: center; justify-content: center; }
-            .filter-section { padding: 14px; gap: 10px; }
-            h2 { font-size: 18px; }
+        .table-custom td {
+            background-color: #ffffff;
+            color: #0f172a;
+            border-color: #e2e8f0;
+            vertical-align: middle;
+            padding: 1rem 0.75rem;
+            font-size: 0.95rem;
         }
 
-        @media print {
-            body { background: #ffffff !important; padding: 0; }
-            .container { box-shadow: none; border: none; max-width: 100%; padding: 0; background: transparent; }
-            .filter-section, .btn-group, .action-col, th.action-col { display: none !important; }
-            th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
-            .qr-print-container {
-                display: flex !important; flex-direction: column; align-items: center;
-                position: absolute; top: 0px; right: 0px; text-align: center;
-            }
-            .qr-print-container img, .qr-print-container canvas { width: 75px !important; height: 75px !important; }
-            .qr-text { font-size: 9px; font-weight: 600; color: #334155; margin-top: 4px; max-width: 90px; line-height: 1.1; }
-            .header-section { padding-right: 100px; }
+        .table-img-thumb {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+            transition: transform 0.2s;
+        }
+
+        .table-img-thumb:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-blue);
         }
     </style>
 </head>
 <body>
 
-<div class="container" id="areaCetak">
-    <div class="qr-print-container">
-        <div id="qrcode"></div>
-        <div class="qr-text">Scan disini untuk melihat jadwal via web</div>
-    </div>
-
-    <div class="header-section">
-        <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
-        <div class="btn-group">
-            <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order</button>
-            <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <i class="fa-solid fa-industry text-primary"></i>
+                <span>LAPORAN PROBLEM PRODUKSI EXTRUDER</span>
+            </a>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm fw-semibold" onclick="switchTab('form')"><i class="fa-solid fa-pen-to-square me-1"></i> Form Input</button>
+                <button class="btn btn-outline-secondary btn-sm fw-semibold" onclick="switchTab('history')"><i class="fa-solid fa-clock-rotate-left me-1"></i> Riwayat Laporan</button>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <div class="filter-section">
-        <div class="filter-group" id="containerFilterSupplier">
-            <label for="pilihSupplier">Pilih Supplier:</label>
-            <select id="pilihSupplier" onchange="filterData()">
-                <option value="semua">Semua Supplier</option>
-                <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
-                <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
-            <input type="date" id="pilihTanggal" onchange="filterData()">
-        </div>
-    </div>
-
-    <div class="meta-info-bar">
-        <div class="last-update-info">
-            ⏱️ <span>Auto-Sync: <strong id="lastUpdateText">Sedang Memuat...</strong></span>
-        </div>
-        <div id="statsSummary" class="stats"></div>
-    </div>
-
-    <div class="table-responsive">
-        <table id="tabelMaterial">
-            <thead>
-                <tr>
-                    <th>Supplier</th>
-                    <th>Nama Material</th>
-                    <th>Jumlah Batch</th>
-                    <th>Tanggal Kedatangan</th>
-                    <th class="action-col">Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="isiTabel">
-                <tr><td colspan="5" class="no-data">Sabar bosku, data sedang memproses...</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="notes-section">
-        <strong>Note:</strong>
-        <ol>
-            <li>1 batch = 71 kilogram (perhitungan internal ipi)</li>
-        </ol>
-    </div>
-</div>
-
-<!-- Modal Login Admin -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span>Login Akses Admin</span>
-            <span class="close-btn" onclick="tutupModalLogin()">&times;</span>
-        </div>
-        <form onsubmit="prosesLogin(event)">
-            <div class="form-group">
-                <label for="inputUsername">Username:</label>
-                <input type="text" id="inputUsername" placeholder="Masukkan username" required>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword">Password:</label>
-                <input type="password" id="inputPassword" placeholder="Masukkan password" required>
-                <div id="loginError" class="error-msg">Username atau Password salah!</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="tutupModalLogin()">Batal</button>
-                <button type="submit" class="btn-action">Masuk</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Modal Form Input / Revisi Order -->
-<div id="orderModal" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
-        <div class="modal-header">
-            <span id="modalTitle">Tambah Order Baru</span>
-            <span class="close-btn" onclick="tutupModalOrder()">&times;</span>
-        </div>
-        <form id="orderForm" onsubmit="simpanData(event)">
-            <input type="hidden" id="editRowId">
-            <div class="form-group">
-                <label for="inputTanggal">Tanggal Kedatangan:</label>
-                <input type="date" id="inputTanggal" required>
-            </div>
-
-            <!-- Form Satuan (Khusus Edit / Revisi) -->
-            <div id="singleEditContainer">
-                <div class="form-group">
-                    <label for="inputMaterial">Nama Material:</label>
-                    <select id="inputMaterial" onchange="onMaterialChange()">
-                        <option value="">-- Pilih Material --</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="inputSupplier">Supplier:</label>
-                    <select id="inputSupplier">
-                        <option value="">-- Pilih Supplier --</option>
-                        <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
-                        <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="inputJumlah">Jumlah Batch:</label>
-                    <input type="text" id="inputJumlah" placeholder="Contoh: 28 atau 46,5">
-                </div>
-            </div>
-
-            <!-- Form Massal (Khusus Tambah Baru Banyak Material Sekaligus) -->
-            <div id="massAddContainer">
-                <label>Daftar Material yang Diorder:</label>
-                <div id="massRowsWrapper" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px; border: 1px solid var(--border); padding: 10px; border-radius: 10px; background: #f8fafc;">
-                </div>
-                <button type="button" class="btn-action" onclick="tambahBarisMassal()" style="background: var(--success); font-size: 12px; padding: 6px 12px; margin-bottom: 10px;">➕ Tambah Baris Material</button>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="tutupModalOrder()">Batal</button>
-                <button type="submit" class="btn-action" id="btnSimpan">Simpan Order</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBzLt1C3PbTLBeEhqmE7aAMeVBzUqHScETfRgH8VCW1BoYU-tfufE1NW3SEEj-DOfV/exec";
-
-    const ADMIN_USER = "ordercompond";
-    const ADMIN_PASS = "inoac12345";
-
-    let sudahLogin = false;
-    let semuaDataGlobal = [];
-    let masterMapping = {}; 
-    let optionsMaterialHTML = '<option value="">-- Pilih Material --</option>';
-    let pendingAction = null; 
-    let pendingRowData = null;
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const activeSupplierParam = urlParams.get('supplier') || "";
-
-    new QRCode(document.getElementById("qrcode"), {
-        text: window.location.href,
-        width: 75,
-        height: 75,
-    });
-
-    async function init() {
-        if (activeSupplierParam) {
-            let containerFilter = document.getElementById("containerFilterSupplier");
-            if (containerFilter) {
-                containerFilter.style.display = "none";
-            }
-        }
-
-        let tglInput = document.getElementById("pilihTanggal");
-        if (!tglInput.value) {
-            let today = new Date();
-            let yyyy = today.getFullYear();
-            let mm = String(today.getMonth() + 1).padStart(2, '0');
-            let dd = String(today.getDate()).padStart(2, '0');
-            tglInput.value = `${yyyy}-${mm}-${dd}`;
-        }
-
-        await muatMasterdataDropdown();
-        await ambilDataOrder(true); 
-    }
-
-    async function muatMasterdataDropdown() {
-        try {
-            let reqUrl = WEB_APP_URL + "?action=getMasterdata";
-            if (activeSupplierParam) {
-                reqUrl += "&supplier=" + encodeURIComponent(activeSupplierParam);
-            }
-            let res = await fetch(reqUrl);
-            let data = await res.json();
-            
-            masterMapping = data.mapping || {};
-            
-            optionsMaterialHTML = '<option value="">-- Pilih Material --</option>';
-            (data.materials || []).forEach(mat => {
-                optionsMaterialHTML += `<option value="${mat}">${mat}</option>`;
-            });
-            
-            let selectMat = document.getElementById("inputMaterial");
-            if (selectMat) selectMat.innerHTML = optionsMaterialHTML;
-        } catch (err) {
-            console.error("Gagal memuat masterdata dropdown:", err);
-        }
-    }
-
-    function onMaterialChange(selectElement = null) {
-        if (!selectElement) {
-            let selectedMat = document.getElementById("inputMaterial").value;
-            let supplierSelect = document.getElementById("inputSupplier");
-            if (masterMapping[selectedMat]) {
-                supplierSelect.value = masterMapping[selectedMat];
-            }
-        } else {
-            let rowDiv = selectElement.closest('.mass-row');
-            let selectedMat = selectElement.value;
-            let supplierSelect = rowDiv.querySelector('.mass-supplier');
-            if (masterMapping[selectedMat]) {
-                supplierSelect.value = masterMapping[selectedMat];
-            }
-        }
-    }
-
-    async function ambilDataOrder(isInitial = false) {
-        try {
-            if (isInitial) {
-                document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Tunggu ya ketua, data sedang di muat....</td></tr>`;
-            }
-            
-            let reqUrl = WEB_APP_URL;
-            if (activeSupplierParam) {
-                reqUrl += "?supplier=" + encodeURIComponent(activeSupplierParam);
-            }
-
-            let response = await fetch(reqUrl);
-            let data = await response.json();
-            semuaDataGlobal = data;
-
-            let now = new Date();
-            let formatWaktu = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
-                              now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('lastUpdateText').innerText = formatWaktu;
-            
-            filterData();
-        } catch (error) {
-            console.error("Gagal memuat data order:", error);
-            if (isInitial) {
-                document.getElementById("isiTabel").innerHTML = `
-                    <tr><td colspan="5" class="no-data" style="color: var(--danger);">Gagal memuat data dari Google Sheets. Periksa koneksi atau URL Web App Anda.</td></tr>
-                `;
-            }
-        }
-    }
-
-    function formatTampilTanggal(tglStr) {
-        if (!tglStr) return "";
-        let s = tglStr.toString().trim();
-        let parts = s.split('-');
-        if (parts.length === 3 && parts[0].length === 4) {
-            return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-        return s;
-    }
-
-    function tampilkanData(data) {
-        let tbody = document.getElementById("isiTabel");
-        tbody.innerHTML = "";
-
-        if (!data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada jadwal order pada tanggal tersebut.</td></tr>`;
-            document.getElementById("statsSummary").innerText = "";
-            return;
-        }
-
-        let totalBatch = 0;
-
-        data.forEach(row => {
-            let tr = document.createElement("tr");
-            let tanggalRapi = formatTampilTanggal(row.tanggal);
-            let displayActionBtn = sudahLogin ? "inline-block" : "none";
-
-            let jumlahNum = parseFloat(String(row.jumlah).replace(',', '.')) || 0;
-            totalBatch += jumlahNum;
-
-            tr.innerHTML = `
-                <td><strong>${row.supplier || "-"}</strong></td>
-                <td>${row.material || "-"}</td>
-                <td>${row.jumlah || "-"}</td>
-                <td>${tanggalRapi}</td>
-                <td class="action-col">
-                    <div class="action-cell">
-                        <button class="btn-edit" style="display: ${displayActionBtn};" onclick='mintaLoginDanEdit(${JSON.stringify(row)})'>✏️ Revisi</button>
-                        <button class="btn-delete" style="display: ${displayActionBtn};" onclick='konfirmasiHapus(${row.rowId})'>🗑️ Hapus</button>
+    <div class="container-fluid container-fluid-custom">
+        <!-- TAB 1: FORM INPUT -->
+        <div id="section-form" class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="glass-card p-4 p-md-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <div>
+                            <h3 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-clipboard-list text-primary me-2"></i>LAPORAN PROBLEM PRODUKSI EXTRUDER</h3>
+                            <p class="text-muted small mb-0">Isi data ringkasan shift dan tambahkan detail problem serta foto bukti.</p>
+                        </div>
+                        <span class="badge bg-primary px-3 py-2 rounded-pill">Shopfloor System</span>
                     </div>
-                </td>
+
+                    <form id="productionForm" onsubmit="handleFormSubmit(event)">
+                        <!-- HEADER SHIFT -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-secondary">Hari</label>
+                                <input type="text" id="hari" class="form-control bg-light" readonly required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-secondary">Tanggal</label>
+                                <input type="date" id="tanggal" class="form-control" required onchange="updateHari()">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-secondary">Shift Operasional</label>
+                                <select id="shift" class="form-select" required>
+                                    <option value="" disabled selected>Pilih Shift...</option>
+                                    <option value="Shift 1">Shift 1</option>
+                                    <option value="Shift 2">Shift 2</option>
+                                    <option value="Shift 3">Shift 3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-secondary">Persentase Rejection (%)</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.01" min="0" max="100" id="rejectionRate" class="form-control" placeholder="Contoh: 1.25" required>
+                                    <span class="input-group-text bg-secondary text-white border-secondary">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- CONTAINER MULTI PROBLEM -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i>Daftar Detail Problem & Improvement</h5>
+                            <button type="button" class="btn btn-sm btn-primary fw-semibold" onclick="addProblemCard()">
+                                <i class="fa-solid fa-plus me-1"></i> Tambah Problem
+                            </button>
+                        </div>
+                        <p class="text-muted small">Supervisor dapat menambahkan lebih dari satu laporan problem dalam satu shift.</p>
+
+                        <div id="problemCardsContainer" class="d-flex flex-column gap-3 mb-4">
+                            <!-- Dynamic Problem Cards -->
+                        </div>
+
+                        <!-- TOMBOL SUBMIT -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary-custom btn-lg py-3">
+                                <i class="fa-solid fa-paper-plane me-2"></i> Kirim Laporan ke Google Sheets & Drive
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: RIWAYAT LAPORAN -->
+        <div id="section-history" class="row justify-content-center d-none">
+            <div class="col-lg-12">
+                <div class="glass-card p-4 p-md-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 pb-3 border-bottom">
+                        <div>
+                            <h3 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Riwayat Laporan Tersimpan</h3>
+                            <p class="text-muted small mb-0">Daftar laporan shift dan problem yang tercatat.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success btn-sm fw-semibold" onclick="exportToCSV()"><i class="fa-solid fa-file-csv me-1"></i> Ekspor CSV</button>
+                            <button class="btn btn-outline-danger btn-sm fw-semibold" onclick="openDeleteModal()"><i class="fa-solid fa-trash me-1"></i> Hapus Riwayat</button>
+                        </div>
+                    </div>
+
+                    <!-- FILTER PERIODE TANGGAL -->
+                    <div class="row g-3 align-items-end mb-4 bg-light p-3 rounded border">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">Dari Tanggal</label>
+                            <input type="date" id="filterStartDate" class="form-control" onchange="renderHistoryTable()">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">Sampai Tanggal</label>
+                            <input type="date" id="filterEndDate" class="form-control" onchange="renderHistoryTable()">
+                        </div>
+                        <div class="col-md-4 d-flex gap-2">
+                            <button class="btn btn-secondary w-100 fw-semibold" onclick="resetFilter()"><i class="fa-solid fa-rotate-left me-1"></i> Reset Filter</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover align-middle border">
+                            <thead>
+                                <tr>
+                                    <th>Waktu / Tanggal</th>
+                                    <th>Shift</th>
+                                    <th>% Reject</th>
+                                    <th>Mesin & Bagian</th>
+                                    <th style="min-width: 250px;">Deskripsi Problem</th>
+                                    <th>Foto Problem</th>
+                                    <th style="min-width: 250px;">Tindakan Improvement</th>
+                                    <th>Foto Improvement</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- Data populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PREVIEW GAMBAR -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="imageModalTitle">Pratinjau Foto Bukti</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-3 bg-light">
+                    <img id="modalImageSrc" src="" class="img-fluid rounded shadow" style="max-height: 80vh;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PASSWORD HAPUS RIWAYAT -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fa-solid fa-lock me-2"></i>Konfirmasi Keamanan Penghapusan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Masukkan password supervisor untuk menghapus seluruh riwayat data secara permanen dari Web dan Google Sheets.</p>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Password Hapus</label>
+                        <div class="input-group">
+                            <input type="password" id="deletePasswordInput" class="form-control" placeholder="Masukkan password...">
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility()">
+                                <i class="fa-solid fa-eye" id="togglePasswordIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4" onclick="executeClearHistory()">Konfirmasi Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ==========================================
+        // KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
+        // ==========================================
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0Y4ZOMWuf8xqdoF_WW6civ2jl9VH2yo1RFvifVbz77hzC_E07CdTEIRku5Ajr/exec"; 
+
+        // PASSWORD KEAMANAN
+        const DELETE_PASSWORD = "hapus1234";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal').value = today;
+            updateHari();
+            addProblemCard();
+            loadHistory();
+        });
+
+        function updateHari() {
+            const dateVal = document.getElementById('tanggal').value;
+            if(!dateVal) return;
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const d = new Date(dateVal);
+            document.getElementById('hari').value = days[d.getDay()];
+        }
+
+        let cardIndex = 0;
+
+        function addProblemCard() {
+            cardIndex++;
+            const container = document.getElementById('problemCardsContainer');
+            const cardId = `problem-card-${cardIndex}`;
+
+            const html = `
+                <div class="problem-item-card" id="${cardId}">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-secondary fw-bold">Problem #${cardIndex}</span>
+                        ${cardIndex > 1 ? `<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCard('${cardId}')"><i class="fa-solid fa-trash"></i> Hapus</button>` : ''}
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Nama Mesin</label>
+                            <select class="form-select problem-mesin" required>
+                                <option value="" disabled selected>Pilih Mesin...</option>
+                                <option value="LINE 1">LINE 1</option>
+                                <option value="LINE 2">LINE 2</option>
+                                <option value="LINE 3">LINE 3</option>
+                                <option value="LINE 4">LINE 4</option>
+                                <option value="FLOKLES">FLOKLES</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Bagian Mesin (Input Manual)</label>
+                            <input type="text" class="form-control problem-bagian" placeholder="Misal: Drilling, HAV, Accumulator, dll." required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-secondary">Deskripsi Problem / Kejadian</label>
+                            <textarea class="form-control problem-desc" rows="2" placeholder="Jelaskan detail kendala teknis atau penyebab barang reject..." required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Foto Bukti Problem</label>
+                            <div class="img-preview-box" onclick="triggerFileInput(this)">
+                                <div class="text-center">
+                                    <i class="fa-solid fa-camera fa-lg mb-1 d-block text-primary"></i>
+                                    <span class="small fw-semibold">Ambil / Upload Foto Problem</span>
+                                </div>
+                                <input type="file" accept="image/*" class="d-none problem-foto-file" onchange="previewImage(this)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Foto Bukti Improvement (Setelah Perbaikan)</label>
+                            <div class="img-preview-box" onclick="triggerFileInput(this)">
+                                <div class="text-center">
+                                    <i class="fa-solid fa-camera fa-lg mb-1 d-block text-success"></i>
+                                    <span class="small fw-semibold">Ambil / Upload Foto Improvement</span>
+                                </div>
+                                <input type="file" accept="image/*" class="d-none improvement-foto-file" onchange="previewImage(this)">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-secondary">Tindakan Improvement / Perbaikan</label>
+                            <textarea class="form-control improvement-desc" rows="2" placeholder="Jelaskan tindakan korektif atau preventif yang dilakukan..." required></textarea>
+                        </div>
+                    </div>
+                </div>
             `;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data (Total: ${totalBatch} Batch)`;
-    }
-
-    function filterData() {
-        let supplierFilter = document.getElementById("pilihSupplier") ? document.getElementById("pilihSupplier").value : "semua";
-        let tanggalFilter = document.getElementById("pilihTanggal").value;
-
-        if (!tanggalFilter) {
-            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
-            document.getElementById("statsSummary").innerText = "";
-            return;
+            container.insertAdjacentHTML('beforeend', html);
         }
 
-        let dataFiltered = semuaDataGlobal.filter(row => {
-            let matchSupplier = true;
-            let matchTanggal = false;
-
-            if (supplierFilter !== "semua" && !activeSupplierParam) {
-                let supData = (row.supplier || "").trim().toUpperCase();
-                let supFilter = supplierFilter.trim().toUpperCase();
-                matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
-            }
-
-            let tglBaris = (row.tanggal || "").trim();
-            if (tglBaris === tanggalFilter) {
-                matchTanggal = true;
-            }
-
-            return matchSupplier && matchTanggal;
-        });
-
-        tampilkanData(dataFiltered);
-    }
-
-    function validasiAksesInput() {
-        if (sudahLogin) {
-            bukaModalTambah();
-        } else {
-            pendingAction = "tambah";
-            document.getElementById("loginError").style.display = "none";
-            document.getElementById("inputUsername").value = "";
-            document.getElementById("inputPassword").value = "";
-            document.getElementById("loginModal").style.display = "flex";
+        function removeCard(cardId) {
+            const el = document.getElementById(cardId);
+            if(el) el.remove();
         }
-    }
 
-    function mintaLoginDanEdit(row) {
-        if (sudahLogin) {
-            bukaModalEdit(row);
-        } else {
-            pendingAction = "edit";
-            pendingRowData = row;
-            document.getElementById("loginError").style.display = "none";
-            document.getElementById("inputUsername").value = "";
-            document.getElementById("inputPassword").value = "";
-            document.getElementById("loginModal").style.display = "flex";
+        function triggerFileInput(boxElement) {
+            const input = boxElement.querySelector('input[type="file"]');
+            input.click();
         }
-    }
 
-    function konfirmasiHapus(rowId) {
-        if (sudahLogin) {
-            eksekusiHapus(rowId);
-        } else {
-            pendingAction = "delete";
-            pendingRowData = rowId;
-            document.getElementById("loginError").style.display = "none";
-            document.getElementById("inputUsername").value = "";
-            document.getElementById("inputPassword").value = "";
-            document.getElementById("loginModal").style.display = "flex";
-        }
-    }
-
-    async function eksekusiHapus(rowId) {
-        if (confirm("Apakah Anda yakin ingin menghapus data order ini?")) {
-            try {
-                let response = await fetch(WEB_APP_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8"
-                    },
-                    body: JSON.stringify({ action: "delete", rowId: rowId })
-                });
-                let result = await response.json();
-                if (result.status === "success") {
-                    alert("Data berhasil dihapus!");
-                    await ambilDataOrder(false);
-                } else {
-                    alert("Gagal menghapus: " + result.message);
+        function previewImage(input) {
+            const box = input.parentElement;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    box.innerHTML = `<img src="${e.target.result}" alt="Preview"><input type="file" accept="image/*" class="d-none ${input.className}" onchange="previewImage(this)">`;
                 }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Terjadi kesalahan koneksi saat menghapus data.");
+                reader.readAsDataURL(input.files[0]);
             }
         }
-    }
 
-    function prosesLogin(event) {
-        event.preventDefault();
-        let u = document.getElementById("inputUsername").value;
-        let p = document.getElementById("inputPassword").value;
+        function switchTab(tabName) {
+            const formSection = document.getElementById('section-form');
+            const historySection = document.getElementById('section-history');
 
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            sudahLogin = true;
-            tutupModalLogin();
-            filterData();
-
-            if (pendingAction === "tambah") {
-                bukaModalTambah();
-            } else if (pendingAction === "edit" && pendingRowData) {
-                bukaModalEdit(pendingRowData);
-            } else if (pendingAction === "delete" && pendingRowData) {
-                eksekusiHapus(pendingRowData);
+            if(tabName === 'form') {
+                formSection.classList.remove('d-none');
+                historySection.classList.add('d-none');
+            } else {
+                formSection.classList.add('d-none');
+                historySection.classList.remove('d-none');
+                renderHistoryTable();
             }
-            pendingAction = null;
-            pendingRowData = null;
-        } else {
-            document.getElementById("loginError").style.display = "block";
         }
-    }
 
-    function tutupModalLogin() {
-        document.getElementById("loginModal").style.display = "none";
-    }
+        async function handleFormSubmit(event) {
+            event.preventDefault();
 
-    function bukaModalTambah() {
-        document.getElementById("modalTitle").innerText = "Tambah Order Massal";
-        document.getElementById("btnSimpan").innerText = "Simpan Semua Order";
-        document.getElementById("editRowId").value = "";
-        
-        document.getElementById("singleEditContainer").style.display = "none";
-        document.getElementById("massAddContainer").style.display = "block";
-        
-        let tglFilterVal = document.getElementById("pilihTanggal").value;
-        document.getElementById("inputTanggal").value = tglFilterVal;
-
-        document.getElementById("massRowsWrapper").innerHTML = "";
-        tambahBarisMassal(); 
-        
-        document.getElementById("orderModal").style.display = "flex";
-    }
-
-    function tambahBarisMassal() {
-        let wrapper = document.getElementById("massRowsWrapper");
-        let div = document.createElement("div");
-        div.className = "mass-row";
-        div.style.cssText = "display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: white; padding: 8px; border-radius: 8px; border: 1px solid var(--border);";
-        
-        div.innerHTML = `
-            <div style="flex: 2;">
-                <select class="mass-material" onchange="onMaterialChange(this)" required style="padding: 8px; font-size: 13px;">
-                    ${optionsMaterialHTML}
-                </select>
-            </div>
-            <div style="flex: 2;">
-                <select class="mass-supplier" required style="padding: 8px; font-size: 13px;">
-                    <option value="">-- Pilih Supplier --</option>
-                    <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
-                    <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
-                </select>
-            </div>
-            <div style="flex: 1;">
-                <input type="text" class="mass-jumlah" placeholder="Batch" required style="padding: 8px; font-size: 13px;">
-            </div>
-            <div>
-                <button type="button" onclick="this.closest('.mass-row').remove()" style="background: var(--danger); color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">✕</button>
-            </div>
-        `;
-        wrapper.appendChild(div);
-    }
-
-    function bukaModalEdit(row) {
-        document.getElementById("modalTitle").innerText = "Revisi / Edit Order";
-        document.getElementById("btnSimpan").innerText = "Perbarui Order";
-        document.getElementById("editRowId").value = row.rowId;
-        
-        document.getElementById("singleEditContainer").style.display = "block";
-        document.getElementById("massAddContainer").style.display = "none";
-        
-        document.getElementById("inputMaterial").innerHTML = optionsMaterialHTML;
-        document.getElementById("inputTanggal").value = row.tanggal;
-        document.getElementById("inputMaterial").value = row.material;
-        document.getElementById("inputSupplier").value = row.supplier;
-        document.getElementById("inputJumlah").value = row.jumlah;
-        
-        document.getElementById("orderModal").style.display = "flex";
-    }
-
-    function tutupModalOrder() {
-        document.getElementById("orderModal").style.display = "none";
-    }
-
-    async function simpanData(event) {
-        event.preventDefault();
-        
-        let rowId = document.getElementById("editRowId").value;
-        let tglValue = document.getElementById("inputTanggal").value;
-        let payload = {};
-
-        if (rowId) {
-            payload = {
-                action: "edit",
-                rowId: parseInt(rowId),
-                tanggal: tglValue,
-                supplier: document.getElementById("inputSupplier").value,
-                material: document.getElementById("inputMaterial").value,
-                jumlah: document.getElementById("inputJumlah").value
+            const headerData = {
+                hari: document.getElementById('hari').value,
+                tanggal: document.getElementById('tanggal').value,
+                shift: document.getElementById('shift').value,
+                rejectionRate: document.getElementById('rejectionRate').value,
+                supervisor: "Supervisor Extruder"
             };
-        } else {
-            let rowElements = document.querySelectorAll(".mass-row");
-            if (rowElements.length === 0) {
-                alert("Harap tambahkan minimal 1 baris material.");
+
+            const problemCards = document.querySelectorAll('.problem-item-card');
+            const problemsArray = [];
+
+            for (let card of problemCards) {
+                const mesin = card.querySelector('.problem-mesin').value;
+                const bagianMesin = card.querySelector('.problem-bagian').value;
+                const problemDesc = card.querySelector('.problem-desc').value;
+                const improvementDesc = card.querySelector('.improvement-desc').value;
+                
+                const problemImgEl = card.querySelector('.problem-foto-file').parentElement.querySelector('img');
+                const improvementImgEl = card.querySelector('.improvement-foto-file').parentElement.querySelector('img');
+
+                problemsArray.push({
+                    mesin: mesin,
+                    bagianMesin: bagianMesin,
+                    problemDesc: problemDesc,
+                    improvementDesc: improvementDesc,
+                    fotoProblem: problemImgEl ? problemImgEl.src : "",
+                    fotoImprovement: improvementImgEl ? improvementImgEl.src : ""
+                });
+            }
+
+            const payload = {
+                header: headerData,
+                problems: problemsArray
+            };
+
+            saveToLocalStorage(payload);
+
+            if(GOOGLE_SCRIPT_URL) {
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    alert(result.message || "Laporan Berhasil Terkirim ke Google Sheets & Drive!");
+                } catch(err) {
+                    console.error(err);
+                    alert("Data tersimpan di lokal, namun gagal terkirim ke server Apps Script.");
+                }
+            }
+
+            document.getElementById('productionForm').reset();
+            document.getElementById('problemCardsContainer').innerHTML = '';
+            cardIndex = 0;
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal').value = today;
+            updateHari();
+            addProblemCard();
+            switchTab('history');
+        }
+
+        function saveToLocalStorage(payload) {
+            let history = JSON.parse(localStorage.getItem('extruder_reports') || '[]');
+            history.unshift(payload);
+            localStorage.setItem('extruder_reports', JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            renderHistoryTable();
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
+            let history = JSON.parse(localStorage.getItem('extruder_reports') || '[]');
+
+            const startDate = document.getElementById('filterStartDate').value;
+            const endDate = document.getElementById('filterEndDate').value;
+
+            if (startDate || endDate) {
+                history = history.filter(item => {
+                    const itemDate = item.header.tanggal;
+                    if (startDate && endDate) return itemDate >= startDate && itemDate <= endDate;
+                    if (startDate) return itemDate >= startDate;
+                    if (endDate) return itemDate <= endDate;
+                    return true;
+                });
+            }
+
+            if(history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Belum ada riwayat laporan tersimpan atau sesuai filter tanggal.</td></tr>`;
                 return;
             }
-            
-            let items = [];
-            rowElements.forEach(el => {
-                items.push({
-                    tanggal: tglValue,
-                    material: el.querySelector(".mass-material").value,
-                    supplier: el.querySelector(".mass-supplier").value,
-                    jumlah: el.querySelector(".mass-jumlah").value
+
+            let html = '';
+            history.forEach(item => {
+                item.problems.forEach(prob => {
+                    html += `
+                        <tr>
+                            <td><small class="fw-bold">${item.header.tanggal}</small><br><span class="badge bg-secondary">${item.header.hari}</span></td>
+                            <td><span class="badge bg-info text-dark">${item.header.shift}</span></td>
+                            <td><span class="text-danger fw-bold">${item.header.rejectionRate}%</span></td>
+                            <td><strong class="text-dark">${prob.mesin}</strong><br><small class="text-muted fw-semibold">${prob.bagianMesin}</small></td>
+                            <td class="text-dark fw-medium">${prob.problemDesc}</td>
+                            <td>${prob.fotoProblem ? `<img src="${prob.fotoProblem}" class="table-img-thumb shadow-sm" onclick="showModalImage('${prob.fotoProblem}')">` : '<span class="text-muted small">Tidak ada</span>'}</td>
+                            <td class="text-dark fw-medium">${prob.improvementDesc}</td>
+                            <td>${prob.fotoImprovement ? `<img src="${prob.fotoImprovement}" class="table-img-thumb shadow-sm" onclick="showModalImage('${prob.fotoImprovement}')">` : '<span class="text-muted small">Tidak ada</span>'}</td>
+                        </tr>
+                    `;
+                });
+            });
+            tbody.innerHTML = html;
+        }
+
+        function resetFilter() {
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
+            renderHistoryTable();
+        }
+
+        function showModalImage(src) {
+            document.getElementById('modalImageSrc').src = src;
+            const myModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            myModal.show();
+        }
+
+        function openDeleteModal() {
+            document.getElementById('deletePasswordInput').value = '';
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        }
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('deletePasswordInput');
+            const icon = document.getElementById('togglePasswordIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        async function executeClearHistory() {
+            const enteredPassword = document.getElementById('deletePasswordInput').value;
+
+            if (enteredPassword === DELETE_PASSWORD) {
+                // Tutup modal password
+                const modalEl = document.getElementById('deleteModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+
+                // 1. Hapus memori lokal web
+                localStorage.removeItem('extruder_reports');
+                renderHistoryTable();
+
+                // 2. Kirim perintah hapus ke Google Sheets via Apps Script
+                if (GOOGLE_SCRIPT_URL) {
+                    try {
+                        const response = await fetch(GOOGLE_SCRIPT_URL, {
+                            method: "POST",
+                            body: JSON.stringify({ action: "clear_sheet" })
+                        });
+                        const result = await response.json();
+                        alert(result.message || "Riwayat di Web dan Google Sheets berhasil dikosongkan!");
+                    } catch(err) {
+                        console.error(err);
+                        alert("Riwayat lokal terhapus, namun gagal terhubung ke server untuk menghapus Google Sheets.");
+                    }
+                } else {
+                    alert("Riwayat lokal berhasil dihapus.");
+                }
+            } else {
+                alert("Password salah! Penghapusan dibatalkan.");
+            }
+        }
+
+        function exportToCSV() {
+            let history = JSON.parse(localStorage.getItem('extruder_reports') || '[]');
+            if(history.length === 0) { alert("Tidak ada data untuk diekspor!"); return; }
+
+            let csv = "Tanggal,Hari,Shift,Rejection (%),Mesin,Bagian Mesin,Deskripsi Problem,Tindakan Improvement\n";
+            history.forEach(item => {
+                item.problems.forEach(p => {
+                    csv += `"${item.header.tanggal}","${item.header.hari}","${item.header.shift}","${item.header.rejectionRate}%","${p.mesin}","${p.bagianMesin}","${p.problemDesc.replace(/"/g, '""')}","${p.improvementDesc.replace(/"/g, '""')}"\n`;
                 });
             });
 
-            payload = {
-                action: "add",
-                items: items
-            };
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.setAttribute('download', 'Laporan_Extruder_' + new Date().toISOString().split('T')[0] + '.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
-
-        let btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerText = "Menyimpan...";
-        btnSimpan.disabled = true;
-
-        try {
-            let response = await fetch(WEB_APP_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8"
-                },
-                body: JSON.stringify(payload)
-            });
-            let result = await response.json();
-            
-            if (result.status === "success") {
-                tutupModalOrder();
-                await ambilDataOrder(false); 
-            } else {
-                alert("Gagal menyimpan: " + result.message);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Terjadi kesalahan koneksi saat menyimpan data.");
-        } finally {
-            btnSimpan.disabled = false;
-        }
-    }
-
-    function unduhPDF() {
-        window.print();
-    }
-
-    init();
-</script>
-
+    </script>
 </body>
 </html>
