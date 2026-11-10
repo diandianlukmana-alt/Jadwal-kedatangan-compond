@@ -3,784 +3,1829 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORDER COMPOND EXTRUDER AUTOSEAL</title>
-    <!-- Library QR Code JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>Laporan Problem Produksi Extruder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --success: #059669;
-            --success-hover: #047857;
-            --warning: #d97706;
-            --warning-hover: #b45309;
-            --danger: #dc2626;
-            --danger-hover: #b91c1c;
-            --surface: rgba(255, 255, 255, 0.92);
-            --text: #1e293b;
-            --text-secondary: #475569;
-            --border: #cbd5e1;
-            --accent-bg: #f1f5f9;
+            --bg-primary: #f8fafc;
+            --accent-primary: #4f46e5;
+            --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Menggunakan kembali URL background jalanan/pohon yang cerah, jelas, dan kontras tinggi */
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15)), 
-                        url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text);
-            margin: 0;
-            padding: 25px 15px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fdf4ff 100%);
+            color: var(--text-main);
             min-height: 100vh;
-            box-sizing: border-box;
+            padding-bottom: 3rem;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1150px;
-            background: var(--surface);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            padding: 30px 35px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            position: relative;
-            box-sizing: border-box;
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-            gap: 15px;
-            flex-wrap: wrap;
+        .navbar {
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #6366f1 !important;
+            box-shadow: 0 4px 20px -2px rgba(79, 70, 229, 0.08) !important;
+        }
+        .navbar-brand { font-weight: 800; color: #0f172a !important; font-size: 1.25rem; }
+        .navbar-brand i { color: #4f46e5; }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 1.25rem;
+            box-shadow: 0 15px 35px -5px rgba(79, 70, 229, 0.08), 0 5px 15px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out forwards;
         }
 
-        h2 { 
-            margin: 0; 
-            color: #0f172a; 
-            font-size: 23px; 
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .container-fluid-custom { max-width: 98%; margin: 0 auto; }
 
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-
-        .btn-action {
-            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-            color: white; border: none; padding: 10px 18px;
-            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
-            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
-
-        .btn-pdf {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            color: white; border: none; padding: 10px 18px;
-            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
-            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4); }
-
-        .filter-section {
-            background: var(--accent-bg); padding: 20px; border-radius: 16px;
-            border: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03) inset;
-        }
-        .filter-group { flex: 1; min-width: 220px; }
-
-        label { font-weight: 700; display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        input[type="date"], input[type="text"], input[type="password"], select {
-            width: 100%; padding: 12px 14px; border: 2px solid var(--border);
-            border-radius: 10px; font-size: 14px; background-color: #ffffff; color: var(--text);
-            box-sizing: border-box; outline: none; cursor: pointer; transition: all 0.2s;
+        .form-control, .form-select {
+            background-color: #ffffff;
+            border: 2px solid #94a3b8;
+            color: #0f172a;
             font-weight: 600;
+            border-radius: 0.75rem;
+            padding: 0.7rem 1rem;
         }
-        input:focus, select:focus {
-            border-color: var(--primary);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
-        }
-
-        .meta-info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
+        .form-control:focus, .form-select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
         }
 
-        .last-update-info { 
-            font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; font-weight: 600; 
-            background: #f1f5f9; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
-        }
-        .stats { font-size: 14px; color: var(--primary); font-weight: 700; }
-
-        .table-responsive { 
-            overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; 
-            border-radius: 14px; 
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-        }
-        table { width: 100%; border-collapse: collapse; min-width: 650px; background: white; }
-        
-        th, td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { background: #f8fafc; font-weight: 700; color: #334155; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f8fafc; transition: background 0.2s; }
-        .no-data { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; font-weight: 500; }
-
-        .action-cell { display: flex; gap: 6px; align-items: center; }
-
-        .btn-edit {
-            background-color: var(--warning); color: white; border: none; padding: 5px 10px;
-            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
-            white-space: nowrap;
-        }
-        .btn-edit:hover { background-color: var(--warning-hover); }
-
-        .btn-delete {
-            background-color: var(--danger); color: white; border: none; padding: 5px 10px;
-            border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; display: none;
-            transition: background 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
-            white-space: nowrap;
-        }
-        .btn-delete:hover { background-color: var(--danger-hover); }
-
-        .modal {
-            display: none; position: fixed; z-index: 1000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
-            justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;
-        }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 18px;
-            width: 100%; max-width: 600px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); box-sizing: border-box;
-            animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes modalSlideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .modal-header { font-size: 20px; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: #0f172a; }
-        .close-btn { cursor: pointer; font-size: 22px; color: #94a3b8; transition: color 0.2s; }
-        .close-btn:hover { color: var(--text); }
-        .form-group { margin-bottom: 16px; }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
-        .btn-cancel { background-color: #f1f5f9; color: #475569; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: background 0.2s; }
-        .btn-cancel:hover { background-color: #e2e8f0; }
-        .error-msg { color: var(--danger); font-size: 13px; margin-top: 6px; display: none; font-weight: 600; }
-
-        .notes-section {
-            margin-top: 20px; padding: 16px 20px; background: #fefce8;
-            border: 1px solid #fde047; border-radius: 14px; font-size: 13px; color: #713f12;
-        }
-        .notes-section strong { color: #854d0e; }
-        .notes-section ol { margin: 6px 0 0 0; padding-left: 20px; }
-        .notes-section li { margin-bottom: 4px; font-weight: 600; }
-
-        .qr-print-container { display: none; }
-
-        @media (max-width: 768px) {
-            body { padding: 10px 5px; }
-            .container { padding: 20px 16px; border-radius: 16px; }
-            .header-section { flex-direction: column; align-items: stretch; }
-            .btn-group { justify-content: stretch; }
-            .btn-group button { flex: 1; text-align: center; justify-content: center; }
-            .filter-section { padding: 14px; gap: 10px; }
-            h2 { font-size: 18px; }
+        .item-block-card {
+            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #c7d2fe;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
+        .problem-item-card {
+            background: #f5f3ff;
+            border: 2px dashed #818cf8;
+            border-radius: 0.85rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .sub-material-box {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary-custom {
+            background: var(--accent-gradient);
+            color: #ffffff;
+            border: none;
+            font-weight: 700;
+            border-radius: 0.75rem;
+            padding: 0.85rem 1.5rem;
+            box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.4);
+        }
+        .btn-primary-custom:hover { color: #ffffff; transform: translateY(-2px); }
+
+        .multi-photo-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; }
+        .img-preview-box {
+            width: 95px; height: 95px; border: 2px dashed #6366f1; border-radius: 0.75rem;
+            display: flex; align-items: center; justify-content: center; overflow: hidden; background: #eef2ff; cursor: pointer; position: relative;
+        }
+        .img-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .table-responsive { max-height: 650px; overflow-y: auto; border-radius: 0.75rem; }
+        .table-custom th { background: linear-gradient(135deg, #312e81 0%, #3730a3 100%) !important; color: #ffffff !important; position: sticky; top: 0; z-index: 10; }
+        .table-img-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid #818cf8; margin-right: 3px; }
+
+        /* ================= PROFESSIONAL PRODUCTION REPORT PRINT STYLING ================= */
         @media print {
-            body { background: #ffffff !important; padding: 0; }
-            .container { box-shadow: none; border: none; max-width: 100%; padding: 0; background: transparent; }
-            .filter-section, .btn-group, .action-col, th.action-col { display: none !important; }
-            th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
-            .qr-print-container {
-                display: flex !important; flex-direction: column; align-items: center;
-                position: absolute; top: 0px; right: 0px; text-align: center;
+            body { background: #ffffff !important; color: #000000 !important; font-size: 10pt; padding: 0 !important; }
+            .navbar, .modal, .no-print, .btn, .glass-card > div:first-child, .row.g-3.mb-4.bg-light, .row.g-3.align-items-end { display: none !important; }
+            .glass-card { border: none !important; box-shadow: none !important; background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
+            #section-history { display: block !important; width: 100% !important; }
+            .table-responsive { max-height: none !important; overflow: visible !important; }
+            
+            .print-header {
+                display: block !important;
+                border-bottom: 3px double #000000;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                text-align: center;
             }
-            .qr-print-container img, .qr-print-container canvas { width: 75px !important; height: 75px !important; }
-            .qr-text { font-size: 9px; font-weight: 600; color: #334155; margin-top: 4px; max-width: 90px; line-height: 1.1; }
-            .header-section { padding-right: 100px; }
+            .print-header h3 { font-size: 16pt; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; color: #000 !important; }
+            .print-header h5 { font-size: 12pt; font-weight: 700; margin-bottom: 2px; color: #333 !important; }
+            .print-header p { font-size: 9pt; margin-bottom: 0; color: #555 !important; }
+
+            .table-custom th {
+                background: #222222 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-size: 9.5pt;
+            }
+            .table-custom td {
+                font-size: 9pt;
+                padding: 5px !important;
+                color: #000000 !important;
+            }
+            .table-img-thumb { width: 40px; height: 40px; border: 1px solid #000; }
         }
+        .print-header { display: none; }
     </style>
 </head>
 <body>
 
-<div class="container" id="areaCetak">
-    <div class="qr-print-container">
-        <div id="qrcode"></div>
-        <div class="qr-text">Scan disini untuk melihat jadwal via web</div>
-    </div>
-
-    <div class="header-section">
-        <h2>📦 ORDER COMPOND EXTRUDER AUTOSEAL</h2>
-        <div class="btn-group">
-            <button class="btn-action" onclick="validasiAksesInput()">➕ Input Order</button>
-            <button class="btn-pdf" onclick="unduhPDF()">📄 Download PDF</button>
-        </div>
-    </div>
-
-    <div class="filter-section">
-        <div class="filter-group" id="containerFilterSupplier">
-            <label for="pilihSupplier">Pilih Supplier:</label>
-            <select id="pilihSupplier" onchange="filterData()">
-                <option value="semua">Semua Supplier</option>
-                <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
-                <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="pilihTanggal">Pilih Tanggal Kedatangan:</label>
-            <input type="date" id="pilihTanggal" onchange="filterData()">
-        </div>
-    </div>
-
-    <div class="meta-info-bar">
-        <div class="last-update-info">
-            ⏱️ <span>Auto-Sync: <strong id="lastUpdateText">Memuat...</strong></span>
-        </div>
-        <div id="statsSummary" class="stats"></div>
-    </div>
-
-    <div class="table-responsive">
-        <table id="tabelMaterial">
-            <thead>
-                <tr>
-                    <th>Supplier</th>
-                    <th>Nama Material</th>
-                    <th>Jumlah Batch</th>
-                    <th>Tanggal Kedatangan</th>
-                    <th class="action-col">Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="isiTabel">
-                <tr><td colspan="5" class="no-data">Sabar bosku, data sedang memproses...</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="notes-section">
-        <strong>Note:</strong>
-        <ol>
-            <li>1 batch = 71 kilogram (perhitungan internal ipi)</li>
-        </ol>
-    </div>
-</div>
-
-<!-- Modal Login Admin -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span>Login Akses Admin</span>
-            <span class="close-btn" onclick="tutupModalLogin()">&times;</span>
-        </div>
-        <form onsubmit="prosesLogin(event)">
-            <div class="form-group">
-                <label for="inputUsername">Username:</label>
-                <input type="text" id="inputUsername" placeholder="Masukkan username" required>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword">Password:</label>
-                <input type="password" id="inputPassword" placeholder="Masukkan password" required>
-                <div id="loginError" class="error-msg">Username atau Password salah!</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="tutupModalLogin()">Batal</button>
-                <button type="submit" class="btn-action">Masuk</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Modal Form Input / Revisi Order -->
-<div id="orderModal" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
-        <div class="modal-header">
-            <span id="modalTitle">Tambah Order Baru</span>
-            <span class="close-btn" onclick="tutupModalOrder()">&times;</span>
-        </div>
-        <form id="orderForm" onsubmit="simpanData(event)">
-            <input type="hidden" id="editRowId">
-            <div class="form-group">
-                <label for="inputTanggal">Tanggal Kedatangan:</label>
-                <input type="date" id="inputTanggal" required>
-            </div>
-
-            <!-- Form Satuan (Khusus Edit / Revisi) -->
-            <div id="singleEditContainer">
-                <div class="form-group">
-                    <label for="inputMaterial">Nama Material:</label>
-                    <select id="inputMaterial" onchange="onMaterialChange()">
-                        <option value="">-- Pilih Material --</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="inputSupplier">Supplier:</label>
-                    <select id="inputSupplier">
-                        <option value="">-- Pilih Supplier --</option>
-                        <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
-                        <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="inputJumlah">Jumlah Batch:</label>
-                    <input type="text" id="inputJumlah" placeholder="Contoh: 28 atau 46,5">
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <i class="fa-solid fa-industry text-primary"></i>
+                <span>LAPORAN PROBLEM EXTRUDER</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-success px-3 py-2 fw-bold fs-6">🟢 TIM EXTRUDER ONLINE</span>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm fw-bold" onclick="switchTab('form')" id="navTabForm"><i class="fa-solid fa-pen-to-square me-1"></i> Form</button>
+                    <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="switchTab('history')" id="navTabHistory"><i class="fa-solid fa-chart-line me-1"></i> Dashboard</button>
                 </div>
             </div>
+        </div>
+    </nav>
 
-            <!-- Form Massal (Khusus Tambah Baru Banyak Material Sekaligus) -->
-            <div id="massAddContainer">
-                <label>Daftar Material yang Diorder:</label>
-                <div id="massRowsWrapper" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px; border: 1px solid var(--border); padding: 10px; border-radius: 10px; background: #f8fafc;">
+    <!-- MODAL PROTEKSI PASSWORD PDF -->
+    <div class="modal fade" id="pdfAuthModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white rounded-top-4 py-3">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-file-pdf me-2"></i>Verifikasi Akses Cetak / Unduh PDF</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <button type="button" class="btn-action" onclick="tambahBarisMassal()" style="background: var(--success); font-size: 12px; padding: 6px 12px; margin-bottom: 10px;">➕ Tambah Baris Material</button>
+                <div class="modal-body p-4">
+                    <p class="text-dark small fw-semibold mb-3">Masukkan kredensial khusus untuk membuka dan mengunduh laporan berformat PDF resmi:</p>
+                    <div id="pdfAuthAlert" class="alert alert-danger d-none py-2 small fw-bold" role="alert"></div>
+                    <form id="pdfAuthForm" onsubmit="executePdfPrint(event)">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-dark">Username PDF</label>
+                            <input type="text" id="pdfUsername" class="form-control" placeholder="Masukkan username..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-dark">Password PDF</label>
+                            <input type="password" id="pdfPassword" class="form-control" placeholder="Masukkan password..." required>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-dark py-2 fw-bold"><i class="fa-solid fa-print me-2"></i>Verifikasi & Buka Dokumen PDF</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="tutupModalOrder()">Batal</button>
-                <button type="submit" class="btn-action" id="btnSimpan">Simpan Order</button>
-            </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyO5Xh3ncI2TdhYfMDSg0T_iqeBkTJtbTKzIEU0qYxXHsjl-_DotrFxtlSjYXMLFRao/exec";
-
-    const ADMIN_USER = "ordercompond";
-    const ADMIN_PASS = "inoac12345";
-
-    let sudahLogin = false;
-    let semuaDataGlobal = [];
-    let masterMapping = {}; 
-    let optionsMaterialHTML = '<option value="">-- Pilih Material --</option>';
-    let pendingAction = null; 
-    let pendingRowData = null;
-
-    // Deteksi Parameter Supplier dari URL Browser
-    const urlParams = new URLSearchParams(window.location.search);
-    const activeSupplierParam = urlParams.get('supplier') || "";
-
-    new QRCode(document.getElementById("qrcode"), {
-        text: window.location.href,
-        width: 75,
-        height: 75,
-    });
-
-    async function init() {
-        // Jika diakses menggunakan link khusus supplier, sembunyikan dropdown filter supplier
-        if (activeSupplierParam) {
-            let containerFilter = document.getElementById("containerFilterSupplier");
-            if (containerFilter) {
-                containerFilter.style.display = "none";
-            }
-        }
-
-        let tglInput = document.getElementById("pilihTanggal");
-        if (!tglInput.value) {
-            let today = new Date();
-            let yyyy = today.getFullYear();
-            let mm = String(today.getMonth() + 1).padStart(2, '0');
-            let dd = String(today.getDate()).padStart(2, '0');
-            tglInput.value = `${yyyy}-${mm}-${dd}`;
-        }
-
-        await muatMasterdataDropdown();
-        await ambilDataOrder(true); 
-    }
-
-    async function muatMasterdataDropdown() {
-        try {
-            let reqUrl = WEB_APP_URL + "?action=getMasterdata";
-            if (activeSupplierParam) {
-                reqUrl += "&supplier=" + encodeURIComponent(activeSupplierParam);
-            }
-            let res = await fetch(reqUrl);
-            let data = await res.json();
-            
-            masterMapping = data.mapping || {};
-            
-            optionsMaterialHTML = '<option value="">-- Pilih Material --</option>';
-            (data.materials || []).forEach(mat => {
-                optionsMaterialHTML += `<option value="${mat}">${mat}</option>`;
-            });
-            
-            let selectMat = document.getElementById("inputMaterial");
-            if (selectMat) selectMat.innerHTML = optionsMaterialHTML;
-        } catch (err) {
-            console.error("Gagal memuat masterdata dropdown:", err);
-        }
-    }
-
-    function onMaterialChange(selectElement = null) {
-        if (!selectElement) {
-            let selectedMat = document.getElementById("inputMaterial").value;
-            let supplierSelect = document.getElementById("inputSupplier");
-            if (masterMapping[selectedMat]) {
-                supplierSelect.value = masterMapping[selectedMat];
-            }
-        } else {
-            let rowDiv = selectElement.closest('.mass-row');
-            let selectedMat = selectElement.value;
-            let supplierSelect = rowDiv.querySelector('.mass-supplier');
-            if (masterMapping[selectedMat]) {
-                supplierSelect.value = masterMapping[selectedMat];
-            }
-        }
-    }
-
-    async function ambilDataOrder(isInitial = false) {
-        try {
-            if (isInitial) {
-                document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Tunggu ya ketua, data sedang di muat....</td></tr>`;
-            }
-            
-            let reqUrl = WEB_APP_URL;
-            if (activeSupplierParam) {
-                reqUrl += "?supplier=" + encodeURIComponent(activeSupplierParam);
-            }
-
-            let response = await fetch(reqUrl);
-            let data = await response.json();
-            semuaDataGlobal = data;
-
-            let now = new Date();
-            let formatWaktu = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
-                              now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('lastUpdateText').innerText = formatWaktu;
-            
-            filterData();
-        } catch (error) {
-            console.error("Gagal memuat data order:", error);
-            if (isInitial) {
-                document.getElementById("isiTabel").innerHTML = `
-                    <tr><td colspan="5" class="no-data" style="color: var(--danger);">Gagal memuat data dari Google Sheets. Periksa koneksi atau URL Web App Anda.</td></tr>
-                `;
-            }
-        }
-    }
-
-    function formatTampilTanggal(tglStr) {
-        if (!tglStr) return "";
-        let s = tglStr.toString().trim();
-        let parts = s.split('-');
-        if (parts.length === 3 && parts[0].length === 4) {
-            return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-        return s;
-    }
-
-    function tampilkanData(data) {
-        let tbody = document.getElementById("isiTabel");
-        tbody.innerHTML = "";
-
-        if (!data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada jadwal order pada tanggal tersebut.</td></tr>`;
-            document.getElementById("statsSummary").innerText = "";
-            return;
-        }
-
-        let totalBatch = 0;
-
-        data.forEach(row => {
-            let tr = document.createElement("tr");
-            let tanggalRapi = formatTampilTanggal(row.tanggal);
-            let displayActionBtn = sudahLogin ? "inline-block" : "none";
-
-            let jumlahNum = parseFloat(String(row.jumlah).replace(',', '.')) || 0;
-            totalBatch += jumlahNum;
-
-            tr.innerHTML = `
-                <td><strong>${row.supplier || "-"}</strong></td>
-                <td>${row.material || "-"}</td>
-                <td>${row.jumlah || "-"}</td>
-                <td>${tanggalRapi}</td>
-                <td class="action-col">
-                    <div class="action-cell">
-                        <button class="btn-edit" style="display: ${displayActionBtn};" onclick='mintaLoginDanEdit(${JSON.stringify(row)})'>✏️ Revisi</button>
-                        <button class="btn-delete" style="display: ${displayActionBtn};" onclick='konfirmasiHapus(${row.rowId})'>🗑️ Hapus</button>
+    <div class="container-fluid container-fluid-custom">
+        <!-- TAB 1: FORM INPUT -->
+        <div id="section-form" class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="glass-card p-3 p-md-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-2">
+                        <div>
+                            <h3 class="fw-bold mb-1 text-dark fs-4" id="formTitle"><i class="fa-solid fa-clipboard-list text-primary me-2"></i>LAPORAN PROBLEM PRODUKSI EXTRUDER</h3>
+                            <p class="text-dark fw-semibold small mb-0">PT. INOAC POLYTECHNO INDONESIA • Department Autoseal Extruder • Plant Tangerang, Pasar Kemis</p>
+                        </div>
+                        <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold" id="formModeBadge">Input Baru</span>
                     </div>
-                </td>
-            `;
-            tbody.appendChild(tr);
+
+                    <form id="productionForm" onsubmit="handleFormSubmit(event)">
+                        <input type="hidden" id="editReportId" value="">
+
+                        <div class="row g-3 mb-4 p-3 bg-light rounded border">
+                            <div class="col-md">
+                                <label class="form-label small fw-bold text-dark">Hari</label>
+                                <input type="text" id="hari" class="form-control bg-white" readonly required>
+                            </div>
+                            <div class="col-md">
+                                <label class="form-label small fw-bold text-dark">Tanggal</label>
+                                <input type="date" id="tanggal" class="form-control" required onchange="updateHari()">
+                            </div>
+                            <div class="col-md">
+                                <label class="form-label small fw-bold text-dark">Shift Operasional</label>
+                                <select id="shift" class="form-select" required>
+                                    <option value="" disabled selected>Pilih Shift...</option>
+                                    <option value="Shift 1">Shift 1</option>
+                                    <option value="Shift 2">Shift 2</option>
+                                    <option value="Shift 3">Shift 3</option>
+                                </select>
+                            </div>
+                            <div class="col-md">
+                                <label class="form-label small fw-bold text-dark">Nama Mesin Utama</label>
+                                <select id="namaMesin" class="form-select" required>
+                                    <option value="" disabled selected>Pilih Mesin...</option>
+                                    <option value="LINE 1">LINE 1 (Target &le; 6.0%)</option>
+                                    <option value="LINE 2">LINE 2 (Target &le; 6.5%)</option>
+                                    <option value="LINE 3">LINE 3 (Target &le; 6.0%)</option>
+                                    <option value="LINE 4">LINE 4 (Target &le; 7.0%)</option>
+                                    <option value="FLOKLES">FLOKLES (Target &le; 1.5% - Material ikut Line 3)</option>
+                                </select>
+                            </div>
+                            <div class="col-md">
+                                <label class="form-label small fw-bold text-dark">Nama Pembuat Laporan (PIC)</label>
+                                <input type="text" id="picName" class="form-control" placeholder="Nama Supervisor/Operator..." required>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h5 class="fw-bold text-primary mb-0 fs-5"><i class="fa-solid fa-boxes-stacked me-2"></i>Daftar Pemakaian Material & Item Produk</h5>
+                            <button type="button" class="btn btn-sm btn-success fw-bold" onclick="addItemBlock()">
+                                <i class="fa-solid fa-plus me-1"></i> Tambah Item Produk
+                            </button>
+                        </div>
+
+                        <div id="itemBlocksContainer"></div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" id="submitBtn" class="btn btn-primary-custom btn-lg py-3">
+                                <i class="fa-solid fa-paper-plane me-2"></i> Kirim Laporan ke Google Sheets & Drive
+                            </button>
+                            <button type="button" id="cancelEditBtn" class="btn btn-outline-secondary d-none fw-bold" onclick="resetFormToNew()">
+                                Batal Revisi (Kembali ke Input Baru)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: DASHBOARD & RIWAYAT -->
+        <div id="section-history" class="row justify-content-center d-none">
+            <div class="col-lg-12">
+                <div class="glass-card p-3 p-md-5 mb-4">
+                    
+                    <!-- KOP LAPORAN KHUSUS PRINT / PDF -->
+                    <div class="print-header">
+                        <h3>PT. INOAC POLYTECHNO INDONESIA</h3>
+                        <h5>DEPARTMENT AUTOSEAL EXTRUDER • PLANT TANGERANG, PASAR KEMIS</h5>
+                        <p><strong>PRODUCTION REPORT PROBLEM & REJECTION ANALYSIS</strong></p>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 pb-3 border-bottom">
+                        <div>
+                            <h3 class="fw-bold mb-1 text-dark fs-4"><i class="fa-solid fa-chart-line text-primary me-2"></i>Dashboard & Riwayat Laporan Extruder</h3>
+                            <p class="text-dark fw-bold small mb-0">PT. INOAC POLYTECHNO INDONESIA (Auto-Refresh Setiap 30 Detik)</p>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap no-print">
+                            <button class="btn btn-outline-primary btn-sm fw-bold" onclick="openPdfAuthModal()"><i class="fa-solid fa-file-pdf me-1"></i> Cetak / PDF</button>
+                            <button class="btn btn-outline-success btn-sm fw-bold" onclick="sendReportToWhatsApp()"><i class="fa-brands fa-whatsapp me-1"></i> Kirim ke WA</button>
+                            <button class="btn btn-outline-success btn-sm fw-bold" onclick="exportToCSV()"><i class="fa-solid fa-file-csv me-1"></i> Ekspor CSV</button>
+                            <button class="btn btn-outline-danger btn-sm fw-bold" id="btnDeleteAll" onclick="openDeleteAllModal()"><i class="fa-solid fa-trash me-1"></i> Hapus Semua</button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4 no-print">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded border shadow-sm border-start border-4 border-info">
+                                <span class="text-dark fw-bold small d-block">KPI TARGET KESELURUHAN</span>
+                                <h4 class="fw-extrabold text-info mb-0 mt-1 fs-5">6.50%</h4>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded border shadow-sm border-start border-4 border-primary">
+                                <span class="text-dark fw-bold small d-block">TOTAL MATERIAL</span>
+                                <h4 class="fw-extrabold text-dark mb-0 mt-1 fs-5" id="statTotalMaterial">0.0 Kg</h4>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded border shadow-sm border-start border-4 border-danger">
+                                <span class="text-dark fw-bold small d-block">TOTAL REJECTION</span>
+                                <h4 class="fw-extrabold text-danger mb-0 mt-1 fs-5" id="statTotalReject">0.0 Kg</h4>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded border shadow-sm border-start border-4" id="statCardJudgeBorder">
+                                <span class="text-dark fw-bold small d-block">AKTUAL & JUDGE</span>
+                                <div class="d-flex align-items-center justify-content-between mt-1 flex-wrap">
+                                    <h4 class="fw-extrabold mb-0 fs-5" id="statAvgReject">0.00%</h4>
+                                    <span class="badge px-2 py-1 fs-6 fw-bold" id="statJudgeBadge">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4 no-print">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-white rounded border shadow-sm">
+                                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-column me-2 text-danger"></i>Akumulasi Rejection Berdasarkan Faktor</h6>
+                                <canvas id="factorChart" style="max-height: 220px;"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-white rounded border shadow-sm">
+                                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-bar me-2 text-danger"></i>10 Kategori Rejection Tertinggi (Kg & %)</h6>
+                                <canvas id="topProblemChart" style="max-height: 220px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-end mb-4 bg-light p-3 rounded border no-print">
+                        <div class="col-md-2 col-6">
+                            <label class="form-label small fw-bold text-dark">Dari Tanggal</label>
+                            <input type="date" id="filterStartDate" class="form-control" onchange="renderHistoryTable()">
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <label class="form-label small fw-bold text-dark">Sampai Tanggal</label>
+                            <input type="date" id="filterEndDate" class="form-control" onchange="renderHistoryTable()">
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <label class="form-label small fw-bold text-dark">Mesin</label>
+                            <select id="filterMachine" class="form-select" onchange="renderHistoryTable()">
+                                <option value="">Semua Mesin</option>
+                                <option value="LINE 1">LINE 1</option>
+                                <option value="LINE 2">LINE 2</option>
+                                <option value="LINE 3">LINE 3</option>
+                                <option value="LINE 4">LINE 4</option>
+                                <option value="FLOKLES">FLOKLES</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <label class="form-label small fw-bold text-dark">Sort Item</label>
+                            <select id="filterItem" class="form-select" onchange="renderHistoryTable()">
+                                <option value="">Semua Item</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <label class="form-label small fw-bold text-dark">Sort Problem</label>
+                            <select id="filterProblemDesc" class="form-select" onchange="renderHistoryTable()">
+                                <option value="">Semua Problem</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <button class="btn btn-secondary w-100 fw-bold" onclick="resetFilter()"><i class="fa-solid fa-rotate-left me-1"></i> Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive desktop-table-view">
+                        <table class="table table-custom table-hover align-middle border">
+                            <thead>
+                                <tr>
+                                    <th class="no-print">Aksi</th>
+                                    <th>Waktu / Shift / PIC</th>
+                                    <th>Item Produk</th>
+                                    <th>Material (Kg)</th>
+                                    <th>Faktor & Problem</th>
+                                    <th>Rejection (Kg & %)</th>
+                                    <th>Analisa & Follow Up</th>
+                                    <th>Tindakan Improvement</th>
+                                    <th>Foto Bukti</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBodyDesktop"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="mobile-card-view no-print" id="historyCardBodyMobile"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GAMBAR & DELETE -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Pratinjau Foto Bukti</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-3 bg-light">
+                    <img id="modalImageSrc" src="" class="img-fluid rounded shadow" style="max-height: 80vh;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fa-solid fa-lock me-2"></i>Konfirmasi Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-dark fw-semibold small mb-2" id="deleteModalDesc">Masukkan password untuk menghapus data.</p>
+                    <div class="input-group">
+                        <input type="password" id="deletePasswordInput" class="form-control" placeholder="Masukkan password..." onkeydown="if(event.key === 'Enter') executeDeleteAction()">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility()"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm fw-bold" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4 fw-bold" onclick="executeDeleteAction()">Konfirmasi Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCqSIJbiqBey6pAIYHmVb3BXh8r82F1_xCc2Ui5s9MH5-phvzRzTmlU7X8x6z6cuXXMg/exec"; 
+        
+        const DELETE_PASSWORD = "hapus1234";
+        const PDF_USER = "extruderhebat";
+        const PDF_PASS = "inoac1234";
+
+        let pdfAuthModalInstance = null;
+        let dynamicMasterItems = [];
+        let dynamicCategories = [];
+        let dynamicMasterCompounds = [];
+        let dynamicMasterMetals = [];
+
+        let itemIndex = 0;
+        let deleteTargetAction = null;
+        let factorChartInstance = null;
+        let topProblemChartInstance = null;
+        let autoRefreshInterval = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            pdfAuthModalInstance = new bootstrap.Modal(document.getElementById('pdfAuthModal'));
+
+            loadLocalMaterialMasters();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal').value = today;
+            updateHari();
+            addItemBlock();
+            await fetchMasterDataFromSheet();
+            populateFilterDropdowns();
+            renderHistoryTable();
+
+            startAutoRefresh();
         });
 
-        document.getElementById("statsSummary").innerText = `Menampilkan ${data.length} data (Total: ${totalBatch} Batch)`;
-    }
-
-    function filterData() {
-        let supplierFilter = document.getElementById("pilihSupplier") ? document.getElementById("pilihSupplier").value : "semua";
-        let tanggalFilter = document.getElementById("pilihTanggal").value;
-
-        if (!tanggalFilter) {
-            document.getElementById("isiTabel").innerHTML = `<tr><td colspan="5" class="no-data">Silakan pilih tanggal kedatangan terlebih dahulu.</td></tr>`;
-            document.getElementById("statsSummary").innerText = "";
-            return;
+        function openPdfAuthModal() {
+            document.getElementById('pdfUsername').value = '';
+            document.getElementById('pdfPassword').value = '';
+            document.getElementById('pdfAuthAlert').classList.add('d-none');
+            pdfAuthModalInstance.show();
         }
 
-        let dataFiltered = semuaDataGlobal.filter(row => {
-            let matchSupplier = true;
-            let matchTanggal = false;
+        function executePdfPrint(event) {
+            event.preventDefault();
+            const uInput = document.getElementById('pdfUsername').value.trim();
+            const pInput = document.getElementById('pdfPassword').value.trim();
+            const alertBox = document.getElementById('pdfAuthAlert');
 
-            if (supplierFilter !== "semua" && !activeSupplierParam) {
-                let supData = (row.supplier || "").trim().toUpperCase();
-                let supFilter = supplierFilter.trim().toUpperCase();
-                matchSupplier = supData.includes(supFilter) || supFilter.includes(supData);
-            }
-
-            let tglBaris = (row.tanggal || "").trim();
-            if (tglBaris === tanggalFilter) {
-                matchTanggal = true;
-            }
-
-            return matchSupplier && matchTanggal;
-        });
-
-        tampilkanData(dataFiltered);
-    }
-
-    function validasiAksesInput() {
-        if (sudahLogin) {
-            bukaModalTambah();
-        } else {
-            pendingAction = "tambah";
-            document.getElementById("loginError").style.display = "none";
-            document.getElementById("inputUsername").value = "";
-            document.getElementById("inputPassword").value = "";
-            document.getElementById("loginModal").style.display = "flex";
-        }
-    }
-
-    function mintaLoginDanEdit(row) {
-        if (sudahLogin) {
-            bukaModalEdit(row);
-        } else {
-            pendingAction = "edit";
-            pendingRowData = row;
-            document.getElementById("loginError").style.display = "none";
-            document.getElementById("inputUsername").value = "";
-            document.getElementById("inputPassword").value = "";
-            document.getElementById("loginModal").style.display = "flex";
-        }
-    }
-
-    function konfirmasiHapus(rowId) {
-        if (sudahLogin) {
-            eksekusiHapus(rowId);
-        } else {
-            pendingAction = "delete";
-            pendingRowData = rowId;
-            document.getElementById("loginError").style.display = "none";
-            document.getElementById("inputUsername").value = "";
-            document.getElementById("inputPassword").value = "";
-            document.getElementById("loginModal").style.display = "flex";
-        }
-    }
-
-    async function eksekusiHapus(rowId) {
-        if (confirm("Apakah Anda yakin ingin menghapus data order ini?")) {
-            try {
-                let response = await fetch(WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action: "delete", rowId: rowId })
-                });
-                let result = await response.json();
-                if (result.status === "success") {
-                    await ambilDataOrder(false);
-                } else {
-                    alert("Gagal menghapus: " + result.message);
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Terjadi kesalahan koneksi saat menghapus data.");
-            }
-        }
-    }
-
-    function prosesLogin(event) {
-        event.preventDefault();
-        let u = document.getElementById("inputUsername").value;
-        let p = document.getElementById("inputPassword").value;
-
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            sudahLogin = true;
-            tutupModalLogin();
-            filterData();
-
-            if (pendingAction === "tambah") {
-                bukaModalTambah();
-            } else if (pendingAction === "edit" && pendingRowData) {
-                bukaModalEdit(pendingRowData);
-            } else if (pendingAction === "delete" && pendingRowData) {
-                eksekusiHapus(pendingRowData);
-            }
-            pendingAction = null;
-            pendingRowData = null;
-        } else {
-            document.getElementById("loginError").style.display = "block";
-        }
-    }
-
-    function tutupModalLogin() {
-        document.getElementById("loginModal").style.display = "none";
-    }
-
-    function bukaModalTambah() {
-        document.getElementById("modalTitle").innerText = "Tambah Order Massal";
-        document.getElementById("btnSimpan").innerText = "Simpan Semua Order";
-        document.getElementById("editRowId").value = "";
-        
-        document.getElementById("singleEditContainer").style.display = "none";
-        document.getElementById("massAddContainer").style.display = "block";
-        
-        let tglFilterVal = document.getElementById("pilihTanggal").value;
-        document.getElementById("inputTanggal").value = tglFilterVal;
-
-        document.getElementById("massRowsWrapper").innerHTML = "";
-        tambahBarisMassal(); 
-        
-        document.getElementById("orderModal").style.display = "flex";
-    }
-
-    function tambahBarisMassal() {
-        let wrapper = document.getElementById("massRowsWrapper");
-        let div = document.createElement("div");
-        div.className = "mass-row";
-        div.style.cssText = "display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: white; padding: 8px; border-radius: 8px; border: 1px solid var(--border);";
-        
-        div.innerHTML = `
-            <div style="flex: 2;">
-                <select class="mass-material" onchange="onMaterialChange(this)" required style="padding: 8px; font-size: 13px;">
-                    ${optionsMaterialHTML}
-                </select>
-            </div>
-            <div style="flex: 2;">
-                <select class="mass-supplier" required style="padding: 8px; font-size: 13px;">
-                    <option value="">-- Pilih Supplier --</option>
-                    <option value="PT. IRC RUBBER MIX.PLANT">PT. IRC RUBBER MIX.PLANT</option>
-                    <option value="PT. ELASTOMIX">PT. ELASTOMIX</option>
-                </select>
-            </div>
-            <div style="flex: 1;">
-                <input type="text" class="mass-jumlah" placeholder="Batch" required style="padding: 8px; font-size: 13px;">
-            </div>
-            <div>
-                <button type="button" onclick="this.closest('.mass-row').remove()" style="background: var(--danger); color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">✕</button>
-            </div>
-        `;
-        wrapper.appendChild(div);
-    }
-
-    function bukaModalEdit(row) {
-        document.getElementById("modalTitle").innerText = "Revisi / Edit Order";
-        document.getElementById("btnSimpan").innerText = "Perbarui Order";
-        document.getElementById("editRowId").value = row.rowId;
-        
-        document.getElementById("singleEditContainer").style.display = "block";
-        document.getElementById("massAddContainer").style.display = "none";
-        
-        document.getElementById("inputMaterial").innerHTML = optionsMaterialHTML;
-        document.getElementById("inputTanggal").value = row.tanggal;
-        document.getElementById("inputMaterial").value = row.material;
-        document.getElementById("inputSupplier").value = row.supplier;
-        document.getElementById("inputJumlah").value = row.jumlah;
-        
-        document.getElementById("orderModal").style.display = "flex";
-    }
-
-    function tutupModalOrder() {
-        document.getElementById("orderModal").style.display = "none";
-    }
-
-    async function simpanData(event) {
-        event.preventDefault();
-        
-        let rowId = document.getElementById("editRowId").value;
-        let tglValue = document.getElementById("inputTanggal").value;
-        let payload = {};
-
-        if (rowId) {
-            payload = {
-                action: "edit",
-                rowId: parseInt(rowId),
-                tanggal: tglValue,
-                supplier: document.getElementById("inputSupplier").value,
-                material: document.getElementById("inputMaterial").value,
-                jumlah: document.getElementById("inputJumlah").value
-            };
-        } else {
-            let rowElements = document.querySelectorAll(".mass-row");
-            if (rowElements.length === 0) {
-                alert("Harap tambahkan minimal 1 baris material.");
+            if (uInput !== PDF_USER || pInput !== PDF_PASS) {
+                alertBox.innerText = "Username atau Password PDF salah!";
+                alertBox.classList.remove('d-none');
                 return;
             }
+
+            pdfAuthModalInstance.hide();
+
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            if (history.length > 0) {
+                let latest = history[0];
+                let tgl = latest.header.tanggal || new Date().toISOString().split('T')[0];
+                let shf = (latest.header.shift || 'Shift-1').replace(/\s+/g, '-');
+                document.title = `Laporan_Extruder_${tgl}_${shf}`;
+            } else {
+                document.title = `Laporan_Extruder_Produksi`;
+            }
+
+            window.print();
+        }
+
+        function sendReportToWhatsApp() {
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            if (history.length === 0) {
+                alert("Belum ada data laporan untuk dikirim ke WhatsApp!");
+                return;
+            }
+
+            let latestReport = history[0];
+            let header = latestReport.header || {};
+
+            const kpiTargets = { 
+                "LINE 1": { target: 6.0, desc: "≤ 6.0%" }, 
+                "LINE 2": { target: 6.5, desc: "≤ 6.5%" }, 
+                "LINE 3": { target: 6.0, desc: "≤ 6.0%" }, 
+                "LINE 4": { target: 7.0, desc: "≤ 7.0%" }, 
+                "FLOKLES": { target: 1.5, desc: "≤ 1.5%" } 
+            };
             
+            const machineInfo = kpiTargets[header.namaMesin] || { target: 6.0, desc: "≤ 6.0%" };
+            const maxThreshold = machineInfo.target;
+
+            let rawDate = header.tanggal || new Date().toISOString().split('T')[0];
+            let formattedDate = rawDate;
+            try {
+                const parts = rawDate.split('-');
+                if (parts.length === 3) {
+                    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                    formattedDate = d.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                } else {
+                    formattedDate = `${rawDate} (${header.hari || ''})`;
+                }
+            } catch(e) {
+                formattedDate = `${rawDate} (${header.hari || ''})`;
+            }
+
+            let waText = `📋 *PT. INOAC POLYTECHNO INDONESIA*\n`;
+            waText += `🏭 *Autoseal Extruder Report*\n`;
+            waText += `──────────────────────\n`;
+            waText += `📅 *Tanggal:* ${formattedDate}\n`;
+            waText += `⏰ *Shift:* ${header.shift || '-'}\n`;
+            waText += `⚙️ *Mesin:* ${header.namaMesin || '-'} (Target KPI: *${machineInfo.desc}*)\n`;
+            waText += `👤 *PIC:* ${header.pic || 'Extruderautoseal'}\n`;
+            waText += `──────────────────────\n\n`;
+
+            let totalShiftMaterial = 0;
+            let totalShiftReject = 0;
+
+            let consolidatedItems = {};
+            
+            history.forEach(report => {
+                let h = report.header || {};
+                if (h.tanggal === header.tanggal && h.shift === header.shift && h.namaMesin === header.namaMesin) {
+                    (report.items || []).forEach(item => {
+                        let itemName = item.namaItem || 'Produk';
+                        if (!consolidatedItems[itemName]) {
+                            let comp = parseFloat(item.compound) || 0;
+                            let met = parseFloat(item.metalInsert) || 0;
+                            if(item.compoundList && item.compoundList.length > 0) {
+                                comp = item.compoundList.reduce((acc, c) => acc + (parseFloat(c.weight) || 0), 0);
+                            }
+                            if(item.metalList && item.metalList.length > 0) {
+                                met = item.metalList.reduce((acc, m) => acc + (parseFloat(m.weight) || 0), 0);
+                            }
+                            consolidatedItems[itemName] = {
+                                namaItem: itemName,
+                                compound: comp,
+                                metalInsert: met,
+                                compoundList: item.compoundList || [],
+                                metalList: item.metalList || [],
+                                problems: []
+                            };
+                        }
+                        if (item.problems) {
+                            consolidatedItems[itemName].problems.push(...item.problems);
+                        }
+                    });
+                }
+            });
+
+            let itemArray = Object.values(consolidatedItems);
+
+            itemArray.forEach((item, idx) => {
+                let totMat = item.compound + item.metalInsert;
+                totalShiftMaterial += totMat;
+
+                waText += `📦 *Item #${idx+1}: ${item.namaItem}*\n`;
+                
+                if (item.compoundList && item.compoundList.length > 0) {
+                    waText += `   🧪 *Compound:*\n`;
+                    item.compoundList.forEach(c => {
+                        waText += `      • ${c.name}: ${c.weight} Kg\n`;
+                    });
+                } else if (item.compound > 0) {
+                    waText += `   🧪 *Compound:* ${item.compound} Kg\n`;
+                }
+
+                if (item.metalList && item.metalList.length > 0) {
+                    waText += `   🔩 *Metal Insert:*\n`;
+                    item.metalList.forEach(m => {
+                        waText += `      • ${m.name}: ${m.weight} Kg\n`;
+                    });
+                } else if (item.metalInsert > 0) {
+                    waText += `   🔩 *Metal Insert:* ${item.metalInsert} Kg\n`;
+                }
+
+                waText += `   🔹 *Total Material:* *${totMat.toFixed(1)} Kg*\n\n`;
+                
+                let problemsList = item.problems || [];
+                problemsList.forEach((prob, pIdx) => {
+                    let rejKg = parseFloat(prob.rejectionKg) || 0;
+                    totalShiftReject += rejKg;
+                    
+                    let rejPct = totMat > 0 ? (rejKg / totMat) * 100 : 0;
+
+                    waText += `   ⚠️ *Problem ${pIdx+1} (${prob.faktor || 'UMUM'}):* ${prob.problemDesc || '-'}\n`;
+                    waText += `   ❌ *Reject:* ${rejKg} Kg (${rejPct.toFixed(2)}%)\n`;
+                    waText += `   🔍 *Analisa:* ${(prob.analisaList || []).join('; ') || '-'}\n`;
+                    waText += `   💡 *Tindakan:* ${(prob.tindakanList || []).join('; ') || '-'}\n`;
+                });
+                waText += `\n`;
+            });
+
+            let totalShiftPct = totalShiftMaterial > 0 ? (totalShiftReject / totalShiftMaterial) * 100 : 0;
+            let isAccumulationOk = totalShiftPct <= maxThreshold;
+            let accumulationStatus = isAccumulationOk ? "✅ OK (Tercapai)" : "❌ NG (Tidak Tercapai)";
+
+            waText += `──────────────────────\n`;
+            waText += `📊 *AKUMULASI TOTAL SHIFT*\n`;
+            waText += `• Total Material: *${totalShiftMaterial.toFixed(1)} Kg*\n`;
+            waText += `• Total Rejection: *${totalShiftReject.toFixed(1)} Kg (${totalShiftPct.toFixed(2)}%)*\n`;
+            waText += `• Standar Target KPI: *${machineInfo.desc}*\n`;
+            waText += `• Status Akumulasi: *${accumulationStatus}*\n`;
+            waText += `──────────────────────\n`;
+            waText += `_Laporan dikirim otomatis via Web System Extruder Autoseal_`;
+
+            let encodedText = encodeURIComponent(waText);
+            let waUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(async () => {
+                const historySection = document.getElementById('section-history');
+                if (historySection && !historySection.classList.contains('d-none')) {
+                    await fetchMasterDataFromSheet();
+                }
+            }, 30000);
+        }
+
+        function loadLocalMaterialMasters() {
+            dynamicMasterCompounds = JSON.parse(localStorage.getItem('extruder_master_compounds') || '[]');
+            dynamicMasterMetals = JSON.parse(localStorage.getItem('extruder_master_metals') || '[]');
+        }
+
+        function saveLocalMaterialMasters() {
+            localStorage.setItem('extruder_master_compounds', JSON.stringify([...new Set(dynamicMasterCompounds)]));
+            localStorage.setItem('extruder_master_metals', JSON.stringify([...new Set(dynamicMasterMetals)]));
+        }
+
+        async function fetchMasterDataFromSheet() {
+            if(!GOOGLE_SCRIPT_URL) return;
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const result = await response.json();
+                if(result.status === "success") {
+                    dynamicMasterItems = result.items || [];
+                    dynamicCategories = result.categories || [];
+                    
+                    if(result.reports && result.reports.length > 0) {
+                        localStorage.setItem('extruder_reports_v7', JSON.stringify(result.reports));
+                        renderHistoryTable();
+                    }
+
+                    if(result.compounds) {
+                        dynamicMasterCompounds = [...new Set([...dynamicMasterCompounds, ...result.compounds])];
+                    }
+                    if(result.metals) {
+                        dynamicMasterMetals = [...new Set([...dynamicMasterMetals, ...result.metals])];
+                    }
+                    saveLocalMaterialMasters();
+
+                    document.querySelectorAll('.item-block-card').forEach(block => {
+                        refreshItemDropdown(block);
+                        block.querySelectorAll('.problem-item-card').forEach(pCard => refreshCategoryDropdown(pCard));
+                        block.querySelectorAll('.sub-compound-row').forEach(cRow => refreshCompoundDropdown(cRow));
+                        block.querySelectorAll('.sub-metal-row').forEach(mRow => refreshMetalDropdown(mRow));
+                    });
+                    populateFilterDropdowns();
+                }
+            } catch(err) {
+                console.error("Gagal mengambil master data:", err);
+            }
+        }
+
+        function populateFilterDropdowns() {
+            const itemSelect = document.getElementById('filterItem');
+            const currentItemVal = itemSelect.value;
+            let itemOpts = `<option value="">Semua Item</option>`;
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            let uniqueItems = new Set([...dynamicMasterItems]);
+            history.forEach(r => (r.items || []).forEach(i => { if(i.namaItem) uniqueItems.add(i.namaItem); }));
+            uniqueItems.forEach(item => {
+                itemOpts += `<option value="${item}" ${currentItemVal === item ? 'selected' : ''}>${item}</option>`;
+            });
+            itemSelect.innerHTML = itemOpts;
+
+            const probSelect = document.getElementById('filterProblemDesc');
+            const currentProbVal = probSelect.value;
+            let probOpts = `<option value="">Semua Problem</option>`;
+            let uniqueProbs = new Set([...dynamicCategories]);
+            history.forEach(r => (r.items || []).forEach(i => (i.problems || []).forEach(p => { if(p.problemDesc) uniqueProbs.add(p.problemDesc); })));
+            uniqueProbs.forEach(prob => {
+                probOpts += `<option value="${prob}" ${currentProbVal === prob ? 'selected' : ''}>${prob}</option>`;
+            });
+            probSelect.innerHTML = probOpts;
+        }
+
+        function refreshItemDropdown(block) {
+            const select = block.querySelector('.item-dropdown');
+            const currentValue = select.value;
+            let options = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Pilih Item Produk...</option>`;
+            dynamicMasterItems.forEach(item => {
+                options += `<option value="${item}" ${currentValue === item ? 'selected' : ''}>${item}</option>`;
+            });
+            options += `<option value="CUSTOM_INPUT" ${currentValue === 'CUSTOM_INPUT' ? 'selected' : ''}>✏️ Ketik Nama Item Lain (Manual)...</option>`;
+            select.innerHTML = options;
+        }
+
+        function refreshCategoryDropdown(pCard) {
+            const select = pCard.querySelector('.prob-desc-dropdown');
+            const currentValue = select.value;
+            let options = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Pilih Kategori Problem...</option>`;
+            dynamicCategories.forEach(cat => {
+                options += `<option value="${cat}" ${currentValue === cat ? 'selected' : ''}>${cat}</option>`;
+            });
+            options += `<option value="CUSTOM_INPUT" ${currentValue === 'CUSTOM_INPUT' ? 'selected' : ''}>✏️ Ketik Deskripsi Problem Lain (Manual)...</option>`;
+            select.innerHTML = options;
+        }
+
+        function refreshCompoundDropdown(cRow) {
+            const select = cRow.querySelector('.comp-name-dropdown');
+            const currentValue = select.value;
+            let options = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Pilih Compound...</option>`;
+            dynamicMasterCompounds.forEach(comp => {
+                options += `<option value="${comp}" ${currentValue === comp ? 'selected' : ''}>${comp}</option>`;
+            });
+            options += `<option value="CUSTOM_INPUT" ${currentValue === 'CUSTOM_INPUT' ? 'selected' : ''}>✏️ Ketik Compound Baru (Manual)...</option>`;
+            select.innerHTML = options;
+        }
+
+        function refreshMetalDropdown(mRow) {
+            const select = mRow.querySelector('.metal-name-dropdown');
+            const currentValue = select.value;
+            let options = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Pilih Metal Insert...</option>`;
+            dynamicMasterMetals.forEach(met => {
+                options += `<option value="${met}" ${currentValue === met ? 'selected' : ''}>${met}</option>`;
+            });
+            options += `<option value="CUSTOM_INPUT" ${currentValue === 'CUSTOM_INPUT' ? 'selected' : ''}>✏️ Ketik Metal Insert Baru (Manual)...</option>`;
+            select.innerHTML = options;
+        }
+
+        function updateHari() {
+            const dateVal = document.getElementById('tanggal').value;
+            if(!dateVal) return;
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const d = new Date(dateVal);
+            document.getElementById('hari').value = days[d.getDay()];
+        }
+
+        function formatTanggalIndo(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const cleanDate = String(dateStr).split('T')[0];
+                const parts = cleanDate.split('-');
+                if (parts.length === 3) {
+                    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' };
+                    let formatted = d.toLocaleDateString('id-ID', options);
+                    return formatted.replace(/,\s*/, ', ').replace(/\s+/g, '-');
+                }
+                const d2 = new Date(dateStr);
+                if (!isNaN(d2)) {
+                    let formatted = d2.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' });
+                    return formatted.replace(/,\s*/, ', ').replace(/\s+/g, '-');
+                }
+                return dateStr;
+            } catch(e) {
+                return dateStr;
+            }
+        }
+
+        function getDriveDirectEmbedUrl(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com/file/d/')) {
+                const fileIdMatch = url.match(/\/d\/(.*?)\//);
+                if (fileIdMatch && fileIdMatch[1]) {
+                    return `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w1000`;
+                }
+            } else if (url.includes('id=')) {
+                const urlParams = new URLSearchParams(url.split('?')[1]);
+                const fileId = urlParams.get('id');
+                if (fileId) {
+                    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+                }
+            }
+            return url;
+        }
+
+        function addItemBlock(existingData = null) {
+            itemIndex++;
+            const currentItemIdx = itemIndex;
+            const container = document.getElementById('itemBlocksContainer');
+            const itemBlockId = `item-block-${currentItemIdx}`;
+
+            const isExistingCustom = existingData && !dynamicMasterItems.includes(existingData.namaItem);
+            const customInputDisplay = isExistingCustom ? "block" : "none";
+            const customInputValue = isExistingCustom ? existingData.namaItem : "";
+
+            let dropdownOptions = `<option value="" disabled ${!existingData ? 'selected' : ''}>Pilih Item Produk...</option>`;
+            dynamicMasterItems.forEach(item => {
+                const selected = (existingData && existingData.namaItem === item) ? 'selected' : '';
+                dropdownOptions += `<option value="${item}" ${selected}>${item}</option>`;
+            });
+            dropdownOptions += `<option value="CUSTOM_INPUT">✏️ Ketik Nama Item Lain (Manual)...</option>`;
+
+            const html = `
+                <div class="item-block-card" id="${itemBlockId}" data-item-idx="${currentItemIdx}">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-box text-primary me-2"></i>Item Produk #${currentItemIdx}</h6>
+                        ${currentItemIdx > 1 ? `<button type="button" class="btn btn-sm btn-outline-danger fw-bold" onclick="removeItemBlock('${itemBlockId}')"><i class="fa-solid fa-trash"></i> Hapus Item</button>` : ''}
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-dark">Nama / Kode Item Produk</label>
+                            <select class="form-select item-dropdown mb-2" onchange="handleItemDropdownChange('${itemBlockId}')" required>
+                                ${dropdownOptions}
+                            </select>
+                            <input type="text" class="form-control item-nama-custom mt-1" placeholder="Ketik nama item baru..." value="${customInputValue}" style="display: ${customInputDisplay};" ${isExistingCustom ? 'required' : ''}>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold text-dark">Ringkasan Total Material Terhitung (Rumus Otomatis)</label>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <input type="text" class="form-control bg-light fw-bold text-primary total-compound-summary" readonly value="0.0 Kg">
+                                    <span class="micro-label text-muted d-block mt-1">Tot Compound</span>
+                                </div>
+                                <div class="col-4">
+                                    <input type="text" class="form-control bg-light fw-bold text-info total-metal-summary" readonly value="0.0 Kg">
+                                    <span class="micro-label text-muted d-block mt-1">Tot Metal</span>
+                                </div>
+                                <div class="col-4">
+                                    <input type="text" class="form-control bg-light fw-bold text-dark item-total-material" readonly value="0.0 Kg">
+                                    <span class="micro-label text-muted d-block mt-1">Total Material</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sub-material-box mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-dark small"><i class="fa-solid fa-flask text-primary me-1"></i> Rincian Pemakaian Compound</span>
+                            <button type="button" class="btn btn-xs btn-outline-primary fw-bold py-1 px-2" onclick="addCompoundRow('${itemBlockId}')"><i class="fa-solid fa-plus me-1"></i> Tambah</button>
+                        </div>
+                        <div class="compounds-container d-flex flex-column gap-2" id="compounds-container-${itemBlockId}"></div>
+                    </div>
+
+                    <div class="sub-material-box mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-dark small"><i class="fa-solid fa-layer-group text-info me-1"></i> Rincian Pemakaian Metal Insert</span>
+                            <button type="button" class="btn btn-xs btn-outline-info fw-bold py-1 px-2" onclick="addMetalRow('${itemBlockId}')"><i class="fa-solid fa-plus me-1"></i> Tambah</button>
+                        </div>
+                        <div class="metals-container d-flex flex-column gap-2" id="metals-container-${itemBlockId}"></div>
+                    </div>
+
+                    <div class="bg-light p-3 rounded border mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-bold text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i>Detail Problem, Analisa, & Tindakan</span>
+                            <button type="button" class="btn btn-xs btn-primary fw-bold py-1 px-2" onclick="addProblemToItem('${itemBlockId}')"><i class="fa-solid fa-plus me-1"></i> Tambah Problem</button>
+                        </div>
+                        <div class="problems-container d-flex flex-column gap-3" id="problems-container-${itemBlockId}"></div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+
+            if(existingData && existingData.compoundList && existingData.compoundList.length > 0) {
+                existingData.compoundList.forEach(c => addCompoundRow(itemBlockId, c));
+            } else if(existingData && existingData.compound) {
+                addCompoundRow(itemBlockId, { name: "Compound Utama", weight: existingData.compound });
+            } else {
+                addCompoundRow(itemBlockId);
+            }
+
+            if(existingData && existingData.metalList && existingData.metalList.length > 0) {
+                existingData.metalList.forEach(m => addMetalRow(itemBlockId, m));
+            } else if(existingData && existingData.metalInsert && parseFloat(existingData.metalInsert) > 0) {
+                addMetalRow(itemBlockId, { name: "Metal Insert Utama", weight: existingData.metalInsert });
+            } else {
+                addMetalRow(itemBlockId);
+            }
+
+            if(existingData && existingData.problems) {
+                existingData.problems.forEach(pData => addProblemToItem(itemBlockId, pData));
+            } else {
+                addProblemToItem(itemBlockId);
+            }
+        }
+
+        function handleItemDropdownChange(itemBlockId) {
+            const block = document.getElementById(itemBlockId);
+            const dropdown = block.querySelector('.item-dropdown');
+            const customInput = block.querySelector('.item-nama-custom');
+            if (dropdown.value === "CUSTOM_INPUT") {
+                customInput.style.display = "block";
+                customInput.value = "";
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customInput.style.display = "none";
+                customInput.value = dropdown.value;
+                customInput.required = false;
+            }
+        }
+
+        function removeItemBlock(itemBlockId) {
+            document.getElementById(itemBlockId)?.remove();
+        }
+
+        function addCompoundRow(itemBlockId, existingComp = null) {
+            const container = document.getElementById(`compounds-container-${itemBlockId}`);
+            const rowCount = container.children.length + 1;
+            const cRowId = `${itemBlockId}-comp-${rowCount}`;
+
+            const isCustom = existingComp && !dynamicMasterCompounds.includes(existingComp.name);
+            const customDisplay = isCustom ? "block" : "none";
+            const customVal = isCustom ? existingComp.name : "";
+
+            let compOptions = `<option value="" disabled ${!existingComp ? 'selected' : ''}>Pilih Jenis Compound...</option>`;
+            dynamicMasterCompounds.forEach(c => {
+                const selected = (existingComp && existingComp.name === c) ? 'selected' : '';
+                compOptions += `<option value="${c}" ${selected}>${c}</option>`;
+            });
+            compOptions += `<option value="CUSTOM_INPUT" ${isCustom ? 'selected' : ''}>✏️ Ketik Compound Baru (Manual)...</option>`;
+
+            const html = `
+                <div class="row g-2 align-items-center sub-compound-row" id="${cRowId}">
+                    <div class="col-md-6">
+                        <select class="form-select form-select-sm comp-name-dropdown" onchange="handleCompoundDropdownChange('${cRowId}')" required>
+                            ${compOptions}
+                        </select>
+                        <input type="text" class="form-control form-control-sm comp-name-custom mt-1" placeholder="Ketik compound baru..." value="${customVal}" style="display: ${customDisplay};" ${isCustom ? 'required' : ''}>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="input-group input-group-sm">
+                            <input type="number" step="0.1" min="0" class="form-control comp-weight-input fw-semibold" placeholder="0" value="${existingComp ? existingComp.weight : ''}" oninput="calculateItemTotals('${itemBlockId}')" required>
+                            <span class="input-group-text">Kg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-1 text-end">
+                        ${rowCount > 1 ? `<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="removeSubRow('${cRowId}', '${itemBlockId}')"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            calculateItemTotals(itemBlockId);
+        }
+
+        function handleCompoundDropdownChange(cRowId) {
+            const row = document.getElementById(cRowId);
+            const dropdown = row.querySelector('.comp-name-dropdown');
+            const customInput = row.querySelector('.comp-name-custom');
+            if (dropdown.value === "CUSTOM_INPUT") {
+                customInput.style.display = "block";
+                customInput.value = "";
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customInput.style.display = "none";
+                customInput.value = dropdown.value;
+                customInput.required = false;
+            }
+        }
+
+        function addMetalRow(itemBlockId, existingMetal = null) {
+            const container = document.getElementById(`metals-container-${itemBlockId}`);
+            const rowCount = container.children.length + 1;
+            const mRowId = `${itemBlockId}-metal-${rowCount}`;
+
+            const isCustom = existingMetal && !dynamicMasterMetals.includes(existingMetal.name);
+            const customDisplay = isCustom ? "block" : "none";
+            const customVal = isCustom ? existingMetal.name : "";
+
+            let metalOptions = `<option value="" disabled ${!existingMetal ? 'selected' : ''}>Pilih Jenis Metal Insert...</option>`;
+            dynamicMasterMetals.forEach(m => {
+                const selected = (existingMetal && existingMetal.name === m) ? 'selected' : '';
+                metalOptions += `<option value="${m}" ${selected}>${m}</option>`;
+            });
+            metalOptions += `<option value="CUSTOM_INPUT" ${isCustom ? 'selected' : ''}>✏️ Ketik Metal Insert Baru (Manual)...</option>`;
+
+            const html = `
+                <div class="row g-2 align-items-center sub-metal-row" id="${mRowId}">
+                    <div class="col-md-6">
+                        <select class="form-select form-select-sm metal-name-dropdown" onchange="handleMetalDropdownChange('${mRowId}')">
+                            ${metalOptions}
+                        </select>
+                        <input type="text" class="form-control form-control-sm metal-name-custom mt-1" placeholder="Ketik metal baru..." value="${customVal}" style="display: ${customDisplay};">
+                    </div>
+                    <div class="col-md-5">
+                        <div class="input-group input-group-sm">
+                            <input type="number" step="0.1" min="0" class="form-control metal-weight-input fw-semibold" placeholder="0" value="${existingMetal ? existingMetal.weight : ''}" oninput="calculateItemTotals('${itemBlockId}')">
+                            <span class="input-group-text">Kg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-1 text-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="removeSubRow('${mRowId}', '${itemBlockId}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            calculateItemTotals(itemBlockId);
+        }
+
+        function handleMetalDropdownChange(mRowId) {
+            const row = document.getElementById(mRowId);
+            const dropdown = row.querySelector('.metal-name-dropdown');
+            const customInput = row.querySelector('.metal-name-custom');
+            if (dropdown.value === "CUSTOM_INPUT") {
+                customInput.style.display = "block";
+                customInput.value = "";
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customInput.style.display = "none";
+                customInput.value = dropdown.value;
+                customInput.required = false;
+            }
+        }
+
+        function removeSubRow(rowId, itemBlockId) {
+            document.getElementById(rowId)?.remove();
+            calculateItemTotals(itemBlockId);
+        }
+
+        function addProblemToItem(itemBlockId, existingProb = null) {
+            const problemsContainer = document.getElementById(`problems-container-${itemBlockId}`);
+            const probCount = problemsContainer.children.length + 1;
+            const probCardId = `${itemBlockId}-prob-${probCount}`;
+
+            const isCustomDesc = existingProb && !dynamicCategories.includes(existingProb.problemDesc);
+            const descInputDisplay = isCustomDesc ? "block" : "none";
+            const descInputValue = isCustomDesc ? existingProb.problemDesc : "";
+
+            let catOptions = `<option value="" disabled ${!existingProb ? 'selected' : ''}>Pilih Kategori Problem...</option>`;
+            dynamicCategories.forEach(cat => {
+                const selected = (existingProb && existingProb.problemDesc === cat) ? 'selected' : '';
+                catOptions += `<option value="${cat}" ${selected}>${cat}</option>`;
+            });
+            catOptions += `<option value="CUSTOM_INPUT" ${isCustomDesc ? 'selected' : ''}>✏️ Ketik Deskripsi Problem Lain (Manual)...</option>`;
+
+            const html = `
+                <div class="problem-item-card" id="${probCardId}">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-secondary fw-bold">Problem #${probCount}</span>
+                        ${probCount > 1 ? `<button type="button" class="btn btn-sm btn-link text-danger p-0 text-decoration-none fw-bold" onclick="removeProblemCard('${probCardId}')"><i class="fa-solid fa-xmark"></i> Hapus</button>` : ''}
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label micro-label fw-bold text-dark">Faktor</label>
+                            <select class="form-select prob-faktor" required>
+                                <option value="" disabled ${!existingProb ? 'selected' : ''}>Pilih Faktor...</option>
+                                <option value="MESIN" ${existingProb && existingProb.faktor === 'MESIN' ? 'selected' : ''}>MESIN</option>
+                                <option value="METHODE" ${existingProb && existingProb.faktor === 'METHODE' ? 'selected' : ''}>METHODE</option>
+                                <option value="MATERIAL" ${existingProb && existingProb.faktor === 'MATERIAL' ? 'selected' : ''}>MATERIAL</option>
+                                <option value="MAN" ${existingProb && existingProb.faktor === 'MAN' ? 'selected' : ''}>MAN</option>
+                                <option value="ENVIRONMENT" ${existingProb && existingProb.faktor === 'ENVIRONMENT' ? 'selected' : ''}>ENVIRONMENT</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label micro-label fw-bold text-dark">Deskripsi Problem</label>
+                            <select class="form-select prob-desc-dropdown mb-1" onchange="handleProblemDropdownChange('${probCardId}')" required>
+                                ${catOptions}
+                            </select>
+                            <input type="text" class="form-control form-control-sm prob-desc-custom mt-1" placeholder="Ketik deskripsi problem..." value="${descInputValue}" style="display: ${descInputDisplay};" ${isCustomDesc ? 'required' : ''}>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label micro-label fw-bold text-dark">Jumlah Rejection (Kg)</label>
+                            <input type="number" step="0.1" min="0" class="form-control prob-reject-kg" placeholder="0" value="${existingProb ? existingProb.rejectionKg : ''}" oninput="calculateItemTotals('${itemBlockId}')" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label micro-label fw-bold text-dark">Persentase Reject (%)</label>
+                            <input type="text" class="form-control bg-light fw-bold text-danger prob-reject-pct" readonly value="0.00%">
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-4">
+                            <label class="form-label micro-label fw-bold text-dark">Analisa (Multi Input)</label>
+                            <div class="analisa-container d-flex flex-column gap-1 mb-1"></div>
+                            <button type="button" class="btn btn-xs btn-outline-secondary fw-bold py-0 px-2" onclick="addAnalisaRow('${probCardId}')"><i class="fa-solid fa-plus me-1"></i> Tambah Analisa</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label micro-label fw-bold text-dark">Follow Up (Multi Input)</label>
+                            <div class="followup-container d-flex flex-column gap-1 mb-1"></div>
+                            <button type="button" class="btn btn-xs btn-outline-secondary fw-bold py-0 px-2" onclick="addFollowUpRow('${probCardId}')"><i class="fa-solid fa-plus me-1"></i> Tambah Follow Up</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label micro-label fw-bold text-dark">Tindakan Improvement (Multi Input)</label>
+                            <div class="tindakan-container d-flex flex-column gap-1 mb-1"></div>
+                            <button type="button" class="btn btn-xs btn-outline-secondary fw-bold py-0 px-2" onclick="addTindakanRow('${probCardId}')"><i class="fa-solid fa-plus me-1"></i> Tambah Tindakan</button>
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-2 pt-2 border-top">
+                        <div class="col-md-6">
+                            <label class="form-label micro-label fw-bold text-dark">Foto Bukti Problem (Max 3)</label>
+                            <div class="multi-photo-container prob-photo-container" data-prob-id="${probCardId}">
+                                <div class="img-preview-box" onclick="triggerPhotoInput(this)">
+                                    <i class="fa-solid fa-camera text-secondary fs-4"></i>
+                                    <input type="file" accept="image/*" class="d-none" onchange="handlePhotoUpload(this)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label micro-label fw-bold text-dark">Foto Bukti Improvement (Max 3)</label>
+                            <div class="multi-photo-container imp-photo-container" data-prob-id="${probCardId}">
+                                <div class="img-preview-box" onclick="triggerPhotoInput(this)">
+                                    <i class="fa-solid fa-camera text-secondary fs-4"></i>
+                                    <input type="file" accept="image/*" class="d-none" onchange="handlePhotoUpload(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            problemsContainer.insertAdjacentHTML('beforeend', html);
+
+            if(existingProb) {
+                if(existingProb.analisaList && existingProb.analisaList.length > 0) {
+                    existingProb.analisaList.forEach(a => addAnalisaRow(probCardId, a));
+                } else { addAnalisaRow(probCardId); }
+
+                if(existingProb.followUpList && existingProb.followUpList.length > 0) {
+                    existingProb.followUpList.forEach(f => addFollowUpRow(probCardId, f));
+                } else { addFollowUpRow(probCardId); }
+
+                if(existingProb.tindakanList && existingProb.tindakanList.length > 0) {
+                    existingProb.tindakanList.forEach(t => addTindakanRow(probCardId, t));
+                } else { addTindakanRow(probCardId); }
+
+                if(existingProb.photoProblemList) {
+                    existingProb.photoProblemList.forEach(pUrl => addPhotoToContainer(probCardId, 'prob', pUrl));
+                }
+                if(existingProb.photoImprovementList) {
+                    existingProb.photoImprovementList.forEach(iUrl => addPhotoToContainer(probCardId, 'imp', iUrl));
+                }
+            } else {
+                addAnalisaRow(probCardId);
+                addFollowUpRow(probCardId);
+                addTindakanRow(probCardId);
+            }
+            calculateItemTotals(itemBlockId);
+        }
+
+        function handleProblemDropdownChange(probCardId) {
+            const card = document.getElementById(probCardId);
+            const dropdown = card.querySelector('.prob-desc-dropdown');
+            const customInput = card.querySelector('.prob-desc-custom');
+            if (dropdown.value === "CUSTOM_INPUT") {
+                customInput.style.display = "block";
+                customInput.value = "";
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customInput.style.display = "none";
+                customInput.value = dropdown.value;
+                customInput.required = false;
+            }
+        }
+
+        function removeProblemCard(probCardId) {
+            const card = document.getElementById(probCardId);
+            if(card) {
+                const itemBlock = card.closest('.item-block-card');
+                card.remove();
+                if(itemBlock) calculateItemTotals(itemBlock.id);
+            }
+        }
+
+        function addAnalisaRow(probCardId, val = "") {
+            const container = document.querySelector(`#${probCardId} .analisa-container`);
+            const count = container.children.length + 1;
+            const rowId = `${probCardId}-analisa-${count}`;
+            const html = `
+                <div class="input-group input-group-sm" id="${rowId}">
+                    <input type="text" class="form-control analisa-input" placeholder="Tulis analisa..." value="${val}">
+                    ${count > 1 ? `<button type="button" class="btn btn-outline-danger" onclick="document.getElementById('${rowId}').remove()"><i class="fa-solid fa-xmark"></i></button>` : ''}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addFollowUpRow(probCardId, val = "") {
+            const container = document.querySelector(`#${probCardId} .followup-container`);
+            const count = container.children.length + 1;
+            const rowId = `${probCardId}-followup-${count}`;
+            const html = `
+                <div class="input-group input-group-sm" id="${rowId}">
+                    <input type="text" class="form-control followup-input" placeholder="Tulis follow up..." value="${val}">
+                    ${count > 1 ? `<button type="button" class="btn btn-outline-danger" onclick="document.getElementById('${rowId}').remove()"><i class="fa-solid fa-xmark"></i></button>` : ''}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function addTindakanRow(probCardId, val = "") {
+            const container = document.querySelector(`#${probCardId} .tindakan-container`);
+            const count = container.children.length + 1;
+            const rowId = `${probCardId}-tindakan-${count}`;
+            const html = `
+                <div class="input-group input-group-sm" id="${rowId}">
+                    <input type="text" class="form-control tindakan-input" placeholder="Tulis tindakan improvement..." value="${val}">
+                    ${count > 1 ? `<button type="button" class="btn btn-outline-danger" onclick="document.getElementById('${rowId}').remove()"><i class="fa-solid fa-xmark"></i></button>` : ''}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function triggerPhotoInput(box) {
+            const input = box.querySelector('input[type="file"]');
+            input.click();
+        }
+
+        function handlePhotoUpload(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Img = e.target.result;
+                const previewBox = input.parentElement;
+                previewBox.innerHTML = `<img src="${base64Img}"><button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-1 rounded-circle p-1" style="width:20px;height:20px;font-size:10px;display:flex;align-items:center;justify-content:center;" onclick="removePhotoBox(this, event)"><i class="fa-solid fa-xmark"></i></button>`;
+                previewBox.removeAttribute('onclick');
+
+                const parentContainer = previewBox.parentElement;
+                if(parentContainer.children.length < 3) {
+                    const newBox = document.createElement('div');
+                    newBox.className = "img-preview-box";
+                    newBox.setAttribute('onclick', 'triggerPhotoInput(this)');
+                    newBox.innerHTML = `<i class="fa-solid fa-camera text-secondary fs-4"></i><input type="file" accept="image/*" class="d-none" onchange="handlePhotoUpload(this)">`;
+                    parentContainer.appendChild(newBox);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePhotoBox(btn, event) {
+            event.stopPropagation();
+            const box = btn.parentElement;
+            const parentContainer = box.parentElement;
+            box.remove();
+
+            const hasEmptyBox = Array.from(parentContainer.children).some(child => child.querySelector('input[type="file"]'));
+            if(!hasEmptyBox && parentContainer.children.length < 3) {
+                const newBox = document.createElement('div');
+                newBox.className = "img-preview-box";
+                newBox.setAttribute('onclick', 'triggerPhotoInput(this)');
+                newBox.innerHTML = `<i class="fa-solid fa-camera text-secondary fs-4"></i><input type="file" accept="image/*" class="d-none" onchange="handlePhotoUpload(this)">`;
+                parentContainer.appendChild(newBox);
+            }
+        }
+
+        function addPhotoToContainer(probCardId, type, url) {
+            if(!url) return;
+            const container = document.querySelector(`#${probCardId} .${type === 'prob' ? 'prob' : 'imp'}-photo-container`);
+            const emptyBox = Array.from(container.children).find(child => !child.querySelector('img'));
+            const targetBox = emptyBox || document.createElement('div');
+            targetBox.className = "img-preview-box position-relative";
+            targetBox.removeAttribute('onclick');
+            targetBox.innerHTML = `<img src="${url}"><button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-1 rounded-circle p-1" style="width:20px;height:20px;font-size:10px;display:flex;align-items:center;justify-content:center;" onclick="removePhotoBox(this, event)"><i class="fa-solid fa-xmark"></i></button>`;
+            if(!emptyBox) container.appendChild(targetBox);
+        }
+
+        function calculateItemTotals(itemBlockId) {
+            const block = document.getElementById(itemBlockId);
+            if(!block) return;
+
+            let totComp = 0;
+            block.querySelectorAll('.comp-weight-input').forEach(inp => {
+                totComp += parseFloat(inp.value) || 0;
+            });
+
+            let totMetal = 0;
+            block.querySelectorAll('.metal-weight-input').forEach(inp => {
+                totMetal += parseFloat(inp.value) || 0;
+            });
+
+            const totMat = totComp + totMetal;
+            
+            const compSummary = block.querySelector('.total-compound-summary');
+            const metalSummary = block.querySelector('.total-metal-summary');
+            const totalMatSummary = block.querySelector('.item-total-material');
+
+            if(compSummary) compSummary.value = `${totComp.toFixed(1)} Kg`;
+            if(metalSummary) metalSummary.value = `${totMetal.toFixed(1)} Kg`;
+            if(totalMatSummary) totalMatSummary.value = `${totMat.toFixed(1)} Kg`;
+
+            block.querySelectorAll('.problem-item-card').forEach(pCard => {
+                const rejInput = pCard.querySelector('.prob-reject-kg');
+                const pctInput = pCard.querySelector('.prob-reject-pct');
+                
+                if(rejInput && pctInput) {
+                    const rejKg = parseFloat(rejInput.value) || 0;
+                    const pct = totMat > 0 ? (rejKg / totMat) * 100 : 0;
+                    pctInput.value = `${pct.toFixed(2)}%`;
+                }
+            });
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan Data...`;
+
+            const header = {
+                id: document.getElementById('editReportId').value || ('REP-' + Date.now()),
+                tanggal: document.getElementById('tanggal').value,
+                hari: document.getElementById('hari').value,
+                shift: document.getElementById('shift').value,
+                namaMesin: document.getElementById('namaMesin').value,
+                pic: document.getElementById('picName').value || 'Extruderautoseal',
+                timestamp: new Date().toISOString()
+            };
+
             let items = [];
-            rowElements.forEach(el => {
+            const itemBlocks = document.querySelectorAll('.item-block-card');
+            for(let block of itemBlocks) {
+                const itemDropdown = block.querySelector('.item-dropdown');
+                let namaItem = itemDropdown.value;
+                if(namaItem === "CUSTOM_INPUT") {
+                    namaItem = block.querySelector('.item-nama-custom').value.trim();
+                }
+
+                let compoundList = [];
+                block.querySelectorAll('.sub-compound-row').forEach(row => {
+                    const d = row.querySelector('.comp-name-dropdown');
+                    let cName = d.value === "CUSTOM_INPUT" ? row.querySelector('.comp-name-custom').value.trim() : d.value;
+                    let cWeight = parseFloat(row.querySelector('.comp-weight-input').value) || 0;
+                    if(cName) compoundList.push({ name: cName, weight: cWeight });
+                });
+
+                let metalList = [];
+                block.querySelectorAll('.sub-metal-row').forEach(row => {
+                    const d = row.querySelector('.metal-name-dropdown');
+                    let mName = d.value === "CUSTOM_INPUT" ? row.querySelector('.metal-name-custom').value.trim() : d.value;
+                    let mWeight = parseFloat(row.querySelector('.metal-weight-input').value) || 0;
+                    if(mName && mWeight > 0) metalList.push({ name: mName, weight: mWeight });
+                });
+
+                let totComp = compoundList.reduce((acc, cur) => acc + cur.weight, 0);
+                let totMetal = metalList.reduce((acc, cur) => acc + cur.weight, 0);
+
+                let problems = [];
+                const probCards = block.querySelectorAll('.problem-item-card');
+                for(let pCard of probCards) {
+                    const pDropdown = pCard.querySelector('.prob-desc-dropdown');
+                    let probDesc = pDropdown.value === "CUSTOM_INPUT" ? pCard.querySelector('.prob-desc-custom').value.trim() : pDropdown.value;
+
+                    let analisaList = [];
+                    pCard.querySelectorAll('.analisa-input').forEach(inp => { if(inp.value.trim()) analisaList.push(inp.value.trim()); });
+
+                    let followUpList = [];
+                    pCard.querySelectorAll('.followup-input').forEach(inp => { if(inp.value.trim()) followUpList.push(inp.value.trim()); });
+
+                    let tindakanList = [];
+                    pCard.querySelectorAll('.tindakan-input').forEach(inp => { if(inp.value.trim()) tindakanList.push(inp.value.trim()); });
+
+                    let photoProblemList = [];
+                    pCard.querySelectorAll('.prob-photo-container img').forEach(img => photoProblemList.push(img.src));
+
+                    let photoImprovementList = [];
+                    pCard.querySelectorAll('.imp-photo-container img').forEach(img => photoImprovementList.push(img.src));
+
+                    problems.push({
+                        faktor: pCard.querySelector('.prob-faktor').value,
+                        problemDesc: probDesc,
+                        rejectionKg: parseFloat(pCard.querySelector('.prob-reject-kg').value) || 0,
+                        analisaList: analisaList,
+                        followUpList: followUpList,
+                        tindakanList: tindakanList,
+                        photoProblemList: photoProblemList,
+                        photoImprovementList: photoImprovementList
+                    });
+                }
+
                 items.push({
-                    tanggal: tglValue,
-                    material: el.querySelector(".mass-material").value,
-                    supplier: el.querySelector(".mass-supplier").value,
-                    jumlah: el.querySelector(".mass-jumlah").value
+                    namaItem: namaItem,
+                    compound: totComp,
+                    metalInsert: totMetal,
+                    compoundList: compoundList,
+                    metalList: metalList,
+                    problems: problems
+                });
+            }
+
+            const reportData = { header, items };
+
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            const editId = document.getElementById('editReportId').value;
+            if(editId) {
+                history = history.filter(r => r.header.id !== editId);
+            }
+            history.unshift(reportData);
+            localStorage.setItem('extruder_reports_v7', JSON.stringify(history));
+
+            if(GOOGLE_SCRIPT_URL) {
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reportData)
+                    });
+                } catch(e) { console.error("Kirim ke Sheets error:", e); }
+            }
+
+            alert("✅ Laporan Berhasil Disimpan!");
+            resetFormToNew();
+            switchTab('history');
+            renderHistoryTable();
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Kirim Laporan ke Google Sheets & Drive`;
+        }
+
+        function resetFormToNew() {
+            document.getElementById('productionForm').reset();
+            document.getElementById('editReportId').value = "";
+            document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-clipboard-list text-primary me-2"></i>LAPORAN PROBLEM PRODUKSI EXTRUDER`;
+            document.getElementById('formModeBadge').innerText = "Input Baru";
+            document.getElementById('cancelEditBtn').classList.add('d-none');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal').value = today;
+            updateHari();
+            document.getElementById('itemBlocksContainer').innerHTML = "";
+            itemIndex = 0;
+            addItemBlock();
+        }
+
+        function switchTab(tabName) {
+            const fSec = document.getElementById('section-form');
+            const hSec = document.getElementById('section-history');
+            const btnF = document.getElementById('navTabForm');
+            const btnH = document.getElementById('navTabHistory');
+
+            if(tabName === 'form') {
+                fSec.classList.remove('d-none');
+                hSec.classList.add('d-none');
+                btnF.className = "btn btn-outline-primary btn-sm fw-bold";
+                btnH.className = "btn btn-outline-secondary btn-sm fw-bold";
+            } else {
+                fSec.classList.add('d-none');
+                hSec.classList.remove('d-none');
+                btnH.className = "btn btn-outline-primary btn-sm fw-bold";
+                btnF.className = "btn btn-outline-secondary btn-sm fw-bold";
+                renderHistoryTable();
+            }
+        }
+
+        function renderHistoryTable() {
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            
+            const startD = document.getElementById('filterStartDate').value;
+            const endD = document.getElementById('filterEndDate').value;
+            const mach = document.getElementById('filterMachine').value;
+            const itemF = document.getElementById('filterItem').value;
+            const probF = document.getElementById('filterProblemDesc').value;
+
+            let filtered = history.filter(r => {
+                let match = true;
+                if(startD && r.header.tanggal < startD) match = false;
+                if(endD && r.header.tanggal > endD) match = false;
+                if(mach && r.header.namaMesin !== mach) match = false;
+                if(itemF && !r.items.some(i => i.namaItem === itemF)) match = false;
+                if(probF && !r.items.some(i => i.problems.some(p => p.problemDesc === probF))) match = false;
+                return match;
+            });
+
+            const desktopBody = document.getElementById('historyTableBodyDesktop');
+            const mobileContainer = document.getElementById('historyCardBodyMobile');
+            desktopBody.innerHTML = "";
+            mobileContainer.innerHTML = "";
+
+            let sumMat = 0;
+            let sumRej = 0;
+            let factorCounts = { "MESIN": 0, "METHODE": 0, "MATERIAL": 0, "MAN": 0, "ENVIRONMENT": 0 };
+            let topProbMap = {};
+
+            if(filtered.length === 0) {
+                desktopBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted fw-bold">Belum ada data laporan yang tersedia.</td></tr>`;
+                mobileContainer.innerHTML = `<div class="text-center py-4 text-muted fw-bold">Belum ada data laporan.</div>`;
+                updateStatistics(0, 0, 0, factorCounts, topProbMap, "LINE 1");
+                return;
+            }
+
+            let primaryMachine = filtered[0].header.namaMesin || "LINE 1";
+            let countedReportIds = new Set();
+
+            filtered.forEach((report) => {
+                const h = report.header;
+                const reportId = h.id || (h.tanggal + '-' + h.shift + '-' + h.namaMesin);
+
+                (report.items || []).forEach(item => {
+                    let comp = parseFloat(item.compound) || 0;
+                    let met = parseFloat(item.metalInsert) || 0;
+                    
+                    if(item.compoundList && item.compoundList.length > 0) {
+                        comp = item.compoundList.reduce((acc, c) => acc + (parseFloat(c.weight) || 0), 0);
+                    }
+                    if(item.metalList && item.metalList.length > 0) {
+                        met = item.metalList.reduce((acc, m) => acc + (parseFloat(m.weight) || 0), 0);
+                    }
+
+                    let totMat = comp + met;
+
+                    let uniqueMaterialKey = reportId + '-' + item.namaItem;
+                    if (!countedReportIds.has(uniqueMaterialKey)) {
+                        sumMat += totMat;
+                        countedReportIds.add(uniqueMaterialKey);
+                    }
+
+                    let compDetails = '-';
+                    if (item.compoundList && item.compoundList.length > 0) {
+                        compDetails = item.compoundList.map(c => `• ${c.name}: ${c.weight} Kg`).join('<br>');
+                    } else if (comp > 0) {
+                        compDetails = `• Utama: ${comp} Kg`;
+                    }
+
+                    let metalDetails = '-';
+                    if (item.metalList && item.metalList.length > 0) {
+                        metalDetails = item.metalList.map(m => `• ${m.name}: ${m.weight} Kg`).join('<br>');
+                    } else if (met > 0) {
+                        metalDetails = `• Utama: ${met} Kg`;
+                    }
+
+                    let materialSummaryHtml = `<small class="text-primary fw-bold">Compound:</small><br>${compDetails}<br><small class="text-info fw-bold">Metal Insert:</small><br>${metalDetails}<br><strong>Total Material: ${totMat.toFixed(1)} Kg</strong>`;
+
+                    (item.problems || []).forEach(prob => {
+                        let rejKg = parseFloat(prob.rejectionKg) || 0;
+                        sumRej += rejKg;
+                        let pct = totMat > 0 ? (rejKg / totMat) * 100 : 0;
+
+                        if(factorCounts[prob.faktor] !== undefined) factorCounts[prob.faktor] += rejKg;
+                        if(prob.problemDesc) {
+                            if(!topProbMap[prob.problemDesc]) topProbMap[prob.problemDesc] = { kg: 0, pct: 0 };
+                            topProbMap[prob.problemDesc].kg += rejKg;
+                            topProbMap[prob.problemDesc].pct += pct;
+                        }
+
+                        let pImgs = (prob.photoProblemList || []).map(u => `<img src="${getDriveDirectEmbedUrl(u)}" class="table-img-thumb" onclick="openImageModal('${getDriveDirectEmbedUrl(u)}')">`).join('') || 'No Prob';
+                        let iImgs = (prob.photoImprovementList || []).map(u => `<img src="${getDriveDirectEmbedUrl(u)}" class="table-img-thumb" onclick="openImageModal('${getDriveDirectEmbedUrl(u)}')">`).join('') || 'No Imp';
+
+                        let row = `
+                            <tr>
+                                <td class="no-print text-center">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <button class="btn btn-sm btn-outline-primary py-0 px-1 fw-bold" onclick="editReport('${h.id}')" title="Revisi"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger py-0 px-1 fw-bold" onclick="confirmDeleteReport('${h.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary mb-1">${h.shift}</span><br>
+                                    <strong>${h.namaMesin}</strong><br>
+                                    <small class="text-muted">${formatTanggalIndo(h.tanggal)}</small><br>
+                                    <small class="text-dark fw-bold">PIC: ${h.pic || '-'}</small>
+                                </td>
+                                <td class="fw-bold text-dark">${item.namaItem}</td>
+                                <td>${materialSummaryHtml}</td>
+                                <td><span class="badge bg-warning text-dark mb-1">${prob.faktor}</span><br><strong>${prob.problemDesc}</strong></td>
+                                <td><strong>${rejKg.toFixed(1)} Kg</strong><br><span class="text-danger fw-bold">(${pct.toFixed(2)}%)</span></td>
+                                <td><small><strong>Analisa:</strong><br>${(prob.analisaList || []).join('; ') || '-'}<br><strong>Follow Up:</strong><br>${(prob.followUpList || []).join('; ') || '-'}</small></td>
+                                <td><small>${(prob.tindakanList || []).join('; ') || '-'}</small></td>
+                                <td><div class="d-flex flex-wrap gap-1">${pImgs}</div><div class="d-flex flex-wrap gap-1 mt-1">${iImgs}</div></td>
+                            </tr>
+                        `;
+                        desktopBody.insertAdjacentHTML('beforeend', row);
+                    });
                 });
             });
 
-            payload = {
-                action: "add",
-                items: items
-            };
+            updateStatistics(sumMat, sumRej, filtered.length, factorCounts, topProbMap, primaryMachine);
+            populateFilterDropdowns();
         }
 
-        let btnSimpan = document.getElementById("btnSimpan");
-        btnSimpan.innerText = "Menyimpan...";
-        btnSimpan.disabled = true;
+        function updateStatistics(totalMat, totalRej, totalReports, factorCounts, topProbMap, machineName) {
+            document.getElementById('statTotalMaterial').innerText = `${totalMat.toFixed(1)} Kg`;
+            document.getElementById('statTotalReject').innerText = `${totalRej.toFixed(1)} Kg`;
 
-        try {
-            let response = await fetch(WEB_APP_URL, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            });
-            let result = await response.json();
-            
-            if (result.status === "success") {
-                tutupModalOrder();
-                await ambilDataOrder(false); 
+            let avgPct = totalMat > 0 ? (totalRej / totalMat) * 100 : 0;
+            document.getElementById('statAvgReject').innerText = `${avgPct.toFixed(2)}%`;
+
+            const kpiTargets = { "LINE 1": 6.0, "LINE 2": 6.5, "LINE 3": 6.0, "LINE 4": 7.0, "FLOKLES": 1.5 };
+            let maxLimit = kpiTargets[machineName] || 6.5;
+
+            const badge = document.getElementById('statJudgeBadge');
+            const borderBox = document.getElementById('statCardJudgeBorder');
+            if(avgPct <= maxLimit) {
+                badge.className = "badge bg-success px-2 py-1 fs-6 fw-bold";
+                badge.innerHTML = "OK 🎉 (Tercapai)";
+                borderBox.className = "p-3 bg-white rounded border shadow-sm border-start border-4 border-success";
             } else {
-                alert("Gagal menyimpan: " + result.message);
+                badge.className = "badge bg-danger px-2 py-1 fs-6 fw-bold";
+                badge.innerHTML = "NG ⚠️ (Tidak Tercapai)";
+                borderBox.className = "p-3 bg-white rounded border shadow-sm border-start border-4 border-danger";
             }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Terjadi kesalahan koneksi saat menyimpan data.");
-        } finally {
-            btnSimpan.disabled = false;
+
+            renderCharts(factorCounts, topProbMap);
         }
-    }
 
-    function unduhPDF() {
-        window.print();
-    }
+        function renderCharts(factorCounts, topProbMap) {
+            const ctxFactor = document.getElementById('factorChart').getContext('2d');
+            if(factorChartInstance) factorChartInstance.destroy();
+            
+            let totalAllReject = Object.values(factorCounts).reduce((a, b) => a + b, 0);
 
-    init();
-</script>
+            factorChartInstance = new Chart(ctxFactor, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(factorCounts),
+                    datasets: [{
+                        label: 'Rejection (Kg)',
+                        data: Object.values(factorCounts),
+                        backgroundColor: '#ef4444',
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let valKg = context.raw || 0;
+                                    let pct = totalAllReject > 0 ? (valKg / totalAllReject) * 100 : 0;
+                                    return ` Rejection: ${valKg.toFixed(1)} Kg (${pct.toFixed(2)}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
 
+            let sortedProbs = Object.entries(topProbMap).sort((a,b) => b[1].kg - a[1].kg).slice(0, 10);
+            const ctxTop = document.getElementById('topProblemChart').getContext('2d');
+            if(topProblemChartInstance) topProblemChartInstance.destroy();
+
+            topProblemChartInstance = new Chart(ctxTop, {
+                type: 'bar',
+                data: {
+                    labels: sortedProbs.map(item => item[0]),
+                    datasets: [{
+                        label: 'Rejection (Kg)',
+                        data: sortedProbs.map(item => item[1].kg),
+                        backgroundColor: '#ef4444',
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    indexAxis: 'y',
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let idx = context.dataIndex;
+                                    let itemData = sortedProbs[idx][1];
+                                    let valKg = itemData.kg;
+                                    let totalMatGlobal = parseFloat(document.getElementById('statTotalMaterial').innerText) || 1;
+                                    let pct = totalMatGlobal > 0 ? (valKg / totalMatGlobal) * 100 : 0;
+                                    return ` Rejection: ${valKg.toFixed(1)} Kg (${pct.toFixed(2)}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function openImageModal(url) {
+            document.getElementById('modalImageSrc').src = url;
+            new bootstrap.Modal(document.getElementById('imageModal')).show();
+        }
+
+        function editReport(id) {
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            let report = history.find(r => r.header.id === id);
+            
+            if(!report) {
+                report = history.find(r => {
+                    const rId = r.header.id || (r.header.tanggal + '-' + r.header.shift + '-' + r.header.namaMesin);
+                    return rId === id || id.includes(r.header.tanggal);
+                });
+            }
+
+            if(!report) {
+                alert("Data laporan tidak ditemukan untuk direvisi!");
+                return;
+            }
+
+            switchTab('form');
+            document.getElementById('editReportId').value = report.header.id || ('REP-' + Date.now());
+            document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-primary me-2"></i>REVISI LAPORAN PRODUKSI EXTRUDER`;
+            document.getElementById('formModeBadge').innerText = "Mode Revisi";
+            document.getElementById('cancelEditBtn').classList.remove('d-none');
+
+            document.getElementById('tanggal').value = report.header.tanggal || new Date().toISOString().split('T')[0];
+            document.getElementById('hari').value = report.header.hari || '';
+            document.getElementById('shift').value = report.header.shift || '';
+            document.getElementById('namaMesin').value = report.header.namaMesin || '';
+            document.getElementById('picName').value = report.header.pic || '';
+
+            document.getElementById('itemBlocksContainer').innerHTML = "";
+            itemIndex = 0;
+            
+            if (report.items && report.items.length > 0) {
+                report.items.forEach(item => addItemBlock(item));
+            } else {
+                addItemBlock();
+            }
+        }
+
+        let currentDeleteId = null;
+        function confirmDeleteReport(id) {
+            currentDeleteId = id;
+            deleteTargetAction = "single";
+            document.getElementById('deleteModalDesc').innerText = "Masukkan password untuk menghapus laporan ini.";
+            document.getElementById('deletePasswordInput').value = "";
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        function openDeleteAllModal() {
+            currentDeleteId = null;
+            deleteTargetAction = "all";
+            document.getElementById('deleteModalDesc').innerText = "Masukkan password untuk MENGHAPUS SEMUA riwayat laporan.";
+            document.getElementById('deletePasswordInput').value = "";
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        function executeDeleteAction() {
+            const pass = document.getElementById('deletePasswordInput').value.trim();
+            if(pass !== DELETE_PASSWORD) {
+                alert("Password salah!");
+                return;
+            }
+
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            if(deleteTargetAction === "single") {
+                history = history.filter(r => {
+                    const rId = r.header.id || (r.header.tanggal + '-' + r.header.shift + '-' + r.header.namaMesin);
+                    return rId !== currentDeleteId;
+                });
+                localStorage.setItem('extruder_reports_v7', JSON.stringify(history));
+                alert("Laporan berhasil dihapus.");
+            } else if(deleteTargetAction === "all") {
+                localStorage.removeItem('extruder_reports_v7');
+                alert("Semua riwayat laporan berhasil dihapus.");
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+            renderHistoryTable();
+        }
+
+        function togglePasswordVisibility() {
+            const inp = document.getElementById('deletePasswordInput');
+            const icon = document.getElementById('eyeIcon');
+            if(inp.type === "password") {
+                inp.type = "text";
+                icon.className = "fa-solid fa-eye-slash";
+            } else {
+                inp.type = "password";
+                icon.className = "fa-solid fa-eye";
+            }
+        }
+
+        function resetFilter() {
+            document.getElementById('filterStartDate').value = "";
+            document.getElementById('filterEndDate').value = "";
+            document.getElementById('filterMachine').value = "";
+            document.getElementById('filterItem').value = "";
+            document.getElementById('filterProblemDesc').value = "";
+            renderHistoryTable();
+        }
+
+        function exportToCSV() {
+            let history = JSON.parse(localStorage.getItem('extruder_reports_v7') || '[]');
+            if(history.length === 0) {
+                alert("Tidak ada data untuk diekspor!");
+                return;
+            }
+
+            let csv = "ID Laporan,Tanggal,Hari,Shift,Nama Mesin,PIC,Nama Item,Compound (Kg),Metal Insert (Kg),Total Material (Kg),Faktor,Deskripsi Problem,Rejection (Kg),Rejection (%),Analisa,Follow Up,Tindakan Improvement\n";
+            history.forEach(r => {
+                const h = r.header;
+                (r.items || []).forEach(i => {
+                    let totMat = (parseFloat(i.compound)||0) + (parseFloat(i.metalInsert)||0);
+                    (i.problems || []).forEach(p => {
+                        let rejKg = parseFloat(p.rejectionKg) || 0;
+                        let pct = totMat > 0 ? (rejKg / totMat) * 100 : 0;
+                        csv += `"${h.id}","${h.tanggal}","${h.hari}","${h.shift}","${h.namaMesin}","${h.pic}","${i.namaItem}","${i.compound}","${i.metalInsert}","${totMat.toFixed(1)}","${p.faktor}","${p.problemDesc}","${rejKg}","${pct.toFixed(2)}%","${(p.analisaList||[]).join('; ')}","${(p.followUpList||[]).join('; ')}","${(p.tindakanList||[]).join('; ')}"\n`;
+                    });
+                });
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Laporan_Extruder_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+    </script>
 </body>
 </html>
